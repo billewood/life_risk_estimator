@@ -22,6 +22,10 @@ export function CauseMixChart({ result, profile }: CauseMixChartProps) {
     .sort((a, b) => b.fraction - a.fraction)
     .slice(0, 5);
 
+  // Debug logging
+  console.log('CauseMix data:', causeMix);
+  console.log('Top causes:', topCauses);
+
   const colors = {
     cvd: '#ef4444',
     cancer: '#f59e0b',
@@ -71,7 +75,7 @@ export function CauseMixChart({ result, profile }: CauseMixChartProps) {
         </button>
       </div>
 
-      {/* Pie Chart */}
+      {/* Chart - Pie Chart with Bar Chart Fallback */}
       <div className="mb-6">
         {topCauses.length > 0 ? (
           <div className="h-80 w-full">
@@ -112,6 +116,34 @@ export function CauseMixChart({ result, profile }: CauseMixChartProps) {
             <p className="text-gray-500">No data available for cause distribution</p>
           </div>
         )}
+        
+        {/* Fallback Bar Chart */}
+        <div className="mt-4">
+          <h4 className="text-sm font-medium text-neutral-800 mb-3">Cause Distribution (Bar Chart)</h4>
+          <div className="space-y-2">
+            {topCauses.map(({ cause, fraction }) => (
+              <div key={cause} className="flex items-center">
+                <div className="w-20 text-xs text-neutral-600 text-right pr-2">
+                  {CAUSE_LABELS[cause]}
+                </div>
+                <div className="flex-1 mx-2">
+                  <div className="bg-neutral-200 rounded-full h-4 relative overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${fraction * 100}%`,
+                        backgroundColor: colors[cause],
+                      }}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center text-xs font-medium text-white">
+                      {fraction > 0.05 ? `${(fraction * 100).toFixed(1)}%` : ''}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Summary Stats */}
