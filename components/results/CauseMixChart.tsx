@@ -73,39 +73,45 @@ export function CauseMixChart({ result, profile }: CauseMixChartProps) {
 
       {/* Pie Chart */}
       <div className="mb-6">
-        <div className="h-80 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={topCauses.map(({ cause, fraction }) => ({
-                  name: CAUSE_LABELS[cause],
-                  value: fraction * 100,
-                  color: colors[cause]
-                }))}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, value }) => value > 5 ? `${name}: ${value.toFixed(1)}%` : ''}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {topCauses.map(({ cause }, index) => (
-                  <Cell key={`cell-${index}`} fill={colors[cause]} />
-                ))}
-              </Pie>
-              <Tooltip 
-                formatter={(value: number) => [`${value.toFixed(1)}%`, 'Percentage']}
-                labelFormatter={(label) => `Cause: ${label}`}
-              />
-              <Legend 
-                verticalAlign="bottom" 
-                height={36}
-                formatter={(value) => <span className="text-sm">{value}</span>}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+        {topCauses.length > 0 ? (
+          <div className="h-80 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={topCauses.map(({ cause, fraction }) => ({
+                    name: CAUSE_LABELS[cause],
+                    value: fraction * 100,
+                    color: colors[cause]
+                  }))}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, value }) => value > 5 ? `${name}: ${value.toFixed(1)}%` : ''}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {topCauses.map(({ cause }, index) => (
+                    <Cell key={`cell-${index}`} fill={colors[cause]} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  formatter={(value: number) => [`${value.toFixed(1)}%`, 'Percentage']}
+                  labelFormatter={(label) => `Cause: ${label}`}
+                />
+                <Legend 
+                  verticalAlign="bottom" 
+                  height={36}
+                  formatter={(value) => <span className="text-sm">{value}</span>}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          <div className="h-80 w-full flex items-center justify-center bg-gray-50 rounded-lg">
+            <p className="text-gray-500">No data available for cause distribution</p>
+          </div>
+        )}
       </div>
 
       {/* Summary Stats */}

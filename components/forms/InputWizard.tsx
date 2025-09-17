@@ -32,33 +32,14 @@ export function InputWizard() {
   const CurrentStepComponent = steps[currentStep]?.component || StepAgeSex;
 
   const handleNext = () => {
-    if (validateCurrentProfile()) {
-      // Move to next step or submit
-      if (currentStep < steps.length - 1) {
-        useProfileStore.getState().setStep(currentStep + 1);
-      } else {
-        handleSubmit();
-      }
+    if (validateCurrentProfile() && currentStep < steps.length - 1) {
+      useProfileStore.getState().setStep(currentStep + 1);
     }
   };
 
   const handlePrevious = () => {
     if (currentStep > 0) {
       useProfileStore.getState().setStep(currentStep - 1);
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!validateCurrentProfile()) return;
-
-    setIsSubmitting(true);
-    try {
-      // The actual estimation will be handled by the SubmitBar component
-      // when the user clicks "Get My Estimates"
-    } catch (error) {
-      console.error('Submission failed:', error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -119,7 +100,7 @@ export function InputWizard() {
         {currentStep < steps.length - 1 && (
           <button
             onClick={handleNext}
-            disabled={!isCurrentStepValid() || isSubmitting}
+            disabled={!isCurrentStepValid()}
             className="px-6 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next

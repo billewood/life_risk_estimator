@@ -51,8 +51,8 @@ export function ShortTermRiskForm({ onCalculate, loading = false }: ShortTermRis
         {/* Header */}
         <div className="bg-gradient-to-r from-orange-500 to-red-500 px-8 py-12">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-6 h-6 bg-white/20 rounded-full mb-3">
-              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-white/20 rounded-full flex items-center justify-center mb-3" style={{width: '100px', height: '100px'}}>
+              <svg className="w-6 h-6 text-white" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
@@ -461,7 +461,7 @@ export function ShortTermRiskForm({ onCalculate, loading = false }: ShortTermRis
                   </>
                 ) : (
                   <>
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 mr-2" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                     Calculate 6-Month Risk
