@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { EstimationResult, CauseCategory, CAUSE_LABELS, UserProfile } from '@/lib/model/types';
 import { formatProbability } from '@/lib/math/stats';
 
@@ -39,7 +40,10 @@ export function CauseMixChart({ result, profile }: CauseMixChartProps) {
           Cause of Death Distribution
         </h2>
         <div className="text-sm text-neutral-500">
-          {title} probability
+          {activeTab === '1y' 
+            ? 'Distribution of causes within the very low 1-year death risk' 
+            : 'Distribution of causes within lifetime mortality risk'
+          }
         </div>
       </div>
 
@@ -67,32 +71,41 @@ export function CauseMixChart({ result, profile }: CauseMixChartProps) {
         </button>
       </div>
 
-      {/* Chart */}
-      <div className="space-y-3 mb-6">
-        {topCauses.map(({ cause, fraction }) => (
-          <div key={cause} className="flex items-center">
-            <div className="w-20 text-xs text-neutral-600 text-right pr-2">
-              {CAUSE_LABELS[cause]}
-            </div>
-            <div className="flex-1 mx-2">
-              <div className="bg-neutral-200 rounded-full h-6 relative overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{
-                    width: `${fraction * 100}%`,
-                    backgroundColor: colors[cause],
-                  }}
-                />
-                <div className="absolute inset-0 flex items-center justify-center text-xs font-medium text-white">
-                  {fraction > 0.05 ? `${(fraction * 100).toFixed(1)}%` : ''}
-                </div>
-              </div>
-            </div>
-            <div className="w-16 text-xs text-neutral-600 text-right">
-              {formatProbability(fraction)}
-            </div>
-          </div>
-        ))}
+      {/* Pie Chart */}
+      <div className="mb-6">
+        <div className="h-80 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={topCauses.map(({ cause, fraction }) => ({
+                  name: CAUSE_LABELS[cause],
+                  value: fraction * 100,
+                  color: colors[cause]
+                }))}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, value }) => value > 5 ? `${name}: ${value.toFixed(1)}%` : ''}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {topCauses.map(({ cause }, index) => (
+                  <Cell key={`cell-${index}`} fill={colors[cause]} />
+                ))}
+              </Pie>
+              <Tooltip 
+                formatter={(value: number) => [`${value.toFixed(1)}%`, 'Percentage']}
+                labelFormatter={(label) => `Cause: ${label}`}
+              />
+              <Legend 
+                verticalAlign="bottom" 
+                height={36}
+                formatter={(value) => <span className="text-sm">{value}</span>}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Summary Stats */}

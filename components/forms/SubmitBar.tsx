@@ -27,7 +27,7 @@ export function SubmitBar() {
 
   return (
     <div className="bg-gradient-to-r from-primary-50 to-blue-50 border border-primary-200 rounded-lg p-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold text-neutral-900">
             Ready to Get Your Estimates?
@@ -50,6 +50,15 @@ export function SubmitBar() {
           ) : (
             'Get My Estimates'
           )}
+        </button>
+      </div>
+      
+      <div className="flex justify-start">
+        <button
+          onClick={() => window.history.back()}
+          className="px-4 py-2 text-neutral-600 border border-neutral-300 rounded-md hover:bg-neutral-50"
+        >
+          Previous
         </button>
       </div>
       

@@ -116,17 +116,15 @@ export function InputWizard() {
           Previous
         </button>
 
-        <button
-          onClick={handleNext}
-          disabled={!isCurrentStepValid() || isSubmitting}
-          className="px-6 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {currentStep === steps.length - 1
-            ? isSubmitting
-              ? 'Calculating...'
-              : 'Get My Estimates'
-            : 'Next'}
-        </button>
+        {currentStep < steps.length - 1 && (
+          <button
+            onClick={handleNext}
+            disabled={!isCurrentStepValid() || isSubmitting}
+            className="px-6 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
+        )}
       </div>
 
       {/* Submit bar for final step */}
