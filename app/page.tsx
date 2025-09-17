@@ -100,7 +100,7 @@ export default function HomePage() {
           <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center mb-6">
               <div className="bg-blue-100 rounded-full flex items-center justify-center mr-2" style={{width: '100px', height: '100px'}}>
-                <svg className="text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+                <svg className="text-blue-600 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
@@ -138,7 +138,7 @@ export default function HomePage() {
           <div className="flex items-start">
             <div className="flex-shrink-0">
               <div className="bg-purple-100 rounded-full flex items-center justify-center" style={{width: '100px', height: '100px'}}>
-                <svg className="text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+                <svg className="text-purple-600 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -154,7 +154,7 @@ export default function HomePage() {
               <div className="bg-red-50 border border-red-200 rounded-xl p-6">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <svg className="text-red-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+                    <svg className="text-red-500 mt-0.5 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                     </svg>
                   </div>
@@ -179,7 +179,7 @@ export default function HomePage() {
           <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center mb-6">
               <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mr-2" style={{width: '100px', height: '100px'}}>
-                <svg className="text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+                <svg className="text-white w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
@@ -197,7 +197,7 @@ export default function HomePage() {
           <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center mb-6">
               <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mr-2" style={{width: '100px', height: '100px'}}>
-                <svg className="text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+                <svg className="text-white w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
@@ -244,7 +244,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center">
             <div className="bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2" style={{width: '100px', height: '100px'}}>
-              <svg className="text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+              <svg className="text-blue-600 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
@@ -258,7 +258,7 @@ export default function HomePage() {
           
           <div className="text-center">
             <div className="bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2" style={{width: '100px', height: '100px'}}>
-              <svg className="text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+              <svg className="text-green-600 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
@@ -272,7 +272,7 @@ export default function HomePage() {
           
           <div className="text-center">
             <div className="bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2" style={{width: '100px', height: '100px'}}>
-              <svg className="text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+              <svg className="text-purple-600 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
