@@ -154,7 +154,7 @@ export default function HomePage() {
               <div className="bg-red-50 border border-red-200 rounded-xl p-6">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <svg className="text-red-500 mt-0.5 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="text-red-500 mt-0.5 w-6 h-6" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                     </svg>
                   </div>
@@ -232,7 +232,7 @@ export default function HomePage() {
               href="/shortterm" 
               className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl hover:from-orange-600 hover:to-red-600 font-medium transition-all duration-200 shadow-sm hover:shadow-md"
             >
-              <svg className="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="mr-2 w-5 h-5" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
               Start 6-Month Risk Assessment
