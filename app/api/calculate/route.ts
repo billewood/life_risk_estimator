@@ -53,11 +53,18 @@ export async function POST(request: NextRequest) {
     
   } catch (error) {
     console.error('Error in mortality calculation API:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    console.error('Error details:', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      cause: error instanceof Error ? error.cause : undefined
+    });
     
     return NextResponse.json(
       { 
         error: 'Mortality calculation failed',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
       },
       { status: 500 }
     );
