@@ -18,7 +18,7 @@
 import { realSSAFetcher } from '../data/real-ssa-fetcher';
 import { realCDCFetcher } from '../data/real-cdc-fetcher';
 import { gbdRiskFactorLoader } from '../data/gbd-risk-factors';
-import { ePrognosisValidator } from '../validation/eprognosis';
+import { ePrognosisSvc } from '../validation/eprognosis';
 import { ascvdValidator } from '../validation/ascvd-validation';
 import { jointAttributionCalculator } from '../model/joint-attribution';
 import { interventionSimulator } from '../interventions/intervention-simulator';

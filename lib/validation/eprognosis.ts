@@ -56,7 +56,7 @@ export interface ePrognosisResult {
   };
 }
 
-export class ePrognosisValidator {
+export class EPrognosisValidator {
   /**
    * Calculate Lee index for 4-year mortality risk
    */
@@ -262,4 +262,4 @@ export class ePrognosisValidator {
   }
 }
 
-export const ePrognosisValidator = new ePrognosisValidator();
+export const ePrognosisSvc = new EPrognosisValidator();
