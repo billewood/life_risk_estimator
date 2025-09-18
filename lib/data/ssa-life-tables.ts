@@ -45,24 +45,43 @@ export interface MortalityRates {
 
 export class SSALifeTableLoader {
   private cache: Map<string, SSALifeTableRow[]> = new Map();
+  private cacheTimestamps: Map<string, number> = new Map();
   private baseUrl = 'https://www.ssa.gov/oact/STATS/table4c6.html';
+  private readonly CACHE_DURATION = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
 
   /**
    * Load SSA life table data for a specific year
+   * Uses caching to avoid repeated API calls
    * In production, this would fetch from the actual SSA API or CSV files
    */
   async loadLifeTable(year: number = 2024): Promise<SSALifeTableRow[]> {
     const cacheKey = `ssa-${year}`;
+    const now = Date.now();
     
-    if (this.cache.has(cacheKey)) {
-      return this.cache.get(cacheKey)!;
+    // Check if we have valid cached data
+    if (this.cache.has(cacheKey) && this.cacheTimestamps.has(cacheKey)) {
+      const cacheTime = this.cacheTimestamps.get(cacheKey)!;
+      const age = now - cacheTime;
+      
+      if (age < this.CACHE_DURATION) {
+        console.log(`Using cached SSA data for ${year} (age: ${Math.round(age / (24 * 60 * 60 * 1000))} days)`);
+        return this.cache.get(cacheKey)!;
+      } else {
+        console.log(`SSA data for ${year} expired, refreshing...`);
+      }
     }
 
+    console.log(`Loading fresh SSA data for ${year}...`);
+    
     // For now, we'll use realistic sample data based on SSA patterns
     // In production, this would fetch from the actual SSA data
     const lifeTableData = this.generateRealisticSSAData(year);
     
+    // Cache the data with timestamp
     this.cache.set(cacheKey, lifeTableData);
+    this.cacheTimestamps.set(cacheKey, now);
+    
+    console.log(`SSA data for ${year} cached successfully`);
     return lifeTableData;
   }
 
@@ -180,6 +199,58 @@ export class SSALifeTableLoader {
     const ex = Math.max(0, baseEx - ageAdjustment);
     
     return ex;
+  }
+
+  /**
+   * Force refresh of cached data (useful when new data is released)
+   */
+  async forceRefresh(year: number = 2024): Promise<SSALifeTableRow[]> {
+    const cacheKey = `ssa-${year}`;
+    console.log(`Force refreshing SSA data for ${year}...`);
+    
+    const lifeTableData = this.generateRealisticSSAData(year);
+    
+    this.cache.set(cacheKey, lifeTableData);
+    this.cacheTimestamps.set(cacheKey, Date.now());
+    
+    console.log(`SSA data for ${year} force refreshed successfully`);
+    return lifeTableData;
+  }
+
+  /**
+   * Clear all cached data
+   */
+  clearCache(): void {
+    this.cache.clear();
+    this.cacheTimestamps.clear();
+    console.log('SSA data cache cleared');
+  }
+
+  /**
+   * Get cache status information
+   */
+  getCacheStatus(): {
+    cachedYears: number[];
+    cacheAges: {[year: number]: number};
+    totalCachedItems: number;
+  } {
+    const cachedYears = Array.from(this.cache.keys()).map(key => 
+      parseInt(key.replace('ssa-', ''))
+    );
+    
+    const cacheAges: {[year: number]: number} = {};
+    const now = Date.now();
+    
+    this.cacheTimestamps.forEach((timestamp, key) => {
+      const year = parseInt(key.replace('ssa-', ''));
+      cacheAges[year] = Math.round((now - timestamp) / (24 * 60 * 60 * 1000));
+    });
+
+    return {
+      cachedYears,
+      cacheAges,
+      totalCachedItems: this.cache.size
+    };
   }
 
   /**

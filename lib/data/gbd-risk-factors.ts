@@ -52,23 +52,42 @@ export interface RiskFactorExposure {
 
 export class GBDRiskFactorLoader {
   private cache: Map<string, GBDRiskFactor[]> = new Map();
+  private cacheTimestamps: Map<string, number> = new Map();
   private baseUrl = 'https://www.healthdata.org/gbd';
+  private readonly CACHE_DURATION = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
 
   /**
    * Load GBD risk factor data for a specific year
+   * Uses caching to avoid repeated API calls
    */
   async loadRiskFactors(year: number = 2021): Promise<GBDRiskFactor[]> {
     const cacheKey = `gbd-risk-factors-${year}`;
+    const now = Date.now();
     
-    if (this.cache.has(cacheKey)) {
-      return this.cache.get(cacheKey)!;
+    // Check if we have valid cached data
+    if (this.cache.has(cacheKey) && this.cacheTimestamps.has(cacheKey)) {
+      const cacheTime = this.cacheTimestamps.get(cacheKey)!;
+      const age = now - cacheTime;
+      
+      if (age < this.CACHE_DURATION) {
+        console.log(`Using cached GBD data for ${year} (age: ${Math.round(age / (24 * 60 * 60 * 1000))} days)`);
+        return this.cache.get(cacheKey)!;
+      } else {
+        console.log(`GBD data for ${year} expired, refreshing...`);
+      }
     }
 
+    console.log(`Loading fresh GBD data for ${year}...`);
+    
     // For now, we'll use realistic sample data based on GBD patterns
     // In production, this would fetch from the actual GBD API
     const riskFactorData = this.generateRealisticGBDData(year);
     
+    // Cache the data with timestamp
     this.cache.set(cacheKey, riskFactorData);
+    this.cacheTimestamps.set(cacheKey, now);
+    
+    console.log(`GBD data for ${year} cached successfully`);
     return riskFactorData;
   }
 
@@ -287,6 +306,58 @@ export class GBDRiskFactorLoader {
         }
       }
     ];
+  }
+
+  /**
+   * Force refresh of cached data (useful when new data is released)
+   */
+  async forceRefresh(year: number = 2021): Promise<GBDRiskFactor[]> {
+    const cacheKey = `gbd-risk-factors-${year}`;
+    console.log(`Force refreshing GBD data for ${year}...`);
+    
+    const riskFactorData = this.generateRealisticGBDData(year);
+    
+    this.cache.set(cacheKey, riskFactorData);
+    this.cacheTimestamps.set(cacheKey, Date.now());
+    
+    console.log(`GBD data for ${year} force refreshed successfully`);
+    return riskFactorData;
+  }
+
+  /**
+   * Clear all cached data
+   */
+  clearCache(): void {
+    this.cache.clear();
+    this.cacheTimestamps.clear();
+    console.log('GBD data cache cleared');
+  }
+
+  /**
+   * Get cache status information
+   */
+  getCacheStatus(): {
+    cachedYears: number[];
+    cacheAges: {[year: number]: number};
+    totalCachedItems: number;
+  } {
+    const cachedYears = Array.from(this.cache.keys()).map(key => 
+      parseInt(key.replace('gbd-risk-factors-', ''))
+    );
+    
+    const cacheAges: {[year: number]: number} = {};
+    const now = Date.now();
+    
+    this.cacheTimestamps.forEach((timestamp, key) => {
+      const year = parseInt(key.replace('gbd-risk-factors-', ''));
+      cacheAges[year] = Math.round((now - timestamp) / (24 * 60 * 60 * 1000));
+    });
+
+    return {
+      cachedYears,
+      cacheAges,
+      totalCachedItems: this.cache.size
+    };
   }
 
   /**

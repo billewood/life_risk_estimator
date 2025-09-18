@@ -43,23 +43,42 @@ export interface CauseFractions {
 
 export class CDCCauseDataLoader {
   private cache: Map<string, CDCCauseRow[]> = new Map();
+  private cacheTimestamps: Map<string, number> = new Map();
   private baseUrl = 'https://wonder.cdc.gov/mortSQL.html';
+  private readonly CACHE_DURATION = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
 
   /**
    * Load CDC cause-of-death data for a specific year
+   * Uses caching to avoid repeated API calls
    */
   async loadCauseData(year: number = 2022): Promise<CDCCauseRow[]> {
     const cacheKey = `cdc-causes-${year}`;
+    const now = Date.now();
     
-    if (this.cache.has(cacheKey)) {
-      return this.cache.get(cacheKey)!;
+    // Check if we have valid cached data
+    if (this.cache.has(cacheKey) && this.cacheTimestamps.has(cacheKey)) {
+      const cacheTime = this.cacheTimestamps.get(cacheKey)!;
+      const age = now - cacheTime;
+      
+      if (age < this.CACHE_DURATION) {
+        console.log(`Using cached CDC data for ${year} (age: ${Math.round(age / (24 * 60 * 60 * 1000))} days)`);
+        return this.cache.get(cacheKey)!;
+      } else {
+        console.log(`CDC data for ${year} expired, refreshing...`);
+      }
     }
 
+    console.log(`Loading fresh CDC data for ${year}...`);
+    
     // For now, we'll use realistic sample data based on CDC patterns
     // In production, this would fetch from the actual CDC WONDER API
     const causeData = this.generateRealisticCDCCauseData(year);
     
+    // Cache the data with timestamp
     this.cache.set(cacheKey, causeData);
+    this.cacheTimestamps.set(cacheKey, now);
+    
+    console.log(`CDC data for ${year} cached successfully`);
     return causeData;
   }
 
@@ -296,6 +315,58 @@ export class CDCCauseDataLoader {
     };
 
     return baseFractions[ageGroup as keyof typeof baseFractions]?.[sex] || {};
+  }
+
+  /**
+   * Force refresh of cached data (useful when new data is released)
+   */
+  async forceRefresh(year: number = 2022): Promise<CDCCauseRow[]> {
+    const cacheKey = `cdc-causes-${year}`;
+    console.log(`Force refreshing CDC data for ${year}...`);
+    
+    const causeData = this.generateRealisticCDCCauseData(year);
+    
+    this.cache.set(cacheKey, causeData);
+    this.cacheTimestamps.set(cacheKey, Date.now());
+    
+    console.log(`CDC data for ${year} force refreshed successfully`);
+    return causeData;
+  }
+
+  /**
+   * Clear all cached data
+   */
+  clearCache(): void {
+    this.cache.clear();
+    this.cacheTimestamps.clear();
+    console.log('CDC data cache cleared');
+  }
+
+  /**
+   * Get cache status information
+   */
+  getCacheStatus(): {
+    cachedYears: number[];
+    cacheAges: {[year: number]: number};
+    totalCachedItems: number;
+  } {
+    const cachedYears = Array.from(this.cache.keys()).map(key => 
+      parseInt(key.replace('cdc-causes-', ''))
+    );
+    
+    const cacheAges: {[year: number]: number} = {};
+    const now = Date.now();
+    
+    this.cacheTimestamps.forEach((timestamp, key) => {
+      const year = parseInt(key.replace('cdc-causes-', ''));
+      cacheAges[year] = Math.round((now - timestamp) / (24 * 60 * 60 * 1000));
+    });
+
+    return {
+      cachedYears,
+      cacheAges,
+      totalCachedItems: this.cache.size
+    };
   }
 
   /**

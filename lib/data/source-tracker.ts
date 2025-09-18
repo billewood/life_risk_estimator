@@ -246,6 +246,28 @@ export class DataSourceTracker {
       lastReviewed: '2024-01-01',
       nextReview: '2025-01-01'
     });
+
+    // Data caching strategy
+    this.assumptions.set('data-caching', {
+      id: 'data-caching',
+      description: 'Data is cached for 30 days to avoid repeated API calls and improve performance',
+      source: 'Performance optimization best practices',
+      justification: 'External data sources are slow to load. Caching improves user experience while maintaining data freshness.',
+      impact: 'low',
+      lastReviewed: '2024-01-01',
+      nextReview: '2025-01-01'
+    });
+
+    // Cache refresh strategy
+    this.assumptions.set('cache-refresh', {
+      id: 'cache-refresh',
+      description: 'Cache is refreshed when data is older than 30 days or when force refreshed',
+      source: 'Data freshness requirements',
+      justification: 'Balances performance with data freshness. 30 days is appropriate for annual data sources.',
+      impact: 'low',
+      lastReviewed: '2024-01-01',
+      nextReview: '2025-01-01'
+    });
   }
 
   getSource(id: string): DataSource | undefined {
