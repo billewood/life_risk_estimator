@@ -20,7 +20,7 @@ interface CalculationMethod {
 
 class CalculationConsolidator {
   private projectRoot: string;
-  private calculationMethods: CalculationMethod[] = [];
+  public calculationMethods: CalculationMethod[] = [];
 
   constructor(projectRoot: string) {
     this.projectRoot = projectRoot;
