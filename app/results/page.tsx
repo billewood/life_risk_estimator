@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { TransparencyModal } from '@/components/transparency/TransparencyModal';
+import { transparencyDB } from '@/lib/data/transparency-database';
 
 interface MortalityResult {
   lifeExpectancy: number;
@@ -19,6 +21,15 @@ export default function ResultsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showRiskFactors, setShowRiskFactors] = useState(false);
+  const [transparencyModal, setTransparencyModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    metric: 'life-expectancy' | 'one-year-risk' | 'cause-breakdown';
+  }>({
+    isOpen: false,
+    title: '',
+    metric: 'life-expectancy'
+  });
   const router = useRouter();
 
   useEffect(() => {
@@ -84,6 +95,22 @@ export default function ResultsPage() {
     calculateRisk();
   }, [router]);
 
+  const openTransparencyModal = (metric: 'life-expectancy' | 'one-year-risk' | 'cause-breakdown', title: string) => {
+    setTransparencyModal({
+      isOpen: true,
+      title,
+      metric
+    });
+  };
+
+  const closeTransparencyModal = () => {
+    setTransparencyModal({
+      isOpen: false,
+      title: '',
+      metric: 'life-expectancy'
+    });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
@@ -135,7 +162,16 @@ export default function ResultsPage() {
         {/* Three Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {/* Life Expectancy */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow cursor-pointer">
+          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow cursor-pointer relative">
+            <button
+              onClick={() => openTransparencyModal('life-expectancy', 'How We Calculate Life Expectancy')}
+              className="absolute top-4 right-4 w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors"
+              title="Learn how we calculate this"
+            >
+              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
             <div className="bg-blue-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
               <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -148,7 +184,16 @@ export default function ResultsPage() {
           </div>
 
           {/* 1-Year Risk */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow cursor-pointer">
+          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow cursor-pointer relative">
+            <button
+              onClick={() => openTransparencyModal('one-year-risk', 'How We Calculate 1-Year Mortality Risk')}
+              className="absolute top-4 right-4 w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors"
+              title="Learn how we calculate this"
+            >
+              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
             <div className="bg-red-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
               <svg className="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -161,7 +206,16 @@ export default function ResultsPage() {
           </div>
 
           {/* Top Cause */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow cursor-pointer">
+          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow cursor-pointer relative">
+            <button
+              onClick={() => openTransparencyModal('cause-breakdown', 'How We Calculate Cause of Death Breakdown')}
+              className="absolute top-4 right-4 w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors"
+              title="Learn how we calculate this"
+            >
+              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
             <div className="bg-orange-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
               <svg className="w-10 h-10 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -279,6 +333,14 @@ export default function ResultsPage() {
           </button>
         </div>
       </div>
+
+      {/* Transparency Modal */}
+      <TransparencyModal
+        isOpen={transparencyModal.isOpen}
+        onClose={closeTransparencyModal}
+        title={transparencyModal.title}
+        {...transparencyDB.getMethodologyForMetric(transparencyModal.metric)}
+      />
     </div>
   );
 }
