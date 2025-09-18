@@ -83,7 +83,9 @@ export class CalculationEnforcer {
       }
 
       // Perform calculation through integrated system
+      console.log('Attempting calculation with inputs:', inputs);
       const result = await this.calculator.calculateMortalityRisk(inputs);
+      console.log('Calculation result:', result);
       
       request.validationPassed = true;
       request.result = result;
@@ -99,6 +101,8 @@ export class CalculationEnforcer {
       this.requestHistory.push(request);
       
       console.error(`❌ Calculation failed for ${source}: ${request.error}`);
+      console.error('Full error details:', error);
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
       throw error;
     }
   }
