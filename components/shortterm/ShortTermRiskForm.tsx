@@ -53,7 +53,7 @@ export function ShortTermRiskForm({ onCalculate, loading = false }: ShortTermRis
           <div className="text-center">
             <div className="bg-white/20 rounded-full flex items-center justify-center mb-3" style={{width: '100px', height: '100px'}}>
               <svg className="w-6 h-6 text-white" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
             </div>
             <h2 className="text-3xl font-bold text-white mb-4">
@@ -73,7 +73,7 @@ export function ShortTermRiskForm({ onCalculate, loading = false }: ShortTermRis
             <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-100 rounded-xl p-6">
               <div className="flex items-center mb-6">
                 <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-4">
-                  <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-red-600" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
                 </div>
