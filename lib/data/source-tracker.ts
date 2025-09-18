@@ -55,11 +55,11 @@ export class DataSourceTracker {
       coverage: 'Ages 0-119, by sex',
       lastUpdated: '2024-01-01',
       version: '2024.1',
-      usage: ['baseline-mortality-rates', 'life-expectancy'],
-      assumptions: ['ssa-parameter-estimation', 'age-interpolation'],
+      usage: ['baseline-mortality-rates', 'life-expectancy', '6-month-probability', '5-year-probability'],
+      assumptions: ['ssa-baseline-mortality', '6-month-approximation', '5-year-approximation'],
       quality: {
         completeness: 100,
-        accuracy: 95,
+        accuracy: 98,
         timeliness: 90
       }
     });
@@ -73,10 +73,10 @@ export class DataSourceTracker {
       updateFrequency: 'annually',
       dataFormat: 'CSV download via web interface',
       coverage: 'US mortality by age, sex, cause of death',
-      lastUpdated: '2024-01-01',
-      version: '2024.1',
-      usage: ['cause-of-death-fractions', 'mortality-validation'],
-      assumptions: ['icd-10-mapping', 'cause-categorization'],
+      lastUpdated: '2022-01-01',
+      version: '2022.1',
+      usage: ['cause-of-death-fractions', 'mortality-validation', 'age-group-causes'],
+      assumptions: ['icd-10-mapping', 'cause-categorization', 'age-group-approximation'],
       quality: {
         completeness: 95,
         accuracy: 98,
@@ -103,16 +103,58 @@ export class DataSourceTracker {
         timeliness: 80
       }
     });
+
+    // Global Burden of Disease
+    this.sources.set('gbd', {
+      id: 'gbd',
+      name: 'Global Burden of Disease Collaborative Network',
+      url: 'https://www.healthdata.org/gbd',
+      description: 'Comprehensive global health data and risk factor estimates',
+      updateFrequency: 'annually',
+      dataFormat: 'CSV files, API access',
+      coverage: 'Global risk factor data, US-specific estimates',
+      lastUpdated: '2021-01-01',
+      version: '2021.1',
+      usage: ['risk-factor-relative-risks', 'dose-response-curves', 'population-attributable-fractions'],
+      assumptions: ['multiplicative-risks', 'independent-risk-factors', 'continuous-dose-response'],
+      quality: {
+        completeness: 90,
+        accuracy: 95,
+        timeliness: 80
+      }
+    });
   }
 
   private initializeAssumptions() {
-    // Mortality rate calculation assumptions
-    this.assumptions.set('gompertz-makeham', {
-      id: 'gompertz-makeham',
-      description: 'Gompertz-Makeham model for mortality rates: μ(x) = a + b * exp(c * x)',
-      source: 'Actuarial literature and SSA life tables',
-      justification: 'Standard model for mortality rate calculation, well-established in actuarial science',
+    // SSA baseline mortality assumptions
+    this.assumptions.set('ssa-baseline-mortality', {
+      id: 'ssa-baseline-mortality',
+      description: 'Baseline mortality rates derived from SSA life tables using Gompertz-Makeham model: μ(x) = a + b * exp(c * x)',
+      source: 'SSA Life Tables 2024, actuarial literature',
+      justification: 'SSA life tables are the canonical US source for short-horizon death probabilities. Gompertz-Makeham is the standard actuarial model.',
       impact: 'high',
+      lastReviewed: '2024-01-01',
+      nextReview: '2025-01-01'
+    });
+
+    // 6-month probability approximation
+    this.assumptions.set('6-month-approximation', {
+      id: '6-month-approximation',
+      description: '6-month mortality probability approximated as: 1 - (1 - qx)^(1/2)',
+      source: 'Actuarial literature, probability theory',
+      justification: 'Standard actuarial approximation for converting annual to semi-annual probabilities',
+      impact: 'medium',
+      lastReviewed: '2024-01-01',
+      nextReview: '2025-01-01'
+    });
+
+    // 5-year probability approximation
+    this.assumptions.set('5-year-approximation', {
+      id: '5-year-approximation',
+      description: '5-year mortality probability approximated as: 1 - (1 - qx)^5',
+      source: 'Actuarial literature, probability theory',
+      justification: 'Standard actuarial approximation for converting annual to 5-year probabilities',
+      impact: 'medium',
       lastReviewed: '2024-01-01',
       nextReview: '2025-01-01'
     });
@@ -145,6 +187,61 @@ export class DataSourceTracker {
       description: 'ICD-10 codes mapped to simplified cause categories',
       source: 'CDC WONDER data, medical literature',
       justification: 'Simplified categories for user understanding while maintaining accuracy',
+      impact: 'medium',
+      lastReviewed: '2024-01-01',
+      nextReview: '2025-01-01'
+    });
+
+    // Age group approximation for cause data
+    this.assumptions.set('age-group-approximation', {
+      id: 'age-group-approximation',
+      description: 'Individual ages mapped to age groups: 18-29, 30-44, 45-59, 60-74, 75+',
+      source: 'CDC WONDER age group definitions',
+      justification: 'CDC data is reported by age groups, so individual ages are mapped to the appropriate group',
+      impact: 'medium',
+      lastReviewed: '2024-01-01',
+      nextReview: '2025-01-01'
+    });
+
+    // Cause fraction allocation
+    this.assumptions.set('cause-fraction-allocation', {
+      id: 'cause-fraction-allocation',
+      description: 'Baseline mortality risk allocated across causes using CDC age/sex-specific fractions',
+      source: 'CDC WONDER cause-of-death data by age group and sex',
+      justification: 'CDC is the gold standard for US cause-of-death distributions. Fractions sum to 1.0 within each age/sex group.',
+      impact: 'high',
+      lastReviewed: '2024-01-01',
+      nextReview: '2025-01-01'
+    });
+
+    // Multiplicative risk factors
+    this.assumptions.set('multiplicative-risks', {
+      id: 'multiplicative-risks',
+      description: 'Relative risks are multiplied together: Adjusted_Risk = Baseline_Risk × RR1 × RR2 × ... × RRn',
+      source: 'GBD methodology, epidemiological literature',
+      justification: 'Standard epidemiological approach for combining multiple risk factors. Assumes independent effects.',
+      impact: 'high',
+      lastReviewed: '2024-01-01',
+      nextReview: '2025-01-01'
+    });
+
+    // Independent risk factors
+    this.assumptions.set('independent-risk-factors', {
+      id: 'independent-risk-factors',
+      description: 'Risk factors are assumed to be independent with no interaction effects',
+      source: 'GBD methodology, epidemiological literature',
+      justification: 'Simplifies modeling and is often reasonable for major risk factors. GBD uses joint attribution to avoid double counting.',
+      impact: 'medium',
+      lastReviewed: '2024-01-01',
+      nextReview: '2025-01-01'
+    });
+
+    // Continuous dose-response relationships
+    this.assumptions.set('continuous-dose-response', {
+      id: 'continuous-dose-response',
+      description: 'Dose-response relationships are continuous and follow established curves (linear, log-linear, quadratic, exponential)',
+      source: 'GBD methodology, meta-analyses',
+      justification: 'Allows for more precise risk estimation based on exposure level. Curves are based on epidemiological evidence.',
       impact: 'medium',
       lastReviewed: '2024-01-01',
       nextReview: '2025-01-01'
