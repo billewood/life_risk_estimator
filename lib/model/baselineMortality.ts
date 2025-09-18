@@ -56,6 +56,7 @@ export async function getBaselineLifeExpectancy(age: number, sex: Sex): Promise<
  */
 export async function getBaseline1YearRisk(age: number, sex: Sex): Promise<number> {
   const baseRow = await getBaseRow(age, sex);
+  console.log(`Baseline 1-year risk for age ${age}, sex ${sex}:`, baseRow.qx);
   return baseRow.qx;
 }
 

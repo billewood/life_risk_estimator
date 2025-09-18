@@ -19,7 +19,9 @@ export async function loadRealLifeTable(): Promise<{
   errors?: string[];
 }> {
   try {
+    console.log('Loading real life table data...');
     const processedData = await dataProcessor.processLifeTables();
+    console.log('Processed data length:', processedData.length);
     
     // Convert processed data to the expected format
     const mortalityRows: MortalityTableRow[] = processedData.map(row => ({
@@ -30,6 +32,11 @@ export async function loadRealLifeTable(): Promise<{
       source: row.source,
       lastUpdated: row.lastUpdated
     }));
+
+    console.log('Mortality rows created:', mortalityRows.length);
+    if (mortalityRows.length > 0) {
+      console.log('Sample row:', mortalityRows[0]);
+    }
 
     return {
       data: mortalityRows,
