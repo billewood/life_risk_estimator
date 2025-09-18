@@ -195,3 +195,4 @@ The life risk estimator uses a data-driven approach based on official US mortali
 3. Global Burden of Disease Collaborative Network. (2021). Global Burden of Disease Study 2019. The Lancet.
 4. Lee, S. J., et al. (2006). Development and validation of a prognostic index for 4-year mortality in older adults. JAMA.
 5. Schonberg, M. A., et al. (2011). Index to predict 5-year mortality of community-dwelling adults 65 and older. JAMA.
+

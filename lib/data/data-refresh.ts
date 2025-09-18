@@ -219,3 +219,4 @@ export class DataRefreshManager {
 }
 
 export const dataRefreshManager = DataRefreshManager.getInstance();
+

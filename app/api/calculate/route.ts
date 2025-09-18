@@ -75,3 +75,4 @@ export async function GET() {
     calculatorInfo: integratedCalculator.getCalculatorInfo()
   });
 }
+

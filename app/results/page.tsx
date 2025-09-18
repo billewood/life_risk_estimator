@@ -1,39 +1,95 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useResultStore } from '@/state/resultStore';
-import { useProfileStore } from '@/state/profileStore';
-import { RiskSummaryCard } from '@/components/results/RiskSummaryCard';
-import { LifeExpectancyCard } from '@/components/results/LifeExpectancyCard';
-import { CauseMixChart } from '@/components/results/CauseMixChart';
-import { DriversWaterfall } from '@/components/results/DriversWaterfall';
-import { DataSourceCitation } from '@/components/results/DataSourceCitation';
+
+interface MortalityResult {
+  lifeExpectancy: number;
+  oneYearRisk: number;
+  topCauses: Array<{
+    cause: string;
+    percentage: number;
+  }>;
+  age: number;
+  sex: string;
+}
 
 export default function ResultsPage() {
-  const { result, isLoading, error } = useResultStore();
-  const { getCompleteProfile } = useProfileStore();
+  const [result, setResult] = useState<MortalityResult | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showRiskFactors, setShowRiskFactors] = useState(false);
   const router = useRouter();
-  const profile = getCompleteProfile();
 
   useEffect(() => {
-    // Check if we have a result, if not redirect to home
-    if (!result && !isLoading && !error) {
-      router.push('/');
-    }
-  }, [result, isLoading, error, router]);
+    const calculateRisk = async () => {
+      try {
+        // Get basic info from localStorage
+        const age = localStorage.getItem('userAge');
+        const sex = localStorage.getItem('userSex');
+        
+        if (!age || !sex) {
+          router.push('/');
+          return;
+        }
 
-  if (isLoading) {
+        // Call the API to calculate mortality risk
+        const response = await fetch('/api/calculate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            age: parseInt(age),
+            sex: sex,
+            // Add minimal risk factors for baseline calculation
+            smoking: 'never',
+            bloodPressure: 120,
+            bmi: 25,
+            diabetes: false,
+            physicalActivity: 'moderate'
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to calculate risk');
+        }
+
+        const data = await response.json();
+        
+        // Transform the data to our simplified format
+        const topCauses = Object.entries(data.causeSpecificRisks || {})
+          .map(([cause, risk]: [string, any]) => ({
+            cause: cause.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            percentage: (risk.adjustedRisk * 100)
+          }))
+          .sort((a, b) => b.percentage - a.percentage)
+          .slice(0, 5);
+
+        setResult({
+          lifeExpectancy: data.lifeExpectancy || 0,
+          oneYearRisk: (data.oneYearRisk * 100) || 0,
+          topCauses,
+          age: parseInt(age),
+          sex: sex
+        });
+      } catch (err) {
+        setError('Failed to calculate your risk assessment. Please try again.');
+        console.error('Error calculating risk:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    calculateRisk();
+  }, [router]);
+
+  if (loading) {
     return (
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <h2 className="text-xl font-semibold text-neutral-900 mb-2">
-            Calculating Your Estimates
-          </h2>
-          <p className="text-neutral-600">
-            This may take a few moments while we process your risk factors...
-          </p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Calculating your risk assessment...</p>
         </div>
       </div>
     );
@@ -41,15 +97,18 @@ export default function ResultsPage() {
 
   if (error) {
     return (
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-          <h2 className="text-xl font-semibold text-red-800 mb-2">
-            Calculation Error
-          </h2>
-          <p className="text-red-700 mb-4">{error}</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="bg-red-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Error</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={() => router.push('/')}
-            className="btn-primary"
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
           >
             Try Again
           </button>
@@ -58,207 +117,167 @@ export default function ResultsPage() {
     );
   }
 
-  if (!result) {
-    return (
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-          <h2 className="text-xl font-semibold text-yellow-800 mb-2">
-            No Results Available
-          </h2>
-          <p className="text-yellow-700 mb-4">
-            Please complete the input form to get your estimates.
-          </p>
-          <button
-            onClick={() => router.push('/')}
-            className="btn-primary"
-          >
-            Get Started
-          </button>
-        </div>
-      </div>
-    );
-  }
+  if (!result) return null;
 
   return (
-    <div className="max-w-6xl mx-auto">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-          Your Mortality Risk Estimates
-        </h1>
-        <p className="text-neutral-600">
-          Educational estimates based on population data and your risk factors
-        </p>
-        <div className="mt-4 text-sm text-neutral-500">
-          Calculated in {result.computationTime}ms • Model v{result.modelVersion} • Data v{result.dataVersion}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <div className="max-w-6xl mx-auto px-4 py-16">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-4">
+            Your Risk Assessment
+          </h1>
+          <p className="text-lg text-gray-600">
+            {result.age} year old {result.sex}
+          </p>
         </div>
-      </div>
 
-      {/* Main Results Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <RiskSummaryCard result={result} />
-        <LifeExpectancyCard result={result} />
-      </div>
-
-      {/* Secondary Results */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
-        <CauseMixChart result={result} profile={profile || undefined} />
-        <DriversWaterfall result={result} />
-      </div>
-
-      {/* Recommendations */}
-      <div className="card mb-8">
-        <h2 className="text-xl font-semibold text-neutral-900 mb-4">
-          Evidence-Based Recommendations
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Lifestyle Recommendations */}
-          <div>
-            <h3 className="font-semibold text-neutral-800 mb-3">Lifestyle Changes</h3>
-            <div className="space-y-3">
-              {result.drivers.some(d => d.name === 'smoking' && d.impact === 'increase') && (
-                <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                  <h4 className="font-medium text-red-800 mb-1">Quit Smoking</h4>
-                  <p className="text-sm text-red-700">
-                    Smoking is one of the strongest modifiable risk factors. 
-                    Quitting can significantly reduce mortality risk.
-                  </p>
-                  <p className="text-xs text-red-600 mt-1">
-                    Resources: <a href="https://smokefree.gov" target="_blank" rel="noopener noreferrer" className="underline">
-                      smokefree.gov
-                    </a>
-                  </p>
-                </div>
-              )}
-              
-              {result.drivers.some(d => d.name === 'activity' && d.impact === 'increase') && (
-                <div className="bg-green-50 border border-green-200 rounded-md p-3">
-                  <h4 className="font-medium text-green-800 mb-1">Increase Physical Activity</h4>
-                  <p className="text-sm text-green-700">
-                    Aim for at least 150 minutes of moderate-intensity activity per week 
-                    to reduce cardiovascular and metabolic disease risk.
-                  </p>
-                </div>
-              )}
-              
-              {result.drivers.some(d => d.name === 'alcohol' && d.impact === 'increase') && (
-                <div className="bg-orange-50 border border-orange-200 rounded-md p-3">
-                  <h4 className="font-medium text-orange-800 mb-1">Reduce Alcohol Consumption</h4>
-                  <p className="text-sm text-orange-700">
-                    Heavy alcohol consumption increases mortality risk. Consider reducing 
-                    or eliminating alcohol intake.
-                  </p>
-                </div>
-              )}
+        {/* Three Key Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          {/* Life Expectancy */}
+          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow cursor-pointer">
+            <div className="bg-blue-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              {result.lifeExpectancy.toFixed(1)} years
+            </h3>
+            <p className="text-gray-600">Expected years left alive</p>
           </div>
 
-          {/* Prevention Recommendations */}
-          <div>
-            <h3 className="font-semibold text-neutral-800 mb-3">Prevention & Screening</h3>
-            <div className="space-y-3">
-              <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-                <h4 className="font-medium text-blue-800 mb-1">Regular Health Checkups</h4>
-                <p className="text-sm text-blue-700">
-                  Schedule regular preventive care visits with your healthcare provider 
-                  for age-appropriate screenings and risk factor management.
-                </p>
+          {/* 1-Year Risk */}
+          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow cursor-pointer">
+            <div className="bg-red-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              {result.oneYearRisk.toFixed(2)}%
+            </h3>
+            <p className="text-gray-600">Chance of dying within 1 year</p>
+          </div>
+
+          {/* Top Cause */}
+          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow cursor-pointer">
+            <div className="bg-orange-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-10 h-10 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+              {result.topCauses[0]?.percentage.toFixed(1)}%
+            </h3>
+            <p className="text-gray-600">Most likely cause: {result.topCauses[0]?.cause}</p>
+          </div>
+        </div>
+
+        {/* Top 5 Causes Breakdown */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+            Top 5 Most Likely Causes of Death
+          </h2>
+          <div className="space-y-4">
+            {result.topCauses.map((cause, index) => (
+              <div key={cause.cause} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                <div className="flex items-center">
+                  <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-4">
+                    {index + 1}
+                  </div>
+                  <span className="text-lg font-medium text-gray-900">{cause.cause}</span>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-blue-600">{cause.percentage.toFixed(1)}%</div>
+                  <div className="w-32 bg-gray-200 rounded-full h-2 mt-1">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full" 
+                      style={{ width: `${Math.min(cause.percentage * 2, 100)}%` }}
+                    ></div>
+                  </div>
+                </div>
               </div>
-              
-              {!profile?.vaccinations?.flu && (
-                <div className="bg-purple-50 border border-purple-200 rounded-md p-3">
-                  <h4 className="font-medium text-purple-800 mb-1">Annual Flu Vaccination</h4>
-                  <p className="text-sm text-purple-700">
-                    Get vaccinated annually to reduce infectious disease mortality risk.
-                  </p>
-                </div>
-              )}
-              
-              {!profile?.vaccinations?.covid && (
-                <div className="bg-indigo-50 border border-indigo-200 rounded-md p-3">
-                  <h4 className="font-medium text-indigo-800 mb-1">COVID-19 Vaccination</h4>
-                  <p className="text-sm text-indigo-700">
-                    Stay up to date with COVID-19 vaccinations to reduce infectious disease risk.
-                  </p>
-                </div>
-              )}
+            ))}
+          </div>
+        </div>
+
+        {/* Interactive Risk Factors Section */}
+        <div className="bg-white rounded-2xl shadow-lg p-8">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Want More Details?
+            </h2>
+            <p className="text-gray-600">
+              Add your risk factors to get a personalized assessment
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Smoking */}
+            <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 text-center hover:shadow-md transition-shadow cursor-pointer">
+              <div className="bg-red-500 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-1">Smoking</h3>
+              <p className="text-sm text-gray-600">Add smoking status</p>
+            </div>
+
+            {/* Blood Pressure */}
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 text-center hover:shadow-md transition-shadow cursor-pointer">
+              <div className="bg-orange-500 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-1">Blood Pressure</h3>
+              <p className="text-sm text-gray-600">Add BP readings</p>
+            </div>
+
+            {/* Weight */}
+            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 text-center hover:shadow-md transition-shadow cursor-pointer">
+              <div className="bg-green-500 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3-1m-3 1l-6-2" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-1">Weight</h3>
+              <p className="text-sm text-gray-600">Add BMI/weight</p>
+            </div>
+
+            {/* Activity */}
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 text-center hover:shadow-md transition-shadow cursor-pointer">
+              <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-1">Activity</h3>
+              <p className="text-sm text-gray-600">Add exercise level</p>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Data Sources & Assumptions */}
-      <div className="mb-8">
-        <DataSourceCitation 
-          sources={['ssa-life-tables', 'cdc-wonder']}
-          assumptions={['gompertz-makeham', 'parameter-estimation']}
-        />
-        
-        {/* Gompertz-Makeham Explanation */}
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
-          <h4 className="text-sm font-semibold text-gray-800 mb-2">
-            How We Calculate Mortality Rates
-          </h4>
-          <div className="text-xs text-gray-600 space-y-2">
-            <p>
-              We use the Gompertz-Makeham model: <strong>μ(x) = a + b × exp(c × x)</strong>, 
-              where μ(x) is the mortality rate at age x. The parameters (a, b, c) are based on 
-              actuarial literature and SSA life table patterns, not fitted to specific data points.
-            </p>
-            <p>
-              <strong>Parameter sources:</strong> Male parameters (a=0.0001, b=0.00001, c=0.1) and 
-              female parameters (a=0.00005, b=0.000005, c=0.1) are derived from established 
-              actuarial models and SSA life table characteristics, producing realistic mortality 
-              rates that match official statistics for typical age ranges.
-            </p>
+          <div className="text-center mt-6">
+            <button
+              onClick={() => setShowRiskFactors(!showRiskFactors)}
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 transition-all duration-200"
+            >
+              {showRiskFactors ? 'Hide' : 'Add'} Risk Factors
+            </button>
           </div>
         </div>
-      </div>
 
-      {/* Important Disclaimers */}
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
-        <h2 className="text-lg font-semibold text-red-800 mb-3">
-          ⚠️ Important Disclaimers
-        </h2>
-        <div className="text-sm text-red-700 space-y-2">
-          <p>
-            <strong>Not Medical Advice:</strong> These estimates are for educational purposes only 
-            and are not medical advice, diagnosis, or treatment recommendations.
-          </p>
-          <p>
-            <strong>Not for Medical Decisions:</strong> Do not use these estimates to make decisions 
-            about your health, medications, or medical care without consulting healthcare providers.
-          </p>
-          <p>
-            <strong>Not for Insurance/Employment:</strong> This tool is not intended for use in 
-            insurance underwriting, employment screening, or credit decisions.
-          </p>
-          <p>
-            <strong>Individual Variation:</strong> Individual risk varies significantly from 
-            population averages. These estimates cannot predict your actual lifespan or health outcomes.
-          </p>
-          <p>
-            <strong>Consult Healthcare Providers:</strong> Always consult with qualified healthcare 
-            providers for personalized medical advice and risk factor management.
-          </p>
+        {/* Back to Home */}
+        <div className="text-center mt-8">
+          <button
+            onClick={() => router.push('/')}
+            className="text-gray-600 hover:text-gray-800 underline"
+          >
+            ← Start Over
+          </button>
         </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <button
-          onClick={() => router.push('/')}
-          className="btn-secondary"
-        >
-          Start New Estimate
-        </button>
-        <button
-          onClick={() => window.print()}
-          className="btn-secondary"
-        >
-          Print Results
-        </button>
       </div>
     </div>
   );
