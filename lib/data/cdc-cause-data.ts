@@ -98,6 +98,11 @@ export class CDCCauseDataLoader {
       fractions[row.cause] = row.fraction;
     });
 
+    // Debug: log the fractions and their sum
+    const totalFraction = Object.values(fractions).reduce((sum, frac) => sum + frac, 0);
+    console.log(`CDC cause fractions for age ${age}, sex ${sex}, ageGroup ${ageGroup}:`, fractions);
+    console.log(`Total fraction: ${totalFraction.toFixed(3)}`);
+
     return fractions;
   }
 

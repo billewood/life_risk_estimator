@@ -80,7 +80,7 @@ export class CalculationEnforcer {
         recommendations: alignmentResult.recommendations
       });
       
-      if (alignmentResult.score < 50) { // Lowered threshold from 70 to 50
+      if (alignmentResult.score < 70) { // Back to original threshold
         request.error = `Data alignment score too low: ${alignmentResult.score}/100. Issues: ${alignmentResult.issues.map(i => i.description).join('; ')}`;
         this.requestHistory.push(request);
         throw new Error(request.error);
