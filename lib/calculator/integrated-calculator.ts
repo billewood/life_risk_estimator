@@ -192,7 +192,7 @@ export class IntegratedMortalityCalculator {
       const result: MortalityResult = {
         baselineRisk,
         causeSpecificRisks,
-        riskFactorAdjustments: jointAttributionResult.riskFactorContributions,
+        riskFactorAdjustments: this.transformRiskFactorContributions(jointAttributionResult.riskFactorContributions),
         validation,
         interventions,
         dataQuality,
@@ -514,6 +514,23 @@ export class IntegratedMortalityCalculator {
     if (age < 60) return '45-59';
     if (age < 75) return '60-74';
     return '75+';
+  }
+
+  /**
+   * Transform risk factor contributions to expected format
+   */
+  private transformRiskFactorContributions(contributions: {[factorId: string]: number}): {[factorId: string]: {relativeRisk: number; contribution: number; jointEffect?: number}} {
+    const transformed: {[factorId: string]: {relativeRisk: number; contribution: number; jointEffect?: number}} = {};
+    
+    Object.entries(contributions).forEach(([factorId, contribution]) => {
+      transformed[factorId] = {
+        relativeRisk: 1.0, // Default relative risk, would need to be passed from joint attribution
+        contribution: contribution,
+        jointEffect: undefined // Would need to be calculated separately
+      };
+    });
+    
+    return transformed;
   }
 
   /**
