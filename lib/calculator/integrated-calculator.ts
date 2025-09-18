@@ -215,21 +215,22 @@ export class IntegratedMortalityCalculator {
    */
   private async getBaselineRisk(inputs: UserInputs): Promise<MortalityResult['baselineRisk']> {
     // Use cached SSA data loader
-    const ssaData = await this.ssaLoader.getMortalityRate(inputs.age, inputs.sex);
+    const mortalityRates = await this.ssaLoader.getMortalityRates(inputs.age, inputs.sex);
+    const lifeExpectancy = await this.ssaLoader.getLifeExpectancy(inputs.age, inputs.sex);
     
-    if (!ssaData) {
-      throw new Error(`No SSA data available for age ${inputs.age}, sex ${inputs.sex}. Data may need to be refreshed.`);
+    if (!mortalityRates) {
+      throw new Error(`No SSA mortality data available for age ${inputs.age}, sex ${inputs.sex}. Data may need to be refreshed.`);
     }
     
-    // Calculate 6-month and 5-year probabilities
-    const qx6m = 1 - Math.pow(1 - ssaData.qx, 0.5);
-    const qx5y = 1 - Math.pow(1 - ssaData.qx, 5);
+    if (lifeExpectancy === null || lifeExpectancy === undefined) {
+      throw new Error(`No SSA life expectancy data available for age ${inputs.age}, sex ${inputs.sex}. Data may need to be refreshed.`);
+    }
     
     return {
-      qx: ssaData.qx,
-      qx6m,
-      qx5y,
-      lifeExpectancy: ssaData.ex
+      qx: mortalityRates.qx,
+      qx6m: mortalityRates.qx6m,
+      qx5y: mortalityRates.qx5y,
+      lifeExpectancy
     };
   }
 
@@ -238,11 +239,10 @@ export class IntegratedMortalityCalculator {
    */
   private async getCauseFractions(inputs: UserInputs): Promise<{[cause: string]: number}> {
     // Use cached CDC data loader
-    const ageGroup = this.getAgeGroup(inputs.age);
-    const causeFractions = await this.cdcLoader.getCauseFractions(ageGroup, inputs.sex);
+    const causeFractions = await this.cdcLoader.getCauseFractions(inputs.age, inputs.sex);
     
     if (!causeFractions || Object.keys(causeFractions).length === 0) {
-      throw new Error(`No CDC cause data available for age group ${ageGroup}, sex ${inputs.sex}. Data may need to be refreshed.`);
+      throw new Error(`No CDC cause data available for age ${inputs.age}, sex ${inputs.sex}. Data may need to be refreshed.`);
     }
     
     return causeFractions;
