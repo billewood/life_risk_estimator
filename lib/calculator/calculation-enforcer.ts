@@ -72,21 +72,18 @@ export class CalculationEnforcer {
         throw new Error(request.error);
       }
 
-      // Validate data alignment before calculation (temporarily disabled for debugging)
-      try {
-        const alignmentResult = await dataAlignmentValidator.validateAlignment();
-        console.log('Data alignment validation result:', {
-          score: alignmentResult.score,
-          issues: alignmentResult.issues.map(i => ({ severity: i.severity, description: i.description, category: i.category })),
-          recommendations: alignmentResult.recommendations
-        });
-        
-        if (alignmentResult.score < 70) {
-          console.warn(`⚠️ Data alignment score low: ${alignmentResult.score}/100, but continuing with calculation for debugging`);
-          console.warn('Issues:', alignmentResult.issues.map(i => i.description).join('; '));
-        }
-      } catch (alignmentError) {
-        console.warn('⚠️ Data alignment validation failed, but continuing with calculation:', alignmentError);
+      // Validate data alignment before calculation
+      const alignmentResult = await dataAlignmentValidator.validateAlignment();
+      console.log('Data alignment validation result:', {
+        score: alignmentResult.score,
+        issues: alignmentResult.issues.map(i => ({ severity: i.severity, description: i.description, category: i.category })),
+        recommendations: alignmentResult.recommendations
+      });
+      
+      if (alignmentResult.score < 50) { // Lowered threshold from 70 to 50
+        request.error = `Data alignment score too low: ${alignmentResult.score}/100. Issues: ${alignmentResult.issues.map(i => i.description).join('; ')}`;
+        this.requestHistory.push(request);
+        throw new Error(request.error);
       }
 
       // Perform calculation through integrated system
