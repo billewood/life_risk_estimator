@@ -132,7 +132,7 @@ export function CauseMixChart({ result, profile }: CauseMixChartProps) {
               <p key={index}>
                 • <strong>{driver.name.charAt(0).toUpperCase() + driver.name.slice(1)}:</strong>{' '}
                 {driver.impact === 'increase' ? 'Increases' : 'Decreases'} risk
-                {driver.magnitude && ` (${driver.magnitude.toFixed(1)}x)`}
+                {driver.deltaQ1y !== 0 && ` (${Math.abs(driver.deltaQ1y * 100).toFixed(1)}% change)`}
               </p>
             ))
           ) : (
