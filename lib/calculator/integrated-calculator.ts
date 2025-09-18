@@ -15,8 +15,8 @@
  * This is the main calculator that implements the complete methodology.
  */
 
-import { realSSAFetcher } from '../data/real-ssa-fetcher';
-import { realCDCFetcher } from '../data/real-cdc-fetcher';
+import { ssaLifeTableLoader } from '../data/ssa-life-tables';
+import { cdcCauseDataLoader } from '../data/cdc-cause-data';
 import { gbdRiskFactorLoader } from '../data/gbd-risk-factors';
 import { ePrognosisSvc } from '../validation/eprognosis';
 import { ascvdValidator } from '../validation/ascvd-validation';
@@ -136,8 +136,8 @@ export interface MortalityResult {
 }
 
 export class IntegratedMortalityCalculator {
-  private ssaFetcher = realSSAFetcher;
-  private cdcFetcher = realCDCFetcher;
+  private ssaLoader = ssaLifeTableLoader;
+  private cdcLoader = cdcCauseDataLoader;
   private gbdLoader = gbdRiskFactorLoader;
   private ePrognosisValidator = ePrognosisSvc;
   private ascvdValidator = ascvdValidator;
@@ -214,93 +214,51 @@ export class IntegratedMortalityCalculator {
    * Get baseline mortality risk from SSA
    */
   private async getBaselineRisk(inputs: UserInputs): Promise<MortalityResult['baselineRisk']> {
-    try {
-      const ssaData = await this.ssaFetcher.fetchSSAData(2024);
-      
-      if (!ssaData.success || ssaData.data.length === 0) {
-        throw new Error('Failed to fetch SSA data');
-      }
-      
-      const ageData = ssaData.data.find(row => 
-        row.age === inputs.age && row.sex === inputs.sex
-      );
+    // Use cached SSA data loader
+    const ssaData = await this.ssaLoader.getMortalityRate(inputs.age, inputs.sex);
     
-    if (!ageData) {
-      throw new Error(`No SSA data found for age ${inputs.age}, sex ${inputs.sex}`);
+    if (!ssaData) {
+      throw new Error(`No SSA data available for age ${inputs.age}, sex ${inputs.sex}. Data may need to be refreshed.`);
     }
     
     // Calculate 6-month and 5-year probabilities
-    const qx6m = 1 - Math.pow(1 - ageData.qx, 0.5);
-    const qx5y = 1 - Math.pow(1 - ageData.qx, 5);
+    const qx6m = 1 - Math.pow(1 - ssaData.qx, 0.5);
+    const qx5y = 1 - Math.pow(1 - ssaData.qx, 5);
     
     return {
-      qx: ageData.qx,
+      qx: ssaData.qx,
       qx6m,
       qx5y,
-      lifeExpectancy: ageData.ex
+      lifeExpectancy: ssaData.ex
     };
-    } catch (error) {
-      console.warn('SSA data fetch failed, using fallback data:', error);
-      // Fallback to existing data loader
-      const { getRealBaselineMortality } = await import('../data/realDataLoader');
-      const baselineData = await getRealBaselineMortality(inputs.age, inputs.sex);
-      
-      return {
-        qx: baselineData.qx,
-        qx6m: 1 - Math.pow(1 - baselineData.qx, 0.5), // Approximate 6-month risk
-        qx5y: 1 - Math.pow(1 - baselineData.qx, 5), // Approximate 5-year risk
-        lifeExpectancy: baselineData.ex
-      };
-    }
   }
 
   /**
    * Get cause fractions from CDC
    */
   private async getCauseFractions(inputs: UserInputs): Promise<{[cause: string]: number}> {
-    try {
-      const cdcData = await this.cdcFetcher.fetchCDCData(2022);
-      
-      if (!cdcData.success || cdcData.data.length === 0) {
-        throw new Error('Failed to fetch CDC data');
-      }
-    
+    // Use cached CDC data loader
     const ageGroup = this.getAgeGroup(inputs.age);
-    const ageGroupData = cdcData.data.filter(row => 
-      row.ageGroup === ageGroup && row.sex === inputs.sex
-    );
+    const causeFractions = await this.cdcLoader.getCauseFractions(ageGroup, inputs.sex);
     
-    const causeFractions: {[cause: string]: number} = {};
-    ageGroupData.forEach(row => {
-      causeFractions[row.cause] = row.fraction;
-    });
+    if (!causeFractions || Object.keys(causeFractions).length === 0) {
+      throw new Error(`No CDC cause data available for age group ${ageGroup}, sex ${inputs.sex}. Data may need to be refreshed.`);
+    }
     
     return causeFractions;
-    } catch (error) {
-      console.warn('CDC data fetch failed, using fallback data:', error);
-      // Fallback to simplified cause fractions
-      return {
-        'heart-disease': 0.25,
-        'cancer': 0.22,
-        'accidents': 0.07,
-        'stroke': 0.06,
-        'respiratory': 0.06,
-        'diabetes': 0.03,
-        'alzheimer': 0.03,
-        'kidney': 0.02,
-        'liver': 0.02,
-        'other': 0.24
-      };
-    }
   }
 
   /**
    * Get risk factor adjustments from GBD
    */
   private async getRiskFactorAdjustments(inputs: UserInputs): Promise<any[]> {
-    try {
-      const riskFactors = await this.gbdLoader.loadRiskFactors(2021);
-      const adjustments: any[] = [];
+    // Use cached GBD data loader
+    const riskFactors = await this.gbdLoader.loadRiskFactors(2021);
+    const adjustments: any[] = [];
+    
+    if (!riskFactors || riskFactors.length === 0) {
+      throw new Error('No GBD risk factor data available. Data may need to be refreshed.');
+    }
     
     // Convert user inputs to risk factor format
     if (inputs.smoking === 'current') {
@@ -362,59 +320,6 @@ export class IntegratedMortalityCalculator {
     }
     
     return adjustments;
-    } catch (error) {
-      console.warn('GBD data fetch failed, using fallback data:', error);
-      // Fallback to simplified risk factors
-      const adjustments: any[] = [];
-      
-      if (inputs.smoking === 'current') {
-        adjustments.push({
-          id: 'smoking',
-          name: 'Smoking',
-          category: 'behavioral',
-          relativeRisk: 2.2,
-          exposure: 1,
-          units: 'pack-years'
-        });
-      }
-      
-      if (inputs.systolicBP > 120) {
-        const exposure = (inputs.systolicBP - 120) / 20;
-        adjustments.push({
-          id: 'blood-pressure',
-          name: 'Systolic Blood Pressure',
-          category: 'metabolic',
-          relativeRisk: 1.6,
-          exposure,
-          units: 'mmHg'
-        });
-      }
-      
-      if (inputs.bmi > 25) {
-        const exposure = (inputs.bmi - 25) / 5;
-        adjustments.push({
-          id: 'bmi',
-          name: 'Body Mass Index',
-          category: 'metabolic',
-          relativeRisk: 1.4,
-          exposure,
-          units: 'kg/m²'
-        });
-      }
-      
-      if (inputs.diabetes) {
-        adjustments.push({
-          id: 'diabetes',
-          name: 'Diabetes',
-          category: 'metabolic',
-          relativeRisk: 1.8,
-          exposure: 1,
-          units: 'years since diagnosis'
-        });
-      }
-      
-      return adjustments;
-    }
   }
 
   /**
@@ -566,8 +471,8 @@ export class IntegratedMortalityCalculator {
    * Assess data quality
    */
   private async assessDataQuality(): Promise<MortalityResult['dataQuality']> {
-    const ssaStatus = this.ssaFetcher.getCacheStatus();
-    const cdcStatus = this.cdcFetcher.getCacheStatus();
+    const ssaStatus = this.ssaLoader.getCacheStatus();
+    const cdcStatus = this.cdcLoader.getCacheStatus();
     const gbdStatus = this.gbdLoader.getCacheStatus();
     
     const ssaDataAge = ssaStatus.cacheAges[2024] || 0;
