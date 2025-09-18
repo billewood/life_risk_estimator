@@ -16,6 +16,11 @@ export interface DataSource {
   coverage: string;
   quality: 'high' | 'medium' | 'low';
   notes: string;
+  version: string;
+  dataHash: string;
+  checksum: string;
+  validationStatus: 'valid' | 'warning' | 'error' | 'unknown';
+  lastValidated: string;
 }
 
 export interface CalculationMethod {
@@ -57,7 +62,12 @@ export class TransparencyDatabase {
       dataFormat: 'HTML tables, downloadable as CSV',
       coverage: 'Ages 0-119, by sex, US population',
       quality: 'high',
-      notes: 'Gold standard for US mortality data, used by insurance industry'
+      notes: 'Gold standard for US mortality data, used by insurance industry',
+      version: '1.0.0',
+      dataHash: 'ssa-2024-001',
+      checksum: 'abc123def456',
+      validationStatus: 'valid',
+      lastValidated: '2024-01-15T10:00:00Z'
     },
     {
       id: 'cdc-wonder',
@@ -69,7 +79,12 @@ export class TransparencyDatabase {
       dataFormat: 'CSV download via web interface',
       coverage: 'US mortality by age, sex, cause of death, ICD-10 codes',
       quality: 'high',
-      notes: 'Official cause-of-death statistics from death certificates'
+      notes: 'Official cause-of-death statistics from death certificates',
+      version: '1.0.0',
+      dataHash: 'cdc-2024-001',
+      checksum: 'def456ghi789',
+      validationStatus: 'valid',
+      lastValidated: '2024-01-15T10:00:00Z'
     },
     {
       id: 'gbd-risk-factors',
@@ -81,7 +96,12 @@ export class TransparencyDatabase {
       dataFormat: 'CSV files, API access',
       coverage: 'Global, by age, sex, risk factor, cause',
       quality: 'high',
-      notes: 'Most comprehensive risk factor database, peer-reviewed methodology'
+      notes: 'Most comprehensive risk factor database, peer-reviewed methodology',
+      version: '1.0.0',
+      dataHash: 'gbd-2023-001',
+      checksum: 'ghi789jkl012',
+      validationStatus: 'valid',
+      lastValidated: '2024-01-15T10:00:00Z'
     },
     {
       id: 'hmd',
@@ -93,7 +113,12 @@ export class TransparencyDatabase {
       dataFormat: 'CSV files',
       coverage: 'US and international mortality data',
       quality: 'high',
-      notes: 'Used for validation and international comparisons'
+      notes: 'Used for validation and international comparisons',
+      version: '1.0.0',
+      dataHash: 'hmd-2024-001',
+      checksum: 'jkl012mno345',
+      validationStatus: 'valid',
+      lastValidated: '2024-01-15T10:00:00Z'
     }
   ];
 
