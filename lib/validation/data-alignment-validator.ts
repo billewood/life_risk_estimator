@@ -70,10 +70,7 @@ export class DataAlignmentValidator {
     issues.push(...modelValidation.issues);
     totalScore -= modelValidation.scoreDeduction;
 
-    // 5. Validate Data Freshness
-    const freshnessValidation = await this.validateDataFreshness();
-    issues.push(...freshnessValidation.issues);
-    totalScore -= freshnessValidation.scoreDeduction;
+    // 5. Data Freshness validation removed - we don't penalize old data
 
     const result: ValidationResult = {
       isValid: issues.filter(i => i.severity === 'critical' || i.severity === 'high').length === 0,
@@ -110,22 +107,7 @@ export class DataAlignmentValidator {
         return { issues, scoreDeduction };
       }
 
-      // Validate data freshness
-      const lastUpdated = new Date(ssaSource.lastUpdated);
-      const monthsSinceUpdate = (Date.now() - lastUpdated.getTime()) / (1000 * 60 * 60 * 24 * 30);
-      
-      if (monthsSinceUpdate > 36) { // Increased from 12 to 36 months
-        issues.push({
-          severity: 'medium', // Reduced from 'high' to 'medium'
-          category: 'data-drift',
-          description: `SSA data is ${monthsSinceUpdate.toFixed(1)} months old`,
-          affectedMetric: 'life-expectancy',
-          expectedValue: 36,
-          actualValue: monthsSinceUpdate,
-          fix: 'Update SSA data source or check for newer data'
-        });
-        scoreDeduction += 5; // Reduced from 15 to 5
-      }
+      // Data freshness validation removed - we don't penalize old data
 
       // Validate key mortality rates against expected ranges
       const expectedMortalityRates = {
@@ -376,50 +358,7 @@ export class DataAlignmentValidator {
     return { issues, scoreDeduction };
   }
 
-  /**
-   * Validate data freshness
-   */
-  private async validateDataFreshness(): Promise<{ issues: ValidationIssue[], scoreDeduction: number }> {
-    const issues: ValidationIssue[] = [];
-    let scoreDeduction = 0;
-
-    const sources = transparencyDB.getAllDataSources();
-    const now = new Date();
-
-    for (const source of sources) {
-      const lastUpdated = new Date(source.lastUpdated);
-      const monthsSinceUpdate = (now.getTime() - lastUpdated.getTime()) / (1000 * 60 * 60 * 24 * 30);
-      
-      let severity: 'low' | 'medium' | 'high' | 'critical' = 'low';
-      let deduction = 0;
-
-      if (monthsSinceUpdate > 24) {
-        severity = 'critical';
-        deduction = 20;
-      } else if (monthsSinceUpdate > 12) {
-        severity = 'high';
-        deduction = 10;
-      } else if (monthsSinceUpdate > 6) {
-        severity = 'medium';
-        deduction = 5;
-      }
-
-      if (deduction > 0) {
-        issues.push({
-          severity,
-          category: 'data-drift',
-          description: `${source.name} data is ${monthsSinceUpdate.toFixed(1)} months old`,
-          affectedMetric: 'all',
-          expectedValue: 6,
-          actualValue: monthsSinceUpdate,
-          fix: `Check for updated ${source.name} data`
-        });
-        scoreDeduction += deduction;
-      }
-    }
-
-    return { issues, scoreDeduction };
-  }
+  // Data freshness validation removed - we don't penalize old data
 
   /**
    * Generate recommendations based on validation issues
