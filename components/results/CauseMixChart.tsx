@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { EstimationResult, CauseCategory, CAUSE_LABELS, UserProfile } from '@/lib/model/types';
 import { formatProbability } from '@/lib/math/stats';
 
@@ -22,9 +21,6 @@ export function CauseMixChart({ result, profile }: CauseMixChartProps) {
     .sort((a, b) => b.fraction - a.fraction)
     .slice(0, 5);
 
-  // Debug logging
-  console.log('CauseMix data:', causeMix);
-  console.log('Top causes:', topCauses);
 
   const colors = {
     cvd: '#ef4444',
@@ -75,74 +71,23 @@ export function CauseMixChart({ result, profile }: CauseMixChartProps) {
         </button>
       </div>
 
-      {/* Chart - Pie Chart with Bar Chart Fallback */}
+      {/* Simple List of Causes */}
       <div className="mb-6">
-        {topCauses.length > 0 ? (
-          <div className="h-80 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={topCauses.map(({ cause, fraction }) => ({
-                    name: CAUSE_LABELS[cause],
-                    value: fraction * 100,
-                    color: colors[cause]
-                  }))}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, value }) => value > 5 ? `${name}: ${value.toFixed(1)}%` : ''}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {topCauses.map(({ cause }, index) => (
-                    <Cell key={`cell-${index}`} fill={colors[cause]} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  formatter={(value: number) => [`${value.toFixed(1)}%`, 'Percentage']}
-                  labelFormatter={(label) => `Cause: ${label}`}
-                />
-                <Legend 
-                  verticalAlign="bottom" 
-                  height={36}
-                  formatter={(value) => <span className="text-sm">{value}</span>}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        ) : (
-          <div className="h-80 w-full flex items-center justify-center bg-gray-50 rounded-lg">
-            <p className="text-gray-500">No data available for cause distribution</p>
-          </div>
-        )}
-        
-        {/* Fallback Bar Chart */}
-        <div className="mt-4">
-          <h4 className="text-sm font-medium text-neutral-800 mb-3">Cause Distribution (Bar Chart)</h4>
-          <div className="space-y-2">
-            {topCauses.map(({ cause, fraction }) => (
-              <div key={cause} className="flex items-center">
-                <div className="w-20 text-xs text-neutral-600 text-right pr-2">
-                  {CAUSE_LABELS[cause]}
-                </div>
-                <div className="flex-1 mx-2">
-                  <div className="bg-neutral-200 rounded-full h-4 relative overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{
-                        width: `${fraction * 100}%`,
-                        backgroundColor: colors[cause],
-                      }}
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center text-xs font-medium text-white">
-                      {fraction > 0.05 ? `${(fraction * 100).toFixed(1)}%` : ''}
-                    </div>
-                  </div>
-                </div>
+        <div className="space-y-3">
+          {topCauses.map(({ cause, fraction }) => (
+            <div key={cause} className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+              <div className="flex items-center">
+                <div 
+                  className="w-4 h-4 rounded-full mr-3" 
+                  style={{ backgroundColor: colors[cause] }}
+                ></div>
+                <span className="font-medium text-neutral-800">{CAUSE_LABELS[cause]}</span>
               </div>
-            ))}
-          </div>
+              <span className="text-lg font-semibold text-neutral-900">
+                {(fraction * 100).toFixed(1)}%
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -152,7 +97,7 @@ export function CauseMixChart({ result, profile }: CauseMixChartProps) {
           Top 5 Causes Summary
         </h4>
         <div className="text-sm text-neutral-700">
-          <p>
+          <p className="mb-2">
             The top 5 causes account for{' '}
             <strong>
               {formatProbability(
@@ -161,11 +106,18 @@ export function CauseMixChart({ result, profile }: CauseMixChartProps) {
             </strong>{' '}
             of {title.toLowerCase()} mortality risk.
           </p>
-          <p className="mt-1">
-            <strong>Leading cause:</strong>{' '}
-            {CAUSE_LABELS[topCauses[0]?.cause] || 'Unknown'} (
-            {formatProbability(topCauses[0]?.fraction || 0)})
-          </p>
+          <div className="space-y-1">
+            {topCauses.map(({ cause, fraction }, index) => (
+              <p key={cause} className="flex justify-between">
+                <span>
+                  <strong>{index + 1}.</strong> {CAUSE_LABELS[cause]}
+                </span>
+                <span className="font-medium">
+                  {formatProbability(fraction)}
+                </span>
+              </p>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -175,17 +127,16 @@ export function CauseMixChart({ result, profile }: CauseMixChartProps) {
           How Your Risk Factors Affect Causes
         </h4>
         <div className="text-sm text-blue-700 space-y-1">
-          {result.drivers.some(d => d.name === 'smoking' && d.impact === 'increase') && (
-            <p>• <strong>Smoking:</strong> Increases respiratory disease and cancer risk</p>
-          )}
-          {result.drivers.some(d => d.name === 'activity' && d.impact === 'decrease') && (
-            <p>• <strong>Physical activity:</strong> Reduces cardiovascular and metabolic disease risk</p>
-          )}
-          {result.drivers.some(d => d.name === 'alcohol' && d.impact === 'increase') && (
-            <p>• <strong>Alcohol:</strong> Increases injury and liver disease risk</p>
-          )}
-          {result.drivers.some(d => d.name === 'bmi' && d.impact === 'increase') && (
-            <p>• <strong>BMI:</strong> Affects cardiovascular, metabolic, and cancer risk</p>
+          {result.drivers && result.drivers.length > 0 ? (
+            result.drivers.map((driver, index) => (
+              <p key={index}>
+                • <strong>{driver.name.charAt(0).toUpperCase() + driver.name.slice(1)}:</strong>{' '}
+                {driver.impact === 'increase' ? 'Increases' : 'Decreases'} risk
+                {driver.magnitude && ` (${driver.magnitude.toFixed(1)}x)`}
+              </p>
+            ))
+          ) : (
+            <p>• No significant risk factor impacts detected</p>
           )}
           {profile?.vaccinations?.flu && (
             <p>• <strong>Flu vaccination:</strong> Reduces infectious disease risk</p>
