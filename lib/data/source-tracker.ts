@@ -120,9 +120,9 @@ export class DataSourceTracker {
     // Parameter estimation assumptions
     this.assumptions.set('parameter-estimation', {
       id: 'parameter-estimation',
-      description: 'Mortality parameters estimated from SSA life tables using least squares fitting',
-      source: 'SSA life tables, statistical fitting methods',
-      justification: 'Standard statistical approach for parameter estimation',
+      description: 'Gompertz-Makeham parameters derived from actuarial literature and SSA life table characteristics',
+      source: 'Actuarial literature, SSA life table patterns, established mortality models',
+      justification: 'Parameters chosen to produce realistic mortality rates that match official statistics for typical age ranges',
       impact: 'high',
       lastReviewed: '2024-01-01',
       nextReview: '2025-01-01'

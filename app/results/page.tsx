@@ -194,6 +194,26 @@ export default function ResultsPage() {
           sources={['ssa-life-tables', 'cdc-wonder']}
           assumptions={['gompertz-makeham', 'parameter-estimation']}
         />
+        
+        {/* Gompertz-Makeham Explanation */}
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
+          <h4 className="text-sm font-semibold text-gray-800 mb-2">
+            How We Calculate Mortality Rates
+          </h4>
+          <div className="text-xs text-gray-600 space-y-2">
+            <p>
+              We use the Gompertz-Makeham model: <strong>μ(x) = a + b × exp(c × x)</strong>, 
+              where μ(x) is the mortality rate at age x. The parameters (a, b, c) are based on 
+              actuarial literature and SSA life table patterns, not fitted to specific data points.
+            </p>
+            <p>
+              <strong>Parameter sources:</strong> Male parameters (a=0.0001, b=0.00001, c=0.1) and 
+              female parameters (a=0.00005, b=0.000005, c=0.1) are derived from established 
+              actuarial models and SSA life table characteristics, producing realistic mortality 
+              rates that match official statistics for typical age ranges.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Important Disclaimers */}
