@@ -7,6 +7,10 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
   experimental: {},
+  // Force complete rebuild
+  generateBuildId: async () => {
+    return `build-${Date.now()}`;
+  },
 }
 
 export default nextConfig
