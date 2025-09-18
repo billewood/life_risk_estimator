@@ -466,7 +466,7 @@ export class IntegratedMortalityCalculator {
       top3: interventionResult.topInterventions.map(intervention => ({
         name: intervention.name,
         absoluteRiskReduction: intervention.absoluteRiskReduction,
-        relativeRiskReduction: intervention.relativeRiskReduction,
+        relativeRiskReduction: intervention.relativeRiskChange,
         difficulty: intervention.difficulty,
         timeToEffect: intervention.timeToEffect
       })),
