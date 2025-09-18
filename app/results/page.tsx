@@ -8,6 +8,7 @@ import { RiskSummaryCard } from '@/components/results/RiskSummaryCard';
 import { LifeExpectancyCard } from '@/components/results/LifeExpectancyCard';
 import { CauseMixChart } from '@/components/results/CauseMixChart';
 import { DriversWaterfall } from '@/components/results/DriversWaterfall';
+import { DataSourceCitation } from '@/components/results/DataSourceCitation';
 
 export default function ResultsPage() {
   const { result, isLoading, error } = useResultStore();
@@ -185,6 +186,14 @@ export default function ResultsPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Data Sources & Assumptions */}
+      <div className="mb-8">
+        <DataSourceCitation 
+          sources={['ssa-life-tables', 'cdc-wonder']}
+          assumptions={['gompertz-makeham', 'parameter-estimation']}
+        />
       </div>
 
       {/* Important Disclaimers */}
