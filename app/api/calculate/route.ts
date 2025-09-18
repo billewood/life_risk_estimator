@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { integratedCalculator } from '@/lib/calculator/integrated-calculator';
+import { calculationEnforcer } from '@/lib/calculator/calculation-enforcer';
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,13 +42,13 @@ export async function POST(request: NextRequest) {
       hospitalizations: body.hospitalizations
     };
     
-    // Calculate mortality risk
-    const result = await integratedCalculator.calculateMortalityRisk(inputs);
+    // Calculate mortality risk through centralized enforcer
+    const result = await calculationEnforcer.calculateMortalityRisk(inputs, 'api-calculate');
     
     return NextResponse.json({
       success: true,
       result,
-      calculatorInfo: integratedCalculator.getCalculatorInfo()
+      requestId: result.requestId || 'unknown'
     });
     
   } catch (error) {
@@ -65,6 +65,9 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
+  const audit = calculationEnforcer.getAudit();
+  const stats = calculationEnforcer.getStatistics();
+  
   return NextResponse.json({
     message: 'Mortality Risk Calculator API',
     version: '1.0.0',
@@ -72,7 +75,8 @@ export async function GET() {
       'POST /api/calculate': 'Calculate mortality risk',
       'GET /api/calculate': 'Get API information'
     },
-    calculatorInfo: integratedCalculator.getCalculatorInfo()
+    audit,
+    statistics: stats
   });
 }
 

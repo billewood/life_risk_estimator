@@ -11,6 +11,10 @@ import { estimateCauseMix } from './causeMix';
 import { bootstrap, calculateConfidenceIntervals } from './uncertainty';
 import { getCurrentVersions } from '@/lib/data/versions';
 
+// ⚠️ DEPRECATED: This file is deprecated. All calculations should go through calculationEnforcer.
+// This file is kept for backward compatibility only.
+console.warn('⚠️ lib/model/engine.ts is deprecated. Use calculationEnforcer.calculateMortalityRisk() instead.');
+
 /**
  * Main estimation engine - orchestrates all calculations
  */

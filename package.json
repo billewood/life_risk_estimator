@@ -12,7 +12,9 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "validate-data": "tsx scripts/validate-data.mts",
-    "bump-version": "tsx scripts/bump-version.mts"
+    "bump-version": "tsx scripts/bump-version.mts",
+    "validate-calculations": "tsx scripts/validate-calculations.ts",
+    "consolidate-calculations": "tsx scripts/consolidate-calculations.ts"
   },
   "dependencies": {
     "@types/papaparse": "^5.3.0",

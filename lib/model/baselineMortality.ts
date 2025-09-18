@@ -2,6 +2,10 @@ import { MortalityTableRow, Sex } from './types';
 import { getRealBaselineMortality, loadRealLifeTable } from '@/lib/data/realDataLoader';
 import { BOUNDS } from './types';
 
+// ⚠️ DEPRECATED: This file is deprecated. All calculations should go through calculationEnforcer.
+// This file is kept for backward compatibility only.
+console.warn('⚠️ lib/model/baselineMortality.ts is deprecated. Use calculationEnforcer.calculateMortalityRisk() instead.');
+
 /**
  * Get baseline mortality data for a specific age and sex
  */
