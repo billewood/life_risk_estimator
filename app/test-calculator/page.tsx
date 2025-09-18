@@ -212,7 +212,7 @@ export default function TestCalculatorPage() {
                 <div className="border border-gray-200 rounded-md p-4">
                   <h3 className="font-semibold text-gray-900 mb-2">Top Causes of Death</h3>
                   <div className="space-y-2">
-                    {Object.entries(result.causeSpecificRisks)
+                    {(Object.entries(result.causeSpecificRisks) as Array<[string, { adjustedRisk: number }]>)
                       .sort(([,a], [,b]) => b.adjustedRisk - a.adjustedRisk)
                       .slice(0, 5)
                       .map(([cause, data]) => (
