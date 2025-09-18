@@ -139,7 +139,7 @@ export class IntegratedMortalityCalculator {
   private ssaFetcher = realSSAFetcher;
   private cdcFetcher = realCDCFetcher;
   private gbdLoader = gbdRiskFactorLoader;
-  private ePrognosisValidator = ePrognosisValidator;
+  private ePrognosisValidator = ePrognosisSvc;
   private ascvdValidator = ascvdValidator;
   private jointAttribution = jointAttributionCalculator;
   private interventionSim = interventionSimulator;
