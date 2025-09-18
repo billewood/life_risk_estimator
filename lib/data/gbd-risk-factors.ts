@@ -176,14 +176,14 @@ export class GBDRiskFactorLoader {
    */
   private generateRealisticGBDData(year: number): GBDRiskFactor[] {
     return [
-      // Smoking
+      // Smoking - 2-3× all-cause mortality vs never smokers
       {
         id: 'smoking',
         name: 'Smoking',
         category: 'behavioral',
-        relativeRisk: 2.5,
+        relativeRisk: 2.5, // 2-3× as specified
         confidenceInterval: [2.0, 3.0],
-        source: 'GBD 2021, meta-analyses',
+        source: 'GBD 2021, meta-analyses, PMC studies',
         lastUpdated: '2021-01-01',
         doseResponse: {
           min: 0,
@@ -193,20 +193,20 @@ export class GBDRiskFactorLoader {
         }
       },
       
-      // Blood Pressure
+      // Blood Pressure - every 20 mmHg higher SBP ~ doubles vascular mortality risk
       {
         id: 'blood-pressure',
         name: 'Systolic Blood Pressure',
         category: 'metabolic',
-        relativeRisk: 1.5,
-        confidenceInterval: [1.3, 1.7],
-        source: 'GBD 2021, cohort studies',
+        relativeRisk: 2.0, // Doubles risk per 20 mmHg as specified
+        confidenceInterval: [1.8, 2.2],
+        source: 'GBD 2021, PubMed studies, AHA Journals',
         lastUpdated: '2021-01-01',
         doseResponse: {
           min: 90,
           max: 180,
           curve: 'linear',
-          parameters: [0.01]
+          parameters: [0.035] // ~3.5% increase per mmHg (20 mmHg = 70% increase ≈ 2x)
         }
       },
       
@@ -227,20 +227,20 @@ export class GBDRiskFactorLoader {
         }
       },
       
-      // Physical Activity
+      // Physical Activity - each +1 MET in CRF linked to ~10-20% lower all-cause mortality
       {
         id: 'physical-activity',
-        name: 'Physical Activity',
+        name: 'Cardiorespiratory Fitness (CRF)',
         category: 'behavioral',
-        relativeRisk: 0.8,
-        confidenceInterval: [0.7, 0.9],
-        source: 'GBD 2021, cohort studies',
+        relativeRisk: 0.85, // 15% reduction per MET as specified
+        confidenceInterval: [0.8, 0.9],
+        source: 'GBD 2021, AHA Journals, pooled analyses',
         lastUpdated: '2021-01-01',
         doseResponse: {
           min: 0,
-          max: 50,
+          max: 20, // METs
           curve: 'log-linear',
-          parameters: [-0.02]
+          parameters: [-0.15] // 15% reduction per MET
         }
       },
       
