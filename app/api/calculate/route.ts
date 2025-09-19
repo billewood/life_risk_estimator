@@ -25,7 +25,8 @@ export async function POST(request: NextRequest) {
 
     try {
        // Try to call the Python backend
-       const response = await fetch('http://localhost:5001/api/calculate-risk', {
+       const backendUrl = process.env.BACKEND_URL || 'http://localhost:5001'
+       const response = await fetch(`${backendUrl}/api/calculate-risk`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

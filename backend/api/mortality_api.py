@@ -366,6 +366,8 @@ def export_relative_risks():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
+    import os
+    
     print("Starting Mortality Calculator API...")
     print("API Endpoints:")
     print("  GET  /api/health - Health check")
@@ -376,5 +378,10 @@ if __name__ == '__main__':
     print("  GET  /api/verify-sources - Verify relative risk sources")
     print("  GET  /api/export-relative-risks - Export relative risks to CSV")
     print()
-    print("Starting server on http://localhost:5000")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    
+    # Get port from environment variable (Render sets this)
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('ENVIRONMENT', 'development') == 'development'
+    
+    print(f"Starting server on port {port}")
+    app.run(debug=debug, host='0.0.0.0', port=port)
