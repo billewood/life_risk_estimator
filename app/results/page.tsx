@@ -181,18 +181,6 @@ export default function ResultsPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {/* Life Expectancy */}
           <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow cursor-pointer relative">
-            <button
-              onClick={() => openTransparencyModal('life-expectancy', 'How We Calculate Life Expectancy')}
-              className="absolute top-4 right-4 w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors"
-              title="Learn how we calculate this"
-            >
-              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </button>
-            <div className="bg-blue-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl font-bold text-blue-600">⏰</span>
-            </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">
               {result.lifeExpectancy.toFixed(1)} years
             </h3>
@@ -201,18 +189,6 @@ export default function ResultsPage() {
 
           {/* 1-Year Risk */}
           <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow cursor-pointer relative">
-            <button
-              onClick={() => openTransparencyModal('one-year-risk', 'How We Calculate 1-Year Mortality Risk')}
-              className="absolute top-4 right-4 w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors"
-              title="Learn how we calculate this"
-            >
-              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </button>
-            <div className="bg-red-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl font-bold text-red-600">⚡</span>
-            </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">
               {result.oneYearRisk.toFixed(2)}%
             </h3>
@@ -221,18 +197,6 @@ export default function ResultsPage() {
 
           {/* Top Cause */}
           <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow cursor-pointer relative">
-            <button
-              onClick={() => openTransparencyModal('cause-breakdown', 'How We Calculate Cause of Death Breakdown')}
-              className="absolute top-4 right-4 w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors"
-              title="Learn how we calculate this"
-            >
-              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </button>
-            <div className="bg-orange-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl font-bold text-orange-600">📊</span>
-            </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">
               {result.topCauses[0]?.percentage.toFixed(1)}%
             </h3>
