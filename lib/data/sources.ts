@@ -22,7 +22,7 @@ export const DATA_SOURCES: Record<string, DataSource> = {
     description: 'Official US mortality data by age, sex, and cause',
     format: 'api',
     updateFrequency: 'annual',
-    lastUpdated: '2024-01-01'
+    lastUpdated: '2025-09-19'
   },
 
   // CDC Life Tables
@@ -42,7 +42,7 @@ export const DATA_SOURCES: Record<string, DataSource> = {
     description: 'Global mortality and health data',
     format: 'api',
     updateFrequency: 'annual',
-    lastUpdated: '2024-01-01'
+    lastUpdated: '2025-09-19'
   },
 
   // Global Burden of Disease Study
@@ -62,7 +62,7 @@ export const DATA_SOURCES: Record<string, DataSource> = {
     description: 'US health and nutrition survey data',
     format: 'api',
     updateFrequency: 'annual',
-    lastUpdated: '2024-01-01'
+    lastUpdated: '2025-09-19'
   }
 };
 

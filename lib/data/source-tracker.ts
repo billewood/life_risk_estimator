@@ -53,7 +53,7 @@ export class DataSourceTracker {
       updateFrequency: 'annually',
       dataFormat: 'HTML tables, CSV download',
       coverage: 'Ages 0-119, by sex',
-      lastUpdated: '2024-01-01',
+      lastUpdated: '2025-09-19',
       version: '2024.1',
       usage: ['baseline-mortality-rates', 'life-expectancy', '6-month-probability', '5-year-probability'],
       assumptions: ['ssa-baseline-mortality', '6-month-approximation', '5-year-approximation'],
@@ -93,7 +93,7 @@ export class DataSourceTracker {
       updateFrequency: 'annually',
       dataFormat: 'CSV files',
       coverage: 'US and international mortality data',
-      lastUpdated: '2024-01-01',
+      lastUpdated: '2025-09-19',
       version: '2024.1',
       usage: ['mortality-validation', 'international-comparison'],
       assumptions: ['data-harmonization', 'age-standardization'],
@@ -133,7 +133,7 @@ export class DataSourceTracker {
       source: 'SSA Life Tables 2024, actuarial literature',
       justification: 'SSA life tables are the canonical US source for short-horizon death probabilities. Gompertz-Makeham is the standard actuarial model.',
       impact: 'high',
-      lastReviewed: '2024-01-01',
+      lastReviewed: '2025-09-19',
       nextReview: '2025-01-01'
     });
 
@@ -144,7 +144,7 @@ export class DataSourceTracker {
       source: 'Actuarial literature, probability theory',
       justification: 'Standard actuarial approximation for converting annual to semi-annual probabilities',
       impact: 'medium',
-      lastReviewed: '2024-01-01',
+      lastReviewed: '2025-09-19',
       nextReview: '2025-01-01'
     });
 
@@ -155,7 +155,7 @@ export class DataSourceTracker {
       source: 'Actuarial literature, probability theory',
       justification: 'Standard actuarial approximation for converting annual to 5-year probabilities',
       impact: 'medium',
-      lastReviewed: '2024-01-01',
+      lastReviewed: '2025-09-19',
       nextReview: '2025-01-01'
     });
 
@@ -166,7 +166,7 @@ export class DataSourceTracker {
       source: 'Actuarial literature, SSA life table patterns, established mortality models',
       justification: 'Parameters chosen to produce realistic mortality rates that match official statistics for typical age ranges',
       impact: 'high',
-      lastReviewed: '2024-01-01',
+      lastReviewed: '2025-09-19',
       nextReview: '2025-01-01'
     });
 
@@ -177,7 +177,7 @@ export class DataSourceTracker {
       source: 'Actuarial literature',
       justification: 'Standard practice for age interpolation in life tables',
       impact: 'medium',
-      lastReviewed: '2024-01-01',
+      lastReviewed: '2025-09-19',
       nextReview: '2025-01-01'
     });
 
@@ -188,7 +188,7 @@ export class DataSourceTracker {
       source: 'CDC WONDER data, medical literature',
       justification: 'Simplified categories for user understanding while maintaining accuracy',
       impact: 'medium',
-      lastReviewed: '2024-01-01',
+      lastReviewed: '2025-09-19',
       nextReview: '2025-01-01'
     });
 
@@ -199,7 +199,7 @@ export class DataSourceTracker {
       source: 'CDC WONDER age group definitions',
       justification: 'CDC data is reported by age groups, so individual ages are mapped to the appropriate group',
       impact: 'medium',
-      lastReviewed: '2024-01-01',
+      lastReviewed: '2025-09-19',
       nextReview: '2025-01-01'
     });
 
@@ -210,7 +210,7 @@ export class DataSourceTracker {
       source: 'CDC WONDER cause-of-death data by age group and sex',
       justification: 'CDC is the gold standard for US cause-of-death distributions. Fractions sum to 1.0 within each age/sex group.',
       impact: 'high',
-      lastReviewed: '2024-01-01',
+      lastReviewed: '2025-09-19',
       nextReview: '2025-01-01'
     });
 
@@ -221,7 +221,7 @@ export class DataSourceTracker {
       source: 'GBD methodology, epidemiological literature',
       justification: 'Standard epidemiological approach for combining multiple risk factors. Assumes independent effects.',
       impact: 'high',
-      lastReviewed: '2024-01-01',
+      lastReviewed: '2025-09-19',
       nextReview: '2025-01-01'
     });
 
@@ -232,7 +232,7 @@ export class DataSourceTracker {
       source: 'GBD methodology, epidemiological literature',
       justification: 'Simplifies modeling and is often reasonable for major risk factors. GBD uses joint attribution to avoid double counting.',
       impact: 'medium',
-      lastReviewed: '2024-01-01',
+      lastReviewed: '2025-09-19',
       nextReview: '2025-01-01'
     });
 
@@ -243,7 +243,7 @@ export class DataSourceTracker {
       source: 'GBD methodology, meta-analyses',
       justification: 'Allows for more precise risk estimation based on exposure level. Curves are based on epidemiological evidence.',
       impact: 'medium',
-      lastReviewed: '2024-01-01',
+      lastReviewed: '2025-09-19',
       nextReview: '2025-01-01'
     });
 
@@ -254,7 +254,7 @@ export class DataSourceTracker {
       source: 'Performance optimization best practices',
       justification: 'External data sources are slow to load. Caching improves user experience while maintaining data freshness.',
       impact: 'low',
-      lastReviewed: '2024-01-01',
+      lastReviewed: '2025-09-19',
       nextReview: '2025-01-01'
     });
 
@@ -265,7 +265,7 @@ export class DataSourceTracker {
       source: 'Data freshness requirements',
       justification: 'Balances performance with data freshness. 30 days is appropriate for annual data sources.',
       impact: 'low',
-      lastReviewed: '2024-01-01',
+      lastReviewed: '2025-09-19',
       nextReview: '2025-01-01'
     });
   }
