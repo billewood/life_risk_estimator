@@ -149,7 +149,8 @@ export class CDCCauseDataLoader {
       'Alzheimer Disease',
       'Influenza and Pneumonia',
       'Kidney Disease',
-      'Suicide'
+      'Suicide',
+      'Other' // Add Other category to ensure fractions sum to 1.0
     ];
 
     ageGroups.forEach(ageGroup => {
@@ -319,7 +320,17 @@ export class CDCCauseDataLoader {
       }
     };
 
-    return baseFractions[ageGroup as keyof typeof baseFractions]?.[sex] || {};
+    const fractions = baseFractions[ageGroup as keyof typeof baseFractions]?.[sex] || {};
+    
+    // Calculate the sum of defined fractions
+    const definedSum = Object.values(fractions).reduce((sum, frac) => sum + frac, 0);
+    
+    // Add "Other" category to make total sum to 1.0
+    if (definedSum < 1.0) {
+      fractions['Other'] = 1.0 - definedSum;
+    }
+    
+    return fractions;
   }
 
   /**
