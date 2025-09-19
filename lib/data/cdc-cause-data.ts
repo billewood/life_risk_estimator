@@ -184,8 +184,6 @@ export class CDCCauseDataLoader {
    * Generate realistic cause fractions based on age group and sex
    */
   private generateCauseFractionsForAgeGroup(ageGroup: string, sex: 'male' | 'female'): {[cause: string]: number} {
-    const fractions: {[cause: string]: number} = {};
-    
     // Base fractions that sum to 1.0
     const baseFractions = {
       '18-29': {
