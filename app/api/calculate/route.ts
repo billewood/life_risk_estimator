@@ -1,89 +1,84 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { calculationEnforcer } from '@/lib/calculator/calculation-enforcer';
+import { NextRequest, NextResponse } from 'next/server'
+import { RiskCalculationRequest, RiskCalculationResponse } from '../../../shared/types/api'
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json()
     
     // Validate required fields
     if (!body.age || !body.sex) {
       return NextResponse.json(
-        { error: 'Age and sex are required' },
+        { success: false, error: 'Missing required fields: age, sex' },
         { status: 400 }
-      );
+      )
     }
-    
-    // Set defaults for optional fields
-    const inputs = {
-      age: body.age,
+
+    // For now, call Python backend via HTTP
+    // TODO: Implement direct Python integration or ensure Python server is running
+    const pythonRequest: RiskCalculationRequest = {
+      age: parseInt(body.age),
       sex: body.sex,
-      smoking: body.smoking || 'never',
-      yearsSinceQuitting: body.yearsSinceQuitting,
-      systolicBP: body.systolicBP || 120,
-      onBPMedication: body.onBPMedication || false,
-      totalCholesterol: body.totalCholesterol,
-      hdlCholesterol: body.hdlCholesterol,
-      bmi: body.bmi || 25,
-      waistCircumference: body.waistCircumference,
-      diabetes: body.diabetes || false,
-      yearsWithDiabetes: body.yearsWithDiabetes,
-      cardiorespiratoryFitness: body.cardiorespiratoryFitness,
-      physicalActivity: body.physicalActivity,
-      alcoholConsumption: body.alcoholConsumption,
-      dietQuality: body.dietQuality,
       race: body.race || 'white',
-      region: body.region || 'moderate',
-      difficultyWalking: body.difficultyWalking,
-      difficultyBathing: body.difficultyBathing,
-      difficultyManagingMoney: body.difficultyManagingMoney,
-      difficultyManagingMedications: body.difficultyManagingMedications,
-      falls: body.falls,
-      weightLoss: body.weightLoss,
-      hospitalizations: body.hospitalizations
-    };
-    
-    // Calculate mortality risk through centralized enforcer
-    const result = await calculationEnforcer.calculateMortalityRisk(inputs, 'api-calculate');
-    
-    return NextResponse.json({
-      success: true,
-      result,
-      requestId: result.requestId || 'unknown'
-    });
-    
+      risk_factors: body.risk_factors || {},
+      time_horizon: body.time_horizon || '1_year'
+    }
+
+    try {
+       // Try to call the Python backend
+       const response = await fetch('http://localhost:5001/api/calculate-risk', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(pythonRequest),
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        return NextResponse.json(result)
+      } else {
+        throw new Error('Python backend not responding')
+      }
+    } catch (error) {
+      // Fallback: Return a message indicating Python backend needs to be started
+      console.warn('Python backend not available, returning setup instructions')
+      return NextResponse.json({
+        success: false,
+        error: 'Python backend not running',
+        instructions: {
+          message: 'Please start the Python backend server',
+           command: 'cd backend && python3 api/mortality_api.py',
+           port: 5001
+        },
+        fallback_data: {
+          lifeExpectancy: 0,
+          oneYearMortality: 0,
+          riskFactors: {},
+          causesOfDeath: [],
+          cardiovascularRisk: {
+            risk_10_year: 0,
+            risk_5_year: 0,
+            risk_1_year: 0,
+            risk_level: 'Unknown' as const,
+            population: 'Unknown',
+            available: false,
+            source: {
+              paper: 'Backend not available',
+              authors: 'N/A',
+              journal: 'N/A',
+              year: 0,
+              doi: 'N/A',
+              table: 'N/A'
+            }
+          }
+        }
+      }, { status: 503 })
+    }
   } catch (error) {
-    console.error('Error in mortality calculation API:', error);
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-    console.error('Error details:', {
-      name: error instanceof Error ? error.name : 'Unknown',
-      message: error instanceof Error ? error.message : 'Unknown error',
-      cause: error instanceof Error ? (error as any).cause : undefined
-    });
-    
+    console.error('API Error:', error)
     return NextResponse.json(
-      { 
-        error: 'Mortality calculation failed',
-        details: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
-      },
+      { success: false, error: 'Calculation failed' },
       { status: 500 }
-    );
+    )
   }
 }
-
-export async function GET() {
-  const audit = calculationEnforcer.getAudit();
-  const stats = calculationEnforcer.getStatistics();
-  
-  return NextResponse.json({
-    message: 'Mortality Risk Calculator API',
-    version: '1.0.0',
-    endpoints: {
-      'POST /api/calculate': 'Calculate mortality risk',
-      'GET /api/calculate': 'Get API information'
-    },
-    audit,
-    statistics: stats
-  });
-}
-

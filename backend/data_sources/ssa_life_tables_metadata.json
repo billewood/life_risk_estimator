@@ -1,0 +1,13 @@
+{
+  "source_url": "https://www.ssa.gov/oact/STATS/table4c6.html",
+  "download_date": "2025-09-19T12:21:16.212832",
+  "record_count": 111,
+  "columns": [
+    "age",
+    "male_qx",
+    "female_qx"
+  ],
+  "age_range": "0-110",
+  "data_hash": "a3ff4b11b83dd510edf9474f88128c6f",
+  "description": "SSA Period Life Tables with age-specific mortality probabilities"
+}
