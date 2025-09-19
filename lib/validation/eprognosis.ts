@@ -257,7 +257,7 @@ export class EPrognosisValidator {
       url: 'https://eprognosis.ucsf.edu/',
       description: 'Validated 4-5 year mortality models for adults ≥65',
       validation: 'c-statistics ~0.75 with good calibration',
-      lastUpdated: '2025-09-19'
+      lastUpdated: '2024-01-01'
     };
   }
 }

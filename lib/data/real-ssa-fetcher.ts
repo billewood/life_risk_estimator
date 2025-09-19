@@ -299,7 +299,7 @@ export class RealSSAFetcher {
       url: 'https://www.ssa.gov/oact/STATS/table4c6.html',
       description: 'Official US life tables used for Social Security calculations',
       updateFrequency: 'Annual',
-      lastUpdated: '2025-09-19'
+      lastUpdated: '2024-01-01'
     };
   }
 }

@@ -127,7 +127,7 @@ export class DataProcessor {
         qx: maleQx,
         ex: maleEx,
         source: 'Sample data based on US mortality patterns',
-        lastUpdated: '2025-09-19'
+        lastUpdated: '2024-01-01'
       });
 
       // Female mortality rates (lower than male)
@@ -140,7 +140,7 @@ export class DataProcessor {
         qx: femaleQx,
         ex: femaleEx,
         source: 'Sample data based on US mortality patterns',
-        lastUpdated: '2025-09-19'
+        lastUpdated: '2024-01-01'
       });
     }
 
@@ -207,7 +207,7 @@ export class DataProcessor {
           sex: sex as Sex,
           causeFractions,
           source: 'Sample data based on CDC cause-of-death patterns',
-          lastUpdated: '2025-09-19'
+          lastUpdated: '2024-01-01'
         });
       });
     });
@@ -262,31 +262,31 @@ export class DataProcessor {
   private async generateSampleRiskFactors(): Promise<ProcessedRiskFactors[]> {
     return [
       // Smoking
-      { factor: 'smoking', level: 'never', hazardRatio: 1.0, confidenceInterval: [0.95, 1.05], source: 'US Surgeon General Report 2014', lastUpdated: '2025-09-19' },
-      { factor: 'smoking', level: 'former', hazardRatio: 1.3, confidenceInterval: [1.2, 1.4], source: 'US Surgeon General Report 2014', lastUpdated: '2025-09-19' },
-      { factor: 'smoking', level: 'current', hazardRatio: 2.1, confidenceInterval: [2.0, 2.2], source: 'US Surgeon General Report 2014', lastUpdated: '2025-09-19' },
+      { factor: 'smoking', level: 'never', hazardRatio: 1.0, confidenceInterval: [0.95, 1.05], source: 'US Surgeon General Report 2014', lastUpdated: '2024-01-01' },
+      { factor: 'smoking', level: 'former', hazardRatio: 1.3, confidenceInterval: [1.2, 1.4], source: 'US Surgeon General Report 2014', lastUpdated: '2024-01-01' },
+      { factor: 'smoking', level: 'current', hazardRatio: 2.1, confidenceInterval: [2.0, 2.2], source: 'US Surgeon General Report 2014', lastUpdated: '2024-01-01' },
       
       // Alcohol
-      { factor: 'alcohol', level: 'none', hazardRatio: 1.0, confidenceInterval: [0.95, 1.05], source: 'Global Burden of Disease Study 2019', lastUpdated: '2025-09-19' },
-      { factor: 'alcohol', level: 'light', hazardRatio: 0.95, confidenceInterval: [0.90, 1.00], source: 'Global Burden of Disease Study 2019', lastUpdated: '2025-09-19' },
-      { factor: 'alcohol', level: 'moderate', hazardRatio: 1.0, confidenceInterval: [0.95, 1.05], source: 'Global Burden of Disease Study 2019', lastUpdated: '2025-09-19' },
-      { factor: 'alcohol', level: 'heavy', hazardRatio: 1.4, confidenceInterval: [1.3, 1.5], source: 'Global Burden of Disease Study 2019', lastUpdated: '2025-09-19' },
+      { factor: 'alcohol', level: 'none', hazardRatio: 1.0, confidenceInterval: [0.95, 1.05], source: 'Global Burden of Disease Study 2019', lastUpdated: '2024-01-01' },
+      { factor: 'alcohol', level: 'light', hazardRatio: 0.95, confidenceInterval: [0.90, 1.00], source: 'Global Burden of Disease Study 2019', lastUpdated: '2024-01-01' },
+      { factor: 'alcohol', level: 'moderate', hazardRatio: 1.0, confidenceInterval: [0.95, 1.05], source: 'Global Burden of Disease Study 2019', lastUpdated: '2024-01-01' },
+      { factor: 'alcohol', level: 'heavy', hazardRatio: 1.4, confidenceInterval: [1.3, 1.5], source: 'Global Burden of Disease Study 2019', lastUpdated: '2024-01-01' },
       
       // Physical Activity
-      { factor: 'activity', level: 'sedentary', hazardRatio: 1.3, confidenceInterval: [1.2, 1.4], source: 'Physical Activity Guidelines for Americans', lastUpdated: '2025-09-19' },
-      { factor: 'activity', level: 'low', hazardRatio: 1.1, confidenceInterval: [1.05, 1.15], source: 'Physical Activity Guidelines for Americans', lastUpdated: '2025-09-19' },
-      { factor: 'activity', level: 'moderate', hazardRatio: 0.9, confidenceInterval: [0.85, 0.95], source: 'Physical Activity Guidelines for Americans', lastUpdated: '2025-09-19' },
-      { factor: 'activity', level: 'high', hazardRatio: 0.8, confidenceInterval: [0.75, 0.85], source: 'Physical Activity Guidelines for Americans', lastUpdated: '2025-09-19' },
+      { factor: 'activity', level: 'sedentary', hazardRatio: 1.3, confidenceInterval: [1.2, 1.4], source: 'Physical Activity Guidelines for Americans', lastUpdated: '2024-01-01' },
+      { factor: 'activity', level: 'low', hazardRatio: 1.1, confidenceInterval: [1.05, 1.15], source: 'Physical Activity Guidelines for Americans', lastUpdated: '2024-01-01' },
+      { factor: 'activity', level: 'moderate', hazardRatio: 0.9, confidenceInterval: [0.85, 0.95], source: 'Physical Activity Guidelines for Americans', lastUpdated: '2024-01-01' },
+      { factor: 'activity', level: 'high', hazardRatio: 0.8, confidenceInterval: [0.75, 0.85], source: 'Physical Activity Guidelines for Americans', lastUpdated: '2024-01-01' },
       
       // BMI
-      { factor: 'bmi', level: 'underweight', hazardRatio: 1.2, confidenceInterval: [1.1, 1.3], source: 'Global Burden of Disease Study 2019', lastUpdated: '2025-09-19' },
-      { factor: 'bmi', level: 'normal', hazardRatio: 1.0, confidenceInterval: [0.95, 1.05], source: 'Global Burden of Disease Study 2019', lastUpdated: '2025-09-19' },
-      { factor: 'bmi', level: 'overweight', hazardRatio: 1.1, confidenceInterval: [1.05, 1.15], source: 'Global Burden of Disease Study 2019', lastUpdated: '2025-09-19' },
-      { factor: 'bmi', level: 'obese', hazardRatio: 1.3, confidenceInterval: [1.2, 1.4], source: 'Global Burden of Disease Study 2019', lastUpdated: '2025-09-19' },
+      { factor: 'bmi', level: 'underweight', hazardRatio: 1.2, confidenceInterval: [1.1, 1.3], source: 'Global Burden of Disease Study 2019', lastUpdated: '2024-01-01' },
+      { factor: 'bmi', level: 'normal', hazardRatio: 1.0, confidenceInterval: [0.95, 1.05], source: 'Global Burden of Disease Study 2019', lastUpdated: '2024-01-01' },
+      { factor: 'bmi', level: 'overweight', hazardRatio: 1.1, confidenceInterval: [1.05, 1.15], source: 'Global Burden of Disease Study 2019', lastUpdated: '2024-01-01' },
+      { factor: 'bmi', level: 'obese', hazardRatio: 1.3, confidenceInterval: [1.2, 1.4], source: 'Global Burden of Disease Study 2019', lastUpdated: '2024-01-01' },
       
       // Vaccinations
-      { factor: 'vaccination', level: 'flu', hazardRatio: 0.95, confidenceInterval: [0.90, 1.00], source: 'CDC Vaccine Effectiveness Studies', lastUpdated: '2025-09-19' },
-      { factor: 'vaccination', level: 'covid', hazardRatio: 0.92, confidenceInterval: [0.88, 0.96], source: 'CDC COVID-19 Vaccine Studies', lastUpdated: '2025-09-19' }
+      { factor: 'vaccination', level: 'flu', hazardRatio: 0.95, confidenceInterval: [0.90, 1.00], source: 'CDC Vaccine Effectiveness Studies', lastUpdated: '2024-01-01' },
+      { factor: 'vaccination', level: 'covid', hazardRatio: 0.92, confidenceInterval: [0.88, 0.96], source: 'CDC COVID-19 Vaccine Studies', lastUpdated: '2024-01-01' }
     ];
   }
 
