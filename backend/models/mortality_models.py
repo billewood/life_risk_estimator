@@ -9,12 +9,17 @@ import numpy as np
 from typing import Dict, Any, Optional, Tuple, List
 import sys
 import os
-sys.path.append('/Users/williamwood/Code/mortality_calculator')
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from data_logger import data_logger
 
 class MortalityModels:
-    def __init__(self, data_dir: str = "/Users/williamwood/Code/mortality_calculator/data_sources"):
-        self.data_dir = data_dir
+    def __init__(self, data_dir: str = None):
+        if data_dir is None:
+            # Use relative path from current working directory
+            self.data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data_sources')
+        else:
+            self.data_dir = data_dir
         self.ssa_data = None
         self.cdc_data = None
         self.gbd_data = None
