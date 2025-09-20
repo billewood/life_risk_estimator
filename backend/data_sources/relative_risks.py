@@ -10,9 +10,13 @@ from datetime import datetime
 import os
 
 class RelativeRiskDatabase:
-    def __init__(self, data_dir: str = "/Users/williamwood/Code/mortality_calculator/data_sources"):
-        self.data_dir = data_dir
-        self.db_file = f"{data_dir}/relative_risks_database.json"
+    def __init__(self, data_dir: str = None):
+        if data_dir is None:
+            # Use relative path from current working directory
+            self.data_dir = os.path.join(os.path.dirname(__file__))
+        else:
+            self.data_dir = data_dir
+        self.db_file = f"{self.data_dir}/relative_risks_database.json"
         self.init_database()
     
     def init_database(self):
