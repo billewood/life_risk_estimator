@@ -688,6 +688,15 @@ export default function Home() {
                       <li>• Does not include family history of CVD</li>
                       <li>• May underestimate risk in certain populations</li>
                     </ul>
+                    <div className="mt-3 p-3 bg-yellow-100 rounded-lg">
+                      <p className="text-xs text-yellow-800 font-medium mb-1">Race/Ethnicity Limitations:</p>
+                      <p className="text-xs text-yellow-700">
+                        The PCE was only validated for White and Black/African American populations. 
+                        For Hispanic, Asian, Native American, or other racial/ethnic groups, the calculator 
+                        uses White coefficients as a fallback, which may not accurately reflect their 
+                        actual cardiovascular risk patterns.
+                      </p>
+                    </div>
                   </div>
                 </div>
               )}
