@@ -6,7 +6,8 @@ ONLY works with real data - no placeholder or fake data allowed
 
 import sys
 import os
-sys.path.append('/Users/williamwood/Code/mortality_calculator')
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def test_data_logger():
     """Test the data logger functionality"""

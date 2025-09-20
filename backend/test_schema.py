@@ -4,7 +4,9 @@ Test script to demonstrate risk factor schema functionality
 """
 
 import sys
-sys.path.append('/Users/williamwood/Code/mortality_calculator')
+import os
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from api.risk_factor_schema import risk_factor_schema
 import json

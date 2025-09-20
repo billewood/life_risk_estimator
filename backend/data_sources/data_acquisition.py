@@ -11,13 +11,19 @@ import os
 from datetime import datetime
 from typing import Dict, Any, Optional, Tuple
 import sys
-sys.path.append('/Users/williamwood/Code/mortality_calculator')
+import os
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from data_logger import data_logger
 
 class DataAcquisition:
-    def __init__(self, data_dir: str = "/Users/williamwood/Code/mortality_calculator/data_sources"):
-        self.data_dir = data_dir
-        os.makedirs(data_dir, exist_ok=True)
+    def __init__(self, data_dir: str = None):
+        if data_dir is None:
+            # Use relative path from current working directory
+            self.data_dir = os.path.join(os.path.dirname(__file__))
+        else:
+            self.data_dir = data_dir
+        os.makedirs(self.data_dir, exist_ok=True)
         
         # Register known data sources
         self._register_sources()
