@@ -12,6 +12,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null)
   const [showDetailedForm, setShowDetailedForm] = useState(false)
   const [riskFactors, setRiskFactors] = useState<RiskFactors>({})
+  const [showInfoModal, setShowInfoModal] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -392,21 +393,51 @@ export default function Home() {
             {/* Key Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Life Expectancy</h3>
+                <div className="flex items-center justify-center mb-2">
+                  <h3 className="text-lg font-semibold text-gray-700">Life Expectancy</h3>
+                  <button
+                    onClick={() => setShowInfoModal('lifeExpectancy')}
+                    className="ml-2 text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
                 <div className="text-3xl font-bold text-blue-600">
                   {result.lifeExpectancy.toFixed(1)} years
                 </div>
               </div>
               
                <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                 <h3 className="text-lg font-semibold text-gray-700 mb-2">1-Year Mortality Risk</h3>
+                 <div className="flex items-center justify-center mb-2">
+                   <h3 className="text-lg font-semibold text-gray-700">1-Year Mortality Risk</h3>
+                   <button
+                     onClick={() => setShowInfoModal('oneYearMortality')}
+                     className="ml-2 text-gray-400 hover:text-gray-600"
+                   >
+                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                       <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                     </svg>
+                   </button>
+                 </div>
                  <div className="text-3xl font-bold text-red-600">
                    {(result.oneYearMortality * 100).toFixed(2)}%
                  </div>
                </div>
 
               <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">10-Year CVD Risk</h3>
+                <div className="flex items-center justify-center mb-2">
+                  <h3 className="text-lg font-semibold text-gray-700">10-Year CVD Risk</h3>
+                  <button
+                    onClick={() => setShowInfoModal('cardiovascularRisk')}
+                    className="ml-2 text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
                 <div className="text-3xl font-bold text-purple-600">
                   {(result.cardiovascularRisk.risk_10_year * 100).toFixed(1)}%
                 </div>
@@ -479,6 +510,83 @@ export default function Home() {
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Information Modals */}
+        {showInfoModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-2xl max-h-96 overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">
+                  {showInfoModal === 'lifeExpectancy' && 'Life Expectancy'}
+                  {showInfoModal === 'oneYearMortality' && '1-Year Mortality Risk'}
+                  {showInfoModal === 'cardiovascularRisk' && '10-Year CVD Risk'}
+                </h3>
+                <button
+                  onClick={() => setShowInfoModal(null)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              {showInfoModal === 'lifeExpectancy' && (
+                <div className="space-y-4">
+                  <p className="text-gray-700">
+                    <strong>Life Expectancy</strong> represents the average number of years a person of your age and sex is expected to live, based on current mortality rates.
+                  </p>
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-blue-800 mb-2">Data Source</h4>
+                    <p className="text-sm text-blue-700">
+                      Social Security Administration Period Life Tables (2021) - Official U.S. mortality probabilities by age and sex
+                    </p>
+                    <p className="text-xs text-blue-600 mt-2">
+                      <strong>Methodology:</strong> Based on current age-specific death rates, this represents the expected remaining years of life for someone of your demographic profile.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {showInfoModal === 'oneYearMortality' && (
+                <div className="space-y-4">
+                  <p className="text-gray-700">
+                    <strong>1-Year Mortality Risk</strong> is the probability of dying within the next 12 months, adjusted for your specific risk factors.
+                  </p>
+                  <div className="bg-red-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-red-800 mb-2">Data Source</h4>
+                    <p className="text-sm text-red-700">
+                      Social Security Administration Life Tables + Risk Factor Adjustments from peer-reviewed literature
+                    </p>
+                    <p className="text-xs text-red-600 mt-2">
+                      <strong>Methodology:</strong> Baseline mortality from SSA tables, adjusted using relative risks from meta-analyses for smoking, blood pressure, BMI, fitness, and other factors.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {showInfoModal === 'cardiovascularRisk' && (
+                <div className="space-y-4">
+                  <p className="text-gray-700">
+                    <strong>10-Year CVD Risk</strong> estimates your probability of having a heart attack, stroke, or other cardiovascular event in the next 10 years.
+                  </p>
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-purple-800 mb-2">Data Source</h4>
+                    <p className="text-sm text-purple-700">
+                      Pooled Cohort Equations (PCE) - 2013 ACC/AHA Guidelines
+                    </p>
+                    <p className="text-xs text-purple-600 mt-2">
+                      <strong>Methodology:</strong> Gold standard cardiovascular risk calculator using age, sex, race, cholesterol, blood pressure, diabetes, and smoking status. Validated for ages 40-79 in U.S. populations.
+                    </p>
+                    <p className="text-xs text-purple-600 mt-1">
+                      <strong>Note:</strong> This is the same calculator used by doctors to determine statin and blood pressure medication recommendations.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
