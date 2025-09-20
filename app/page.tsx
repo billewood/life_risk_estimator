@@ -6,7 +6,7 @@ import { RiskCalculationResponse, RiskFactors, CardiovascularRisk } from '../sha
 export default function Home() {
   const [age, setAge] = useState('')
   const [sex, setSex] = useState<'male' | 'female' | ''>('')
-  const [race, setRace] = useState<'white' | 'black' | 'african_american' | 'other'>('white')
+  const [race, setRace] = useState<'white' | 'black' | 'african_american' | 'hispanic' | 'asian' | 'native_american' | 'pacific_islander' | 'mixed' | 'other'>('white')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<RiskCalculationResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -124,9 +124,20 @@ export default function Home() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Race/Ethnicity
-                  </label>
+                  <div className="flex items-center mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Race/Ethnicity
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowInfoModal('raceEthnicity')}
+                      className="ml-2 text-gray-400 hover:text-gray-600"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
                   <select
                     value={race}
                     onChange={(e) => setRace(e.target.value as any)}
@@ -134,7 +145,12 @@ export default function Home() {
                   >
                     <option value="white">White</option>
                     <option value="black">Black/African American</option>
-                    <option value="other">Other</option>
+                    <option value="hispanic">Hispanic/Latino</option>
+                    <option value="asian">Asian</option>
+                    <option value="native_american">Native American/Alaska Native</option>
+                    <option value="pacific_islander">Native Hawaiian/Pacific Islander</option>
+                    <option value="mixed">Mixed Race/Multiracial</option>
+                    <option value="other">Other/Unknown</option>
                   </select>
                 </div>
               </div>
@@ -629,6 +645,62 @@ export default function Home() {
                       <li>• No interaction effects between risk factors</li>
                       <li>• Risk factor effects are reversible</li>
                     </ul>
+                  </div>
+                </div>
+              )}
+
+              {showInfoModal === 'raceEthnicity' && (
+                <div className="space-y-4">
+                  <p className="text-gray-700">
+                    <strong>Race/Ethnicity in Medical Research</strong> - Understanding the limitations and our commitment to inclusion.
+                  </p>
+                  
+                  <div className="bg-red-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-red-800 mb-2">The Reality of Medical Research</h4>
+                    <p className="text-sm text-red-700 mb-2">
+                      Unfortunately, many medical studies and risk calculators have historically focused on limited racial/ethnic groups, creating significant gaps in our understanding of health risks across diverse populations.
+                    </p>
+                    <ul className="text-xs text-red-600 space-y-1">
+                      <li>• Many studies only tracked "White" vs "Non-White" categories</li>
+                      <li>• Specific ethnic groups were often grouped together or excluded</li>
+                      <li>• Data collection methods varied across studies and time periods</li>
+                      <li>• Underrepresented groups were frequently not included in validation studies</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-blue-800 mb-2">Framingham/PCE Limitations</h4>
+                    <p className="text-sm text-blue-700 mb-2">
+                      The Pooled Cohort Equations (PCE) - our cardiovascular risk calculator - was only validated for White and Black/African American populations.
+                    </p>
+                    <p className="text-xs text-blue-600">
+                      This means that for Hispanic, Asian, Native American, Pacific Islander, and other groups, 
+                      we must use the best available approximation (White coefficients), even though this may not 
+                      accurately reflect their actual cardiovascular risk patterns.
+                    </p>
+                  </div>
+
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-green-800 mb-2">Our Commitment</h4>
+                    <p className="text-sm text-green-700 mb-2">
+                      We are actively working to improve representation and accuracy for all populations.
+                    </p>
+                    <ul className="text-xs text-green-600 space-y-1">
+                      <li>• Continuously searching for studies that include diverse populations</li>
+                      <li>• Incorporating newer research that better represents underrepresented groups</li>
+                      <li>• Being transparent about limitations and uncertainties</li>
+                      <li>• Advocating for more inclusive medical research</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-yellow-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-yellow-800 mb-2">What This Means for You</h4>
+                    <p className="text-xs text-yellow-700">
+                      If you identify with a group that has limited research representation, please interpret 
+                      your results with this context in mind. The calculations may not be as accurate for your 
+                      specific population, and we encourage you to discuss your results with a healthcare provider 
+                      who understands your individual risk factors and family history.
+                    </p>
                   </div>
                 </div>
               )}

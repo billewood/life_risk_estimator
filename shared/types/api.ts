@@ -4,7 +4,7 @@
 export interface RiskCalculationRequest {
   age: number
   sex: 'male' | 'female'
-  race?: 'white' | 'black' | 'african_american' | 'other'
+  race?: 'white' | 'black' | 'african_american' | 'hispanic' | 'asian' | 'native_american' | 'pacific_islander' | 'mixed' | 'other'
   risk_factors: RiskFactors
   time_horizon?: '1_year' | '5_year' | '10_year'
 }
