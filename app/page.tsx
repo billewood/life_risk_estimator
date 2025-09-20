@@ -79,7 +79,7 @@ export default function Home() {
           </p>
                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                    <p className="text-sm text-blue-800">
-                     <strong>Privacy Protected:</strong> All calculations happen on your device. We don't store, retrieve, or track any of your personal information. Completely anonymous.
+                     <strong>Privacy Protected:</strong> We don't store, retrieve, or track any of your personal information. Completely anonymous.
                    </p>
                  </div>
         </div>
