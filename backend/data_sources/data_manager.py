@@ -9,13 +9,18 @@ import pandas as pd
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional
 import sys
-sys.path.append('/Users/williamwood/Code/mortality_calculator')
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from data_logger import data_logger
 
 class DataManager:
-    def __init__(self, data_dir: str = "/Users/williamwood/Code/mortality_calculator/data_sources"):
-        self.data_dir = data_dir
-        os.makedirs(data_dir, exist_ok=True)
+    def __init__(self, data_dir: str = None):
+        if data_dir is None:
+            # Use relative path from current working directory
+            self.data_dir = os.path.join(os.path.dirname(__file__))
+        else:
+            self.data_dir = data_dir
+        os.makedirs(self.data_dir, exist_ok=True)
     
     def get_data_status(self) -> Dict[str, Dict[str, Any]]:
         """
