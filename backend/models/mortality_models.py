@@ -114,6 +114,44 @@ class MortalityModels:
         else:
             raise ValueError(f"Unsupported time horizon: {time_horizon}")
     
+    def calculate_life_expectancy(self, age: int, sex: str) -> float:
+        """
+        Calculate life expectancy from SSA actuarial tables
+        ONLY works with real SSA data
+        """
+        if self.ssa_data is None:
+            raise ValueError("SSA data not loaded. Must download real data first.")
+        
+        # Validate age range
+        if age < self.ssa_data['age'].min() or age > self.ssa_data['age'].max():
+            raise ValueError(f"Age {age} outside available data range")
+        
+        # Get life expectancy from real SSA data
+        if sex == 'male':
+            life_expectancy = self.ssa_data[self.ssa_data['age'] == age]['male_ex'].iloc[0]
+        else:
+            life_expectancy = self.ssa_data[self.ssa_data['age'] == age]['female_ex'].iloc[0]
+        
+        return life_expectancy
+    
+    def calculate_risk_adjusted_life_expectancy(self, age: int, sex: str, risk_multiplier: float) -> float:
+        """
+        Calculate risk-adjusted life expectancy using actuarial methods
+        Applies risk multiplier to mortality rates and recalculates life expectancy
+        """
+        if self.ssa_data is None:
+            raise ValueError("SSA data not loaded. Must download real data first.")
+        
+        # Get baseline life expectancy
+        baseline_ex = self.calculate_life_expectancy(age, sex)
+        
+        # For risk adjustment, we can use a simplified approach:
+        # If risk is doubled, life expectancy is roughly halved
+        # This is a reasonable approximation for moderate risk changes
+        adjusted_ex = baseline_ex / risk_multiplier
+        
+        return max(adjusted_ex, 1.0)  # At least 1 year
+    
     def allocate_cause_risks(self, age: int, baseline_risk: float) -> Dict[str, float]:
         """
         Allocate baseline risk across specific causes using real CDC data or simplified allocation

@@ -25,19 +25,33 @@ rr_db = RelativeRiskDatabase()
 data_manager = DataManager()
 
 def _calculate_life_expectancy(age: int, sex: str, adjusted_risk: float) -> float:
-    """Calculate life expectancy based on adjusted mortality risk"""
-    # Simplified life expectancy calculation
-    # In a more sophisticated model, this would use life table methods
-    if adjusted_risk <= 0.01:  # Low risk
-        remaining_years = 85 - age if sex == 'male' else 88 - age
-    elif adjusted_risk <= 0.05:  # Moderate risk
-        remaining_years = 80 - age if sex == 'male' else 83 - age
-    elif adjusted_risk <= 0.15:  # High risk
-        remaining_years = 75 - age if sex == 'male' else 78 - age
-    else:  # Very high risk
-        remaining_years = 70 - age if sex == 'male' else 73 - age
-    
-    return max(remaining_years, 1)  # At least 1 year
+    """Calculate life expectancy using SSA actuarial tables with risk adjustment"""
+    try:
+        # Get baseline life expectancy from SSA actuarial tables
+        baseline_ex = calculator.models.calculate_life_expectancy(age, sex)
+        print(f"DEBUG: baseline_ex = {baseline_ex}")
+        
+        # Calculate risk multiplier (how much higher than baseline risk)
+        baseline_risk = calculator.models.calculate_baseline_mortality(age, sex, "1_year")
+        print(f"DEBUG: baseline_risk = {baseline_risk}")
+        risk_multiplier = adjusted_risk / baseline_risk if baseline_risk > 0 else 1.0
+        print(f"DEBUG: risk_multiplier = {risk_multiplier}")
+        
+        # Apply risk adjustment to life expectancy
+        # Higher risk = lower life expectancy
+        adjusted_ex = baseline_ex / risk_multiplier
+        print(f"DEBUG: adjusted_ex = {adjusted_ex}")
+        
+        result = max(adjusted_ex, 1.0)  # At least 1 year
+        print(f"DEBUG: final result = {result}")
+        return result
+        
+    except Exception as e:
+        print(f"Error calculating life expectancy: {e}")
+        # Fallback to simple approximation if SSA data fails
+        fallback = max(85 - age if sex == 'male' else 88 - age, 1.0)
+        print(f"DEBUG: using fallback = {fallback}")
+        return fallback
 
 def _format_causes_of_death(top_causes: List[Dict]) -> List[Dict]:
     """Format causes of death for frontend consumption"""

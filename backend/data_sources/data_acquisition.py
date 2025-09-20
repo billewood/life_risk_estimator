@@ -159,44 +159,51 @@ class DataAcquisition:
             rows = life_table.find_all('tr')
             data = []
             
-            # SSA table has complex header structure
-            # Row 0: ['Exact age', 'Male', 'Female'] 
-            # Row 1: ['Death probability', 'Number of lives', 'Life expectancy', 'Death probability', 'Number of lives', 'Life expectancy']
-            # Row 2+: Data rows
-            
-            # Based on the structure we observed:
+            # SSA table structure from the actual data:
             # Column 0: Age
             # Column 1: Male death probability (qx)
+            # Column 2: Male number of lives (lx) - we don't need this
+            # Column 3: Male life expectancy (ex)
             # Column 4: Female death probability (qx)
+            # Column 5: Female number of lives (lx) - we don't need this
+            # Column 6: Female life expectancy (ex)
             
             male_qx_col = 1
+            male_ex_col = 3
             female_qx_col = 4
+            female_ex_col = 6
             
-            print(f"Using fixed column positions: male_qx in column {male_qx_col}, female_qx in column {female_qx_col}")
+            print(f"Using fixed column positions: male_qx in column {male_qx_col}, male_ex in column {male_ex_col}, female_qx in column {female_qx_col}, female_ex in column {female_ex_col}")
             
             # Parse data rows
             for row in rows:
                 cells = row.find_all(['td', 'th'])
-                if len(cells) > max(male_qx_col, female_qx_col):
+                if len(cells) > max(male_qx_col, male_ex_col, female_qx_col, female_ex_col):
                     try:
                         age_text = cells[0].get_text().strip()
                         
                         # Clean and parse age
                         if age_text.isdigit():
                             age = int(age_text)
-                            if 0 <= age <= 110:  # Valid age range
-                                # Get the correct qx columns
-                                male_text = cells[male_qx_col].get_text().strip()
-                                female_text = cells[female_qx_col].get_text().strip()
+                            if 0 <= age <= 120:  # Valid age range (extended to 120)
+                                # Get the correct columns
+                                male_qx_text = cells[male_qx_col].get_text().strip()
+                                male_ex_text = cells[male_ex_col].get_text().strip()
+                                female_qx_text = cells[female_qx_col].get_text().strip()
+                                female_ex_text = cells[female_ex_col].get_text().strip()
                                 
-                                # Clean and parse mortality rates
-                                male_qx = float(male_text.replace(',', ''))
-                                female_qx = float(female_text.replace(',', ''))
+                                # Clean and parse values
+                                male_qx = float(male_qx_text.replace(',', ''))
+                                male_ex = float(male_ex_text.replace(',', ''))
+                                female_qx = float(female_qx_text.replace(',', ''))
+                                female_ex = float(female_ex_text.replace(',', ''))
                                 
                                 data.append({
                                     'age': age,
                                     'male_qx': male_qx,
-                                    'female_qx': female_qx
+                                    'male_ex': male_ex,
+                                    'female_qx': female_qx,
+                                    'female_ex': female_ex
                                 })
                     except (ValueError, IndexError):
                         continue  # Skip invalid rows
@@ -221,7 +228,7 @@ class DataAcquisition:
                 'columns': list(df.columns),
                 'age_range': f"{df['age'].min()}-{df['age'].max()}",
                 'data_hash': data_logger.get_data_hash(df.to_dict()),
-                'description': 'SSA Period Life Tables with age-specific mortality probabilities'
+                'description': 'SSA Period Life Tables with age-specific mortality probabilities and life expectancy'
             }
             
             metadata_file = f"{self.data_dir}/ssa_life_tables_metadata.json"
