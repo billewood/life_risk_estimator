@@ -539,14 +539,45 @@ export default function Home() {
                   <p className="text-gray-700">
                     <strong>Life Expectancy</strong> represents the average number of years a person of your age and sex is expected to live, based on current mortality rates.
                   </p>
+                  
                   <div className="bg-blue-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-blue-800 mb-2">Data Source</h4>
-                    <p className="text-sm text-blue-700">
-                      Social Security Administration Period Life Tables (2021) - Official U.S. mortality probabilities by age and sex
-                    </p>
-                    <p className="text-xs text-blue-600 mt-2">
-                      <strong>Methodology:</strong> Based on current age-specific death rates, this represents the expected remaining years of life for someone of your demographic profile.
-                    </p>
+                    <h4 className="font-semibold text-blue-800 mb-2">Data Sources</h4>
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-sm text-blue-700 font-medium">Social Security Administration Actuarial Life Tables</p>
+                        <p className="text-xs text-blue-600">Official US life tables used for Social Security calculations, providing age-specific mortality rates</p>
+                        <p className="text-xs text-blue-500 mt-1">URL: https://www.ssa.gov/oact/STATS/table4c6.html</p>
+                        <p className="text-xs text-blue-500">Coverage: Ages 0-119, by sex, US population | Quality: High</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-blue-700 font-medium">Human Mortality Database</p>
+                        <p className="text-xs text-blue-600">International mortality database for validation and comparison</p>
+                        <p className="text-xs text-blue-500 mt-1">URL: https://www.mortality.org/</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-green-800 mb-2">Calculation Method</h4>
+                    <p className="text-sm text-green-700 font-medium">Gompertz-Makeham Mortality Model</p>
+                    <p className="text-xs text-green-600 mb-2">Mathematical model for age-specific mortality rates using exponential growth</p>
+                    <p className="text-xs text-green-600 font-mono bg-green-100 p-2 rounded">μ(x) = a + b × exp(c × x)</p>
+                    <div className="mt-2 text-xs text-green-600">
+                      <p><strong>Parameters:</strong></p>
+                      <p>• a (baseline hazard): 0.0001 (male), 0.00005 (female)</p>
+                      <p>• b (exponential coefficient): 0.00001 (male), 0.000005 (female)</p>
+                      <p>• c (age acceleration): 0.1 (both sexes)</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-purple-800 mb-2">Key Assumptions</h4>
+                    <ul className="text-xs text-purple-600 space-y-1">
+                      <li>• Mortality follows Gompertz-Makeham pattern</li>
+                      <li>• Parameters are constant over time</li>
+                      <li>• No cohort effects</li>
+                      <li>• Model applies to general population</li>
+                    </ul>
                   </div>
                 </div>
               )}
@@ -556,14 +587,48 @@ export default function Home() {
                   <p className="text-gray-700">
                     <strong>1-Year Mortality Risk</strong> is the probability of dying within the next 12 months, adjusted for your specific risk factors.
                   </p>
+                  
                   <div className="bg-red-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-red-800 mb-2">Data Source</h4>
-                    <p className="text-sm text-red-700">
-                      Social Security Administration Life Tables + Risk Factor Adjustments from peer-reviewed literature
-                    </p>
-                    <p className="text-xs text-red-600 mt-2">
-                      <strong>Methodology:</strong> Baseline mortality from SSA tables, adjusted using relative risks from meta-analyses for smoking, blood pressure, BMI, fitness, and other factors.
-                    </p>
+                    <h4 className="font-semibold text-red-800 mb-2">Data Sources</h4>
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-sm text-red-700 font-medium">Social Security Administration Actuarial Life Tables</p>
+                        <p className="text-xs text-red-600">Official US life tables providing baseline mortality rates by age and sex</p>
+                        <p className="text-xs text-red-500 mt-1">URL: https://www.ssa.gov/oact/STATS/table4c6.html</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-red-700 font-medium">Global Burden of Disease Risk Factors</p>
+                        <p className="text-xs text-red-600">Comprehensive risk factor data and relative risks from GBD study</p>
+                        <p className="text-xs text-red-500 mt-1">URL: https://www.healthdata.org/gbd</p>
+                        <p className="text-xs text-red-500">Coverage: Global, by age, sex, risk factor, cause | Quality: High</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-green-800 mb-2">Calculation Method</h4>
+                    <p className="text-sm text-green-700 font-medium">Risk Factor Adjustment Model</p>
+                    <p className="text-xs text-green-600 mb-2">Multiplicative model adjusting baseline mortality by relative risks</p>
+                    <p className="text-xs text-green-600 font-mono bg-green-100 p-2 rounded">Adjusted Risk = Baseline Risk × RR₁ × RR₂ × ... × RRₙ</p>
+                    <div className="mt-2 text-xs text-green-600">
+                      <p><strong>Risk Factors Considered:</strong></p>
+                      <p>• Smoking status and years since quitting</p>
+                      <p>• Blood pressure (systolic/diastolic) and treatment status</p>
+                      <p>• Body Mass Index (BMI) category</p>
+                      <p>• Physical activity level</p>
+                      <p>• Diabetes status</p>
+                      <p>• Alcohol consumption pattern</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-purple-800 mb-2">Key Assumptions</h4>
+                    <ul className="text-xs text-purple-600 space-y-1">
+                      <li>• Risk factors act multiplicatively (independent effects)</li>
+                      <li>• Relative risks are constant across age groups</li>
+                      <li>• No interaction effects between risk factors</li>
+                      <li>• Risk factor effects are reversible</li>
+                    </ul>
                   </div>
                 </div>
               )}
@@ -573,17 +638,56 @@ export default function Home() {
                   <p className="text-gray-700">
                     <strong>10-Year CVD Risk</strong> estimates your probability of having a heart attack, stroke, or other cardiovascular event in the next 10 years.
                   </p>
+                  
                   <div className="bg-purple-50 p-4 rounded-lg">
                     <h4 className="font-semibold text-purple-800 mb-2">Data Source</h4>
-                    <p className="text-sm text-purple-700">
-                      Pooled Cohort Equations (PCE) - 2013 ACC/AHA Guidelines
+                    <p className="text-sm text-purple-700 font-medium">Pooled Cohort Equations (PCE) - 2013 ACC/AHA Guidelines</p>
+                    <p className="text-xs text-purple-600 mb-2">Gold standard cardiovascular risk calculator used by doctors nationwide</p>
+                    <p className="text-xs text-purple-500 mt-1">URL: https://www.ahajournals.org/doi/10.1161/01.cir.0000437741.48606.98</p>
+                    <p className="text-xs text-purple-500">Authors: Goff et al. (2013) | Journal: Circulation</p>
+                    <p className="text-xs text-purple-500">Coverage: Ages 40-79, White and Black/African American populations | Quality: High</p>
+                  </div>
+
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-green-800 mb-2">Calculation Method</h4>
+                    <p className="text-sm text-green-700 font-medium">Pooled Cohort Equations (PCE)</p>
+                    <p className="text-xs text-green-600 mb-2">Logistic regression model using 9 key risk factors</p>
+                    <div className="mt-2 text-xs text-green-600">
+                      <p><strong>Risk Factors Used:</strong></p>
+                      <p>• Age (40-79 years)</p>
+                      <p>• Sex (male/female)</p>
+                      <p>• Race (White/Black/African American)</p>
+                      <p>• Total cholesterol (mg/dL)</p>
+                      <p>• HDL cholesterol (mg/dL)</p>
+                      <p>• Systolic blood pressure (mmHg)</p>
+                      <p>• Blood pressure treatment status</p>
+                      <p>• Smoking status (current/former/never)</p>
+                      <p>• Diabetes status (yes/no)</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-blue-800 mb-2">Clinical Significance</h4>
+                    <p className="text-xs text-blue-600 mb-2">This is the same calculator used by doctors to determine:</p>
+                    <ul className="text-xs text-blue-600 space-y-1">
+                      <li>• Statin medication recommendations</li>
+                      <li>• Blood pressure medication guidelines</li>
+                      <li>• Aspirin therapy decisions</li>
+                      <li>• Lifestyle intervention priorities</li>
+                    </ul>
+                    <p className="text-xs text-blue-600 mt-2">
+                      <strong>Risk Categories:</strong> Low (&lt;5%), Borderline (5-7.4%), Intermediate (7.5-19.9%), High (≥20%)
                     </p>
-                    <p className="text-xs text-purple-600 mt-2">
-                      <strong>Methodology:</strong> Gold standard cardiovascular risk calculator using age, sex, race, cholesterol, blood pressure, diabetes, and smoking status. Validated for ages 40-79 in U.S. populations.
-                    </p>
-                    <p className="text-xs text-purple-600 mt-1">
-                      <strong>Note:</strong> This is the same calculator used by doctors to determine statin and blood pressure medication recommendations.
-                    </p>
+                  </div>
+
+                  <div className="bg-yellow-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-yellow-800 mb-2">Important Limitations</h4>
+                    <ul className="text-xs text-yellow-600 space-y-1">
+                      <li>• Only validated for ages 40-79</li>
+                      <li>• Limited to White and Black/African American populations</li>
+                      <li>• Does not include family history of CVD</li>
+                      <li>• May underestimate risk in certain populations</li>
+                    </ul>
                   </div>
                 </div>
               )}
