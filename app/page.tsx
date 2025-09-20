@@ -93,7 +93,7 @@ export default function Home() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Age *
+                    Age (required)
                   </label>
                   <input
                     type="number"
@@ -108,9 +108,20 @@ export default function Home() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Sex *
-                  </label>
+                  <div className="flex items-center mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Sex (required)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowInfoModal('sex')}
+                      className="ml-2 text-gray-400 hover:text-gray-600"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
                   <select
                     value={sex}
                     onChange={(e) => setSex(e.target.value as 'male' | 'female')}
@@ -645,6 +656,49 @@ export default function Home() {
                       <li>• No interaction effects between risk factors</li>
                       <li>• Risk factor effects are reversible</li>
                     </ul>
+                  </div>
+                </div>
+              )}
+
+              {showInfoModal === 'sex' && (
+                <div className="space-y-4">
+                  <p className="text-gray-700">
+                    <strong>Sex in Medical Research</strong> - Understanding current limitations and our commitment to inclusion.
+                  </p>
+                  
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-blue-800 mb-2">Current Data Limitations</h4>
+                    <p className="text-sm text-blue-700 mb-2">
+                      Unfortunately, the underlying medical research and data sources we use (Social Security Administration life tables, 
+                      Global Burden of Disease studies, and Pooled Cohort Equations) only provide data for male and female categories.
+                    </p>
+                    <p className="text-xs text-blue-600">
+                      This is a limitation of the current state of medical research, not a reflection of our values or beliefs about gender identity.
+                    </p>
+                  </div>
+
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-green-800 mb-2">Our Commitment</h4>
+                    <p className="text-sm text-green-700 mb-2">
+                      We are committed to providing accurate and inclusive health information for all people.
+                    </p>
+                    <ul className="text-xs text-green-600 space-y-1">
+                      <li>• Actively monitoring for research that includes diverse gender identities</li>
+                      <li>• Working to incorporate new data as it becomes available</li>
+                      <li>• Being transparent about current limitations</li>
+                      <li>• Advocating for more inclusive medical research practices</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-yellow-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-yellow-800 mb-2">What This Means for You</h4>
+                    <p className="text-xs text-yellow-700">
+                      If you identify as non-binary, transgender, or another gender identity not represented in the current options, 
+                      please select the option that most closely aligns with your biological sex assigned at birth for the purposes 
+                      of these medical calculations. We understand this may not fully represent your identity, and we apologize for 
+                      this limitation. We encourage you to discuss your results with a healthcare provider who understands and 
+                      respects your identity.
+                    </p>
                   </div>
                 </div>
               )}
