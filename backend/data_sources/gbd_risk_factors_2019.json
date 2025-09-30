@@ -1,0 +1,27 @@
+{
+  "smoking": {
+    "current_vs_never": 2.5,
+    "former_vs_never": 1.2,
+    "years_to_never_equivalent": 15
+  },
+  "blood_pressure": {
+    "per_20mmhg_sbp": 1.8,
+    "treatment_reduction": 0.7
+  },
+  "bmi": {
+    "per_5_units": 1.15,
+    "optimal_range": [
+      18.5,
+      24.9
+    ]
+  },
+  "fitness": {
+    "per_met": 0.85,
+    "sedentary_vs_active": 1.4
+  },
+  "alcohol": {
+    "moderate_vs_none": 0.9,
+    "heavy_vs_none": 1.3,
+    "binge_vs_none": 1.2
+  }
+}
