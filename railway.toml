@@ -1,5 +1,6 @@
 [build]
 builder = "nixpacks"
+buildCommand = "cd backend && pip install -r requirements.txt"
 
-[general]
-rootDirectory = "backend"
+[deploy]
+startCommand = "cd backend && python api/mortality_api.py"
