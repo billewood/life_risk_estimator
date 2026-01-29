@@ -8,15 +8,18 @@ RUN apt-get update && apt-get install -y \
     libsodium-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install R packages
-RUN R -e "install.packages(c('plumber', 'preventr'), repos='https://cran.rstudio.com/')"
+# Install R packages - with verbose output to debug
+RUN R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); install.packages('plumber', dependencies = TRUE); install.packages('preventr', dependencies = TRUE)"
+
+# Verify packages installed
+RUN R -e "library(plumber); library(preventr); cat('Packages loaded successfully\n')"
 
 # Copy API files
 WORKDIR /app
 COPY api.R .
 COPY run.R .
 
-# Expose port
+# Expose port (Railway uses PORT env var)
 EXPOSE 8000
 
 # Run the API
