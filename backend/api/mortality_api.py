@@ -55,11 +55,42 @@ def _calculate_life_expectancy(age: int, sex: str, adjusted_risk: float) -> floa
 
 def _format_causes_of_death(top_causes: List[Dict]) -> List[Dict]:
     """Format causes of death for frontend consumption"""
+    # Map internal cause names to human-readable names and descriptions
+    cause_info = {
+        'heart_disease': {
+            'name': 'Heart Disease',
+            'description': 'Cardiovascular conditions including heart attack and heart failure'
+        },
+        'cancer': {
+            'name': 'Cancer',
+            'description': 'Malignant neoplasms of various types'
+        },
+        'accidents': {
+            'name': 'Accidents',
+            'description': 'Unintentional injuries including falls, motor vehicle accidents'
+        },
+        'stroke': {
+            'name': 'Stroke',
+            'description': 'Cerebrovascular diseases including ischemic and hemorrhagic stroke'
+        },
+        'diabetes': {
+            'name': 'Diabetes',
+            'description': 'Diabetes mellitus and related complications'
+        },
+        'other': {
+            'name': 'Other Causes',
+            'description': 'Other medical conditions and causes'
+        }
+    }
+    
     formatted_causes = []
     for cause in top_causes:
+        cause_key = cause['cause']
+        info = cause_info.get(cause_key, {'name': cause_key.replace('_', ' ').title(), 'description': ''})
         formatted_causes.append({
-            'cause': cause['cause'],
-            'risk': cause['risk'],
+            'name': info['name'],
+            'description': info['description'],
+            'probability': cause['risk'],  # This is already the actual risk value
             'percentage': cause['percentage'],
             'riskLevel': _classify_cause_risk(cause['percentage'])
         })
