@@ -1,4 +1,4 @@
-# Life Risk Calculator - Full Stack Application
+# Life Risk Calculator 
 
 A comprehensive mortality and cardiovascular risk calculator built with Next.js frontend and Python backend, using only real data from authoritative sources.
 
