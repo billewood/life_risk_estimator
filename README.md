@@ -33,6 +33,8 @@ A comprehensive mortality and cardiovascular risk calculator built with Next.js 
 
 ### **Installation**
 
+**THIS IS NOT TESTED TO RUN ON OTHER SYSTEMS DONT EXPECT THIS TO WORK**
+
 1. **Clone and setup**:
 ```bash
 cd life-risk-app
