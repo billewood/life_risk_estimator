@@ -161,17 +161,17 @@ class RelativeRiskDatabase:
             
             "alcohol": {
                 "description": "Relative risks for alcohol consumption on all-cause mortality",
-                "source": "Di Castelnuovo A, Costanzo S, Bagnardi V, et al. Alcohol dosing and total mortality in men and women. Arch Intern Med 2006",
-                "notes": "J-shaped relationship with moderate consumption showing protective effect, heavy consumption increasing risk.",
+                "source": "GBD 2016 Alcohol Collaborators. Alcohol use and burden for 195 countries. Lancet 2018",
+                "notes": "Earlier J-curve findings (moderate drinking protective) now understood to be confounded. Mendelian randomization studies show no safe level of alcohol.",
                 "values": {
                     "moderate_vs_none": {
-                        "value": 0.9,
-                        "source": "Di Castelnuovo A, Costanzo S, Bagnardi V, et al. Alcohol dosing and total mortality in men and women: an updated meta-analysis of 34 prospective studies. Arch Intern Med 2006",
-                        "url": "https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/410298",
-                        "study_type": "meta-analysis",
-                        "sample_size": "1,015,835 adults",
-                        "confidence_interval": "0.85-0.95",
-                        "notes": "10% lower mortality risk with moderate alcohol consumption"
+                        "value": 1.0,
+                        "source": "GBD 2016 Alcohol Collaborators. Alcohol use and burden for 195 countries and territories, 1990-2016. Lancet 2018; Millwood IY et al. Conventional and genetic evidence on alcohol and vascular disease. Lancet 2019",
+                        "url": "https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(18)31310-2/fulltext",
+                        "study_type": "systematic review + Mendelian randomization",
+                        "sample_size": "Global population",
+                        "confidence_interval": "0.95-1.05",
+                        "notes": "No net mortality benefit from moderate alcohol - earlier J-curve findings likely due to sick-quitter bias and confounding"
                     },
                     "heavy_vs_none": {
                         "value": 1.3,
