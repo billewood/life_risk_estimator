@@ -59,6 +59,7 @@ class RealPCECalculator:
                 "ln_age": 17.114,
                 "ln_total_chol": 0.940,
                 "ln_hdl": -18.920,
+                "ln_age_x_ln_hdl": 4.475,  # Was missing - critical for correct calculation
                 "ln_sbp_treated": 29.291,
                 "ln_age_x_ln_sbp_treated": -6.432,
                 "ln_sbp_untreated": 27.820,
