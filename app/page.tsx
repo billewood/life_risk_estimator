@@ -16,6 +16,9 @@ export default function Home() {
   
   // BMI Calculator state
   const [showBmiCalculator, setShowBmiCalculator] = useState(false)
+  
+  // Environmental factors section state
+  const [showEnvironmentalFactors, setShowEnvironmentalFactors] = useState(false)
   const [bmiUnits, setBmiUnits] = useState<'imperial' | 'metric'>('imperial')
   const [heightFeet, setHeightFeet] = useState('')
   const [heightInches, setHeightInches] = useState('')
@@ -201,18 +204,19 @@ export default function Home() {
             </div>
 
             {/* Detailed Risk Factors */}
+            {/* Health Details Section */}
             <div className="border-t pt-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-700">Additional Risk Factors</h3>
-                  <p className="text-sm text-gray-500">These factors help provide more accurate risk calculations</p>
+                  <h3 className="text-lg font-semibold text-gray-700">Health Details</h3>
+                  <p className="text-sm text-gray-500">Medical and lifestyle factors for cardiovascular risk assessment</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowDetailedForm(!showDetailedForm)}
                   className="text-blue-600 hover:text-blue-800 font-medium"
                 >
-                  {showDetailedForm ? 'Hide Details' : 'Add More Details'}
+                  {showDetailedForm ? 'Hide Health Details' : 'Add Health Details'}
                 </button>
               </div>
               
@@ -568,6 +572,98 @@ export default function Home() {
                         </select>
                       </div>
                     </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Environmental & External Factors Section */}
+            <div className="border-t pt-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-700">Environmental & External Factors</h3>
+                  <p className="text-sm text-gray-500">Daily safety and environmental exposure risks</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowEnvironmentalFactors(!showEnvironmentalFactors)}
+                  className="text-green-600 hover:text-green-800 font-medium"
+                >
+                  {showEnvironmentalFactors ? 'Hide Factors' : 'Add Environmental Factors'}
+                </button>
+              </div>
+
+              {showEnvironmentalFactors && (
+                <div className="space-y-6">
+                  {/* Daily Safety */}
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-amber-800 mb-3 flex items-center">
+                      <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      Daily Safety
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Primary Transportation Mode
+                        </label>
+                        <select 
+                          value={riskFactors.transportation_mode || 'car'}
+                          onChange={(e) => setRiskFactors({...riskFactors, transportation_mode: e.target.value as any})}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                        >
+                          <option value="car">Car/Truck</option>
+                          <option value="motorcycle">Motorcycle</option>
+                          <option value="bicycle">Bicycle</option>
+                          <option value="public_transit">Public Transit (bus, train, subway)</option>
+                          <option value="walk">Walking</option>
+                          <option value="work_from_home">Work from home / Minimal travel</option>
+                        </select>
+                        <p className="text-xs text-gray-500 mt-1">Motorcycles have ~29x higher fatality rate per mile vs cars</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Occupation Risk Level
+                        </label>
+                        <select 
+                          value={riskFactors.occupation_risk || 'low'}
+                          onChange={(e) => setRiskFactors({...riskFactors, occupation_risk: e.target.value as any})}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                        >
+                          <option value="low">Low (office, education, IT, remote work)</option>
+                          <option value="moderate">Moderate (retail, healthcare, manufacturing)</option>
+                          <option value="high">High (construction, mining, agriculture)</option>
+                          <option value="very_high">Very High (logging, fishing, roofing)</option>
+                        </select>
+                        <p className="text-xs text-gray-500 mt-1">Based on Bureau of Labor Statistics occupational fatality data</p>
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={riskFactors.firearm_in_home || false}
+                            onChange={(e) => setRiskFactors({...riskFactors, firearm_in_home: e.target.checked})}
+                            className="mr-2"
+                          />
+                          <span className="text-sm text-gray-700">Firearm in household</span>
+                        </label>
+                        <p className="text-xs text-gray-500 mt-1 ml-5">Associated with ~1.9x higher risk of suicide/homicide mortality (Anglemyer et al. 2014)</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Coming Soon placeholder */}
+                  <div className="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-500 mb-2 flex items-center">
+                      <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                      </svg>
+                      Environmental Exposure (Coming Soon)
+                    </h4>
+                    <p className="text-sm text-gray-500">Air quality (PM2.5), climate/heat risk, and geographic hazards</p>
                   </div>
                 </div>
               )}
