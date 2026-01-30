@@ -185,47 +185,25 @@ export default function Home() {
               
               {showDetailedForm && (
                 <div className="space-y-6">
-                  {/* Tier 1: Critical Factors */}
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <h4 className="font-semibold text-red-800 mb-3 flex items-center">
-                      <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
-                      High Impact Factors
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* PREVENT Calculator Section */}
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                    <div className="flex items-start justify-between mb-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Smoking Status
-                        </label>
-                        <select 
-                          value={riskFactors.smoking_status || 'never'}
-                          onChange={(e) => setRiskFactors({...riskFactors, smoking_status: e.target.value as any})}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                        >
-                          <option value="never">Never smoked</option>
-                          <option value="former">Former smoker</option>
-                          <option value="current">Current smoker</option>
-                        </select>
-                        {riskFactors.smoking_status === 'former' && (
-                          <div className="mt-2">
-                            <label className="block text-sm font-medium text-gray-600 mb-1">
-                              Years since quitting
-                            </label>
-                            <input
-                              type="number"
-                              value={riskFactors.years_since_quit || ''}
-                              onChange={(e) => setRiskFactors({...riskFactors, years_since_quit: parseInt(e.target.value) || undefined})}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                              placeholder="5"
-                              min="0"
-                              max="50"
-                            />
-                          </div>
-                        )}
+                        <h4 className="font-semibold text-purple-800 flex items-center">
+                          <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                          </svg>
+                          AHA PREVENT Calculator Fields
+                        </h4>
+                        <p className="text-xs text-purple-600 mt-1">Complete these fields to get 10-year and 30-year cardiovascular risk from the official AHA equations</p>
                       </div>
-
+                    </div>
+                    
+                    {/* Row 1: Blood Pressure & BMI */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Blood Pressure
+                          Blood Pressure (mmHg)
                         </label>
                         <div className="grid grid-cols-2 gap-2">
                           <div>
@@ -235,8 +213,8 @@ export default function Home() {
                               onChange={(e) => setRiskFactors({...riskFactors, systolic_bp: parseInt(e.target.value) || undefined})}
                               className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                               placeholder="120"
-                              min="80"
-                              max="250"
+                              min="90"
+                              max="200"
                             />
                             <p className="text-xs text-gray-500 mt-1">Systolic (top)</p>
                           </div>
@@ -253,47 +231,164 @@ export default function Home() {
                             <p className="text-xs text-gray-500 mt-1">Diastolic (bottom)</p>
                           </div>
                         </div>
-                        <div className="mt-2">
-                          <label className="flex items-center">
-                            <input
-                              type="checkbox"
-                              checked={riskFactors.bp_treated || false}
-                              onChange={(e) => setRiskFactors({...riskFactors, bp_treated: e.target.checked})}
-                              className="mr-2"
-                            />
-                            <span className="text-sm text-gray-600">Taking blood pressure medication</span>
-                          </label>
-                        </div>
+                        <label className="flex items-center mt-2">
+                          <input
+                            type="checkbox"
+                            checked={riskFactors.bp_treated || false}
+                            onChange={(e) => setRiskFactors({...riskFactors, bp_treated: e.target.checked})}
+                            className="mr-2"
+                          />
+                          <span className="text-sm text-gray-600">On blood pressure medication</span>
+                        </label>
                       </div>
-                    </div>
-                  </div>
 
-                  {/* Tier 2: High Impact Factors */}
-                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                    <h4 className="font-semibold text-orange-800 mb-3 flex items-center">
-                      <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
-                      Important Lifestyle Factors
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Body Weight Category
+                          BMI (kg/m²)
                         </label>
-                        <select 
+                        <input
+                          type="number"
                           value={riskFactors.bmi || ''}
                           onChange={(e) => setRiskFactors({...riskFactors, bmi: parseFloat(e.target.value) || undefined})}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                        >
-                          <option value="">Select category</option>
-                          <option value="18.5">Underweight (BMI &lt; 18.5)</option>
-                          <option value="22">Normal weight (BMI 18.5-24.9)</option>
-                          <option value="27.5">Overweight (BMI 25-29.9)</option>
-                          <option value="32.5">Obese Class I (BMI 30-34.9)</option>
-                          <option value="37.5">Obese Class II (BMI 35-39.9)</option>
-                          <option value="42.5">Obese Class III (BMI &ge; 40)</option>
-                        </select>
+                          placeholder="25"
+                          min="15"
+                          max="50"
+                          step="0.1"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Normal: 18.5-24.9 | PREVENT range: 18.5-39.9</p>
                       </div>
+                    </div>
 
+                    {/* Row 2: Cholesterol */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Total Cholesterol (mg/dL)
+                        </label>
+                        <input
+                          type="number"
+                          value={riskFactors.total_cholesterol || ''}
+                          onChange={(e) => setRiskFactors({...riskFactors, total_cholesterol: parseInt(e.target.value) || undefined})}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          placeholder="200"
+                          min="130"
+                          max="320"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Desirable: &lt; 200 mg/dL</p>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          HDL Cholesterol (mg/dL)
+                        </label>
+                        <input
+                          type="number"
+                          value={riskFactors.hdl_cholesterol || ''}
+                          onChange={(e) => setRiskFactors({...riskFactors, hdl_cholesterol: parseInt(e.target.value) || undefined})}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          placeholder="50"
+                          min="20"
+                          max="100"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Good: &ge; 40 (men), &ge; 50 (women)</p>
+                      </div>
+                    </div>
+
+                    {/* Row 3: eGFR */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          eGFR (mL/min/1.73m²)
+                        </label>
+                        <input
+                          type="number"
+                          value={riskFactors.egfr || ''}
+                          onChange={(e) => setRiskFactors({...riskFactors, egfr: parseInt(e.target.value) || undefined})}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          placeholder="90"
+                          min="1"
+                          max="150"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Normal: &ge; 90 | Find on lab results or ask your doctor</p>
+                      </div>
+                    </div>
+
+                    {/* Row 4: Medical History - checkboxes/toggles */}
+                    <div className="bg-purple-100 rounded-lg p-3">
+                      <p className="text-sm font-medium text-purple-800 mb-2">Medical History</p>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Diabetes
+                          </label>
+                          <select 
+                            value={riskFactors.diabetes ? 'yes' : 'no'}
+                            onChange={(e) => setRiskFactors({...riskFactors, diabetes: e.target.value === 'yes'})}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white"
+                          >
+                            <option value="no">No</option>
+                            <option value="yes">Yes</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Current Smoker
+                          </label>
+                          <select 
+                            value={riskFactors.smoking_status || 'never'}
+                            onChange={(e) => setRiskFactors({...riskFactors, smoking_status: e.target.value as any})}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white"
+                          >
+                            <option value="never">Never smoked</option>
+                            <option value="former">Former smoker</option>
+                            <option value="current">Current smoker</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            On Statin
+                          </label>
+                          <select 
+                            value={riskFactors.statin ? 'yes' : 'no'}
+                            onChange={(e) => setRiskFactors({...riskFactors, statin: e.target.value === 'yes'})}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white"
+                          >
+                            <option value="no">No</option>
+                            <option value="yes">Yes</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {riskFactors.smoking_status === 'former' && (
+                      <div className="mt-3">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Years since quitting smoking
+                        </label>
+                        <input
+                          type="number"
+                          value={riskFactors.years_since_quit || ''}
+                          onChange={(e) => setRiskFactors({...riskFactors, years_since_quit: parseInt(e.target.value) || undefined})}
+                          className="w-full md:w-1/4 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          placeholder="5"
+                          min="0"
+                          max="50"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Other Lifestyle Factors */}
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-700 mb-3 flex items-center">
+                      <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                      Other Lifestyle Factors
+                    </h4>
+                    <p className="text-xs text-gray-500 mb-3">These affect overall mortality risk but are not used in the PREVENT cardiovascular calculator</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Physical Activity Level
@@ -311,20 +406,6 @@ export default function Home() {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Diabetes Status
-                        </label>
-                        <select 
-                          value={riskFactors.diabetes ? 'yes' : 'no'}
-                          onChange={(e) => setRiskFactors({...riskFactors, diabetes: e.target.value === 'yes'})}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                        >
-                          <option value="no">No diabetes</option>
-                          <option value="yes">Has diabetes (Type 1 or 2)</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
                           Alcohol Consumption
                         </label>
                         <select 
@@ -337,75 +418,6 @@ export default function Home() {
                           <option value="heavy">Heavy (3+ drinks/day)</option>
                           <option value="binge">Binge drinking pattern</option>
                         </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Tier 3: Optional Enhanced Factors */}
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h4 className="font-semibold text-blue-800 mb-3 flex items-center">
-                      <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                      Optional: Laboratory Values (for enhanced cardiovascular risk)
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Total Cholesterol (mg/dL)
-                        </label>
-                        <input
-                          type="number"
-                          value={riskFactors.total_cholesterol || ''}
-                          onChange={(e) => setRiskFactors({...riskFactors, total_cholesterol: parseInt(e.target.value) || undefined})}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                          placeholder="200"
-                          min="100"
-                          max="500"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">Normal: &lt; 200 mg/dL</p>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          HDL Cholesterol (mg/dL)
-                        </label>
-                        <input
-                          type="number"
-                          value={riskFactors.hdl_cholesterol || ''}
-                          onChange={(e) => setRiskFactors({...riskFactors, hdl_cholesterol: parseInt(e.target.value) || undefined})}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                          placeholder="50"
-                          min="20"
-                          max="150"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">Good: &ge; 40 mg/dL (men), &ge; 50 mg/dL (women)</p>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          eGFR (mL/min/1.73m²)
-                        </label>
-                        <input
-                          type="number"
-                          value={riskFactors.egfr || ''}
-                          onChange={(e) => setRiskFactors({...riskFactors, egfr: parseInt(e.target.value) || undefined})}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                          placeholder="90"
-                          min="1"
-                          max="150"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">Normal: &ge; 90 mL/min/1.73m²</p>
-                      </div>
-
-                      <div>
-                        <label className="flex items-center mt-4">
-                          <input
-                            type="checkbox"
-                            checked={riskFactors.statin || false}
-                            onChange={(e) => setRiskFactors({...riskFactors, statin: e.target.checked})}
-                            className="mr-2"
-                          />
-                          <span className="text-sm text-gray-700">Currently taking a statin medication</span>
-                        </label>
                       </div>
                     </div>
                   </div>
