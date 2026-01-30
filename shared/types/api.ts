@@ -21,6 +21,8 @@ export interface RiskFactors {
   diabetes?: boolean
   total_cholesterol?: number
   hdl_cholesterol?: number
+  egfr?: number
+  statin?: boolean
 }
 
 export interface RiskFactorAdjustment {
@@ -52,6 +54,29 @@ export interface CardiovascularRisk {
     table: string
   }
   error?: string
+}
+
+export interface PreventRisk {
+  available: boolean
+  risk_10yr_cvd?: number
+  risk_10yr_ascvd?: number
+  risk_10yr_hf?: number
+  risk_30yr_cvd?: number
+  risk_30yr_ascvd?: number
+  risk_30yr_hf?: number
+  model?: string
+  errors?: string[]
+  message?: string
+  missing_fields?: string[]
+  source?: {
+    name: string
+    authors: string
+    title: string
+    journal: string
+    year: number
+    doi: string
+    url: string
+  }
 }
 
 export interface CalculationMetadata {
@@ -90,6 +115,7 @@ export interface RiskCalculationResponse {
   riskFactors: Record<string, RiskFactorAdjustment>
   causesOfDeath: CauseOfDeath[]
   cardiovascularRisk: CardiovascularRisk
+  preventRisk?: PreventRisk
   metadata: CalculationMetadata
   data_sources: DataSources
 }

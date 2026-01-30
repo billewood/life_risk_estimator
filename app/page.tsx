@@ -379,6 +379,34 @@ export default function Home() {
                         />
                         <p className="text-xs text-gray-500 mt-1">Good: &ge; 40 mg/dL (men), &ge; 50 mg/dL (women)</p>
                       </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          eGFR (mL/min/1.73m²)
+                        </label>
+                        <input
+                          type="number"
+                          value={riskFactors.egfr || ''}
+                          onChange={(e) => setRiskFactors({...riskFactors, egfr: parseInt(e.target.value) || undefined})}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          placeholder="90"
+                          min="1"
+                          max="150"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Normal: &ge; 90 mL/min/1.73m²</p>
+                      </div>
+
+                      <div>
+                        <label className="flex items-center mt-4">
+                          <input
+                            type="checkbox"
+                            checked={riskFactors.statin || false}
+                            onChange={(e) => setRiskFactors({...riskFactors, statin: e.target.checked})}
+                            className="mr-2"
+                          />
+                          <span className="text-sm text-gray-700">Currently taking a statin medication</span>
+                        </label>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -475,6 +503,105 @@ export default function Home() {
 
             </div>
 
+            {/* AHA PREVENT Risk Calculator Results */}
+            {result.preventRisk && result.preventRisk.available && (
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="text-xl font-semibold">AHA PREVENT Calculator</h2>
+                    <p className="text-sm text-gray-500">Official AHA cardiovascular risk equations (Khan et al. 2024)</p>
+                  </div>
+                  <button
+                    onClick={() => setShowInfoModal('preventRisk')}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+                
+                {/* 10-Year Risks */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-medium text-gray-600 mb-3">10-Year Risk</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-4 text-center">
+                      <div className="text-2xl font-bold text-red-600">
+                        {result.preventRisk.risk_10yr_cvd?.toFixed(1) ?? 'N/A'}%
+                      </div>
+                      <div className="text-sm font-medium text-red-800">Total CVD</div>
+                      <div className="text-xs text-red-600 mt-1">Heart attack, stroke, or HF</div>
+                    </div>
+                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 text-center">
+                      <div className="text-2xl font-bold text-orange-600">
+                        {result.preventRisk.risk_10yr_ascvd?.toFixed(1) ?? 'N/A'}%
+                      </div>
+                      <div className="text-sm font-medium text-orange-800">ASCVD</div>
+                      <div className="text-xs text-orange-600 mt-1">Heart attack or stroke</div>
+                    </div>
+                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 text-center">
+                      <div className="text-2xl font-bold text-purple-600">
+                        {result.preventRisk.risk_10yr_hf?.toFixed(1) ?? 'N/A'}%
+                      </div>
+                      <div className="text-sm font-medium text-purple-800">Heart Failure</div>
+                      <div className="text-xs text-purple-600 mt-1">New-onset HF</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 30-Year Risks (if available) */}
+                {(result.preventRisk.risk_30yr_cvd !== null && result.preventRisk.risk_30yr_cvd !== undefined) && (
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-600 mb-3">30-Year Risk (ages 30-59)</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-gray-50 rounded-lg p-4 text-center">
+                        <div className="text-xl font-bold text-gray-700">
+                          {result.preventRisk.risk_30yr_cvd?.toFixed(1) ?? 'N/A'}%
+                        </div>
+                        <div className="text-sm text-gray-600">Total CVD</div>
+                      </div>
+                      <div className="bg-gray-50 rounded-lg p-4 text-center">
+                        <div className="text-xl font-bold text-gray-700">
+                          {result.preventRisk.risk_30yr_ascvd?.toFixed(1) ?? 'N/A'}%
+                        </div>
+                        <div className="text-sm text-gray-600">ASCVD</div>
+                      </div>
+                      <div className="bg-gray-50 rounded-lg p-4 text-center">
+                        <div className="text-xl font-bold text-gray-700">
+                          {result.preventRisk.risk_30yr_hf?.toFixed(1) ?? 'N/A'}%
+                        </div>
+                        <div className="text-sm text-gray-600">Heart Failure</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Validation warnings */}
+                {result.preventRisk.errors && result.preventRisk.errors.length > 0 && (
+                  <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Note:</strong> {result.preventRisk.errors.join('. ')}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* PREVENT not available message */}
+            {result.preventRisk && !result.preventRisk.available && (
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-xl font-semibold mb-2">AHA PREVENT Calculator</h2>
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <p className="text-gray-600">{result.preventRisk.message}</p>
+                  {result.preventRisk.missing_fields && result.preventRisk.missing_fields.length > 0 && (
+                    <p className="text-sm text-gray-500 mt-2">
+                      Missing: {result.preventRisk.missing_fields.join(', ')}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Risk Factors */}
             {Object.keys(result.riskFactors).length > 0 && (
               <div className="bg-white rounded-lg shadow-md p-6">
@@ -521,21 +648,30 @@ export default function Home() {
             {/* Data Sources */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold mb-4">Data Sources</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-3 bg-blue-50 rounded-lg">
                   <h3 className="font-semibold text-blue-800">Baseline Mortality</h3>
                   <p className="text-sm text-blue-600">{result.data_sources.baseline_mortality.source}</p>
-                  <a href={result.data_sources.baseline_mortality.url} className="text-xs text-blue-500 hover:underline">
+                  <a href={result.data_sources.baseline_mortality.url} className="text-xs text-blue-500 hover:underline" target="_blank" rel="noopener noreferrer">
                     View Source
                   </a>
                 </div>
                 <div className="p-3 bg-green-50 rounded-lg">
-                  <h3 className="font-semibold text-green-800">Cardiovascular Risk</h3>
+                  <h3 className="font-semibold text-green-800">CVD Risk (PCE)</h3>
                   <p className="text-sm text-green-600">{result.cardiovascularRisk.source.paper}</p>
                   <p className="text-xs text-green-500">
                     {result.cardiovascularRisk.source.authors} ({result.cardiovascularRisk.source.year})
                   </p>
                 </div>
+                {result.preventRisk?.available && result.preventRisk?.source && (
+                  <div className="p-3 bg-purple-50 rounded-lg">
+                    <h3 className="font-semibold text-purple-800">PREVENT (AHA)</h3>
+                    <p className="text-sm text-purple-600">{result.preventRisk.source.name}</p>
+                    <a href={result.preventRisk.source.url} className="text-xs text-purple-500 hover:underline" target="_blank" rel="noopener noreferrer">
+                      Khan et al. {result.preventRisk.source.year}
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -550,6 +686,7 @@ export default function Home() {
                   {showInfoModal === 'lifeExpectancy' && 'Life Expectancy'}
                   {showInfoModal === 'oneYearMortality' && '1-Year Mortality Risk'}
                   {showInfoModal === 'cardiovascularRisk' && '10-Year CVD Risk'}
+                  {showInfoModal === 'preventRisk' && 'AHA PREVENT Calculator'}
                 </h3>
                 <button
                   onClick={() => setShowInfoModal(null)}
@@ -823,6 +960,78 @@ export default function Home() {
                         actual cardiovascular risk patterns.
                       </p>
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {showInfoModal === 'preventRisk' && (
+                <div className="space-y-4">
+                  <p className="text-gray-700">
+                    <strong>AHA PREVENT Equations</strong> are the newest cardiovascular risk prediction tool from the American Heart Association, published in 2024.
+                  </p>
+                  
+                  <div className="bg-red-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-red-800 mb-2">Key Improvements Over PCE</h4>
+                    <ul className="text-xs text-red-600 space-y-1">
+                      <li>• Includes <strong>kidney function (eGFR)</strong> as a risk factor</li>
+                      <li>• Predicts <strong>heart failure</strong> in addition to ASCVD</li>
+                      <li>• Validated for ages <strong>30-79</strong> (vs 40-79 for PCE)</li>
+                      <li>• Provides <strong>30-year risk</strong> for younger adults</li>
+                      <li>• Race-free model - does not use race as a variable</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-purple-800 mb-2">Data Source</h4>
+                    <p className="text-sm text-purple-700 font-medium">AHA PREVENT Equations - Khan et al. 2024</p>
+                    <p className="text-xs text-purple-600 mb-2">Official AHA cardiovascular risk equations</p>
+                    <p className="text-xs text-purple-500">Journal: Circulation, Volume 149(6), Pages 430-449</p>
+                    <p className="text-xs text-purple-500">DOI: 10.1161/CIRCULATIONAHA.123.067626</p>
+                    <p className="text-xs text-purple-500 mt-1">
+                      <a href="https://professional.heart.org/en/guidelines-and-statements/about-prevent-calculator" 
+                         className="underline hover:text-purple-700" target="_blank" rel="noopener noreferrer">
+                        Official AHA PREVENT Calculator
+                      </a>
+                    </p>
+                  </div>
+
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-green-800 mb-2">Risk Factors Used</h4>
+                    <div className="grid grid-cols-2 gap-2 text-xs text-green-600">
+                      <div>
+                        <p>• Age (30-79 years)</p>
+                        <p>• Sex</p>
+                        <p>• Total cholesterol</p>
+                        <p>• HDL cholesterol</p>
+                        <p>• Systolic blood pressure</p>
+                      </div>
+                      <div>
+                        <p>• BP treatment status</p>
+                        <p>• Diabetes status</p>
+                        <p>• Smoking status</p>
+                        <p>• <strong>eGFR</strong> (kidney function)</p>
+                        <p>• Statin use</p>
+                        <p>• BMI (for heart failure)</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-blue-800 mb-2">What It Predicts</h4>
+                    <ul className="text-xs text-blue-600 space-y-1">
+                      <li>• <strong>Total CVD:</strong> Heart attack, stroke, or heart failure</li>
+                      <li>• <strong>ASCVD:</strong> Heart attack or stroke only</li>
+                      <li>• <strong>Heart Failure:</strong> New-onset heart failure</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-yellow-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-yellow-800 mb-2">Implementation Note</h4>
+                    <p className="text-xs text-yellow-700">
+                      This implementation uses the official AHA PREVENT R package equations, 
+                      faithfully ported to Python. The coefficients and formulas are unchanged 
+                      from the original publication.
+                    </p>
                   </div>
                 </div>
               )}
