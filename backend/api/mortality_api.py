@@ -16,6 +16,7 @@ from calculators.mortality_calculator import MortalityCalculator
 from data_sources.relative_risks import RelativeRiskDatabase
 from data_sources.data_manager import DataManager
 from api.risk_factor_schema import risk_factor_schema
+from models.prevent_equations import prevent_base, get_prevent_source_info
 
 app = Flask(__name__)
 
@@ -106,6 +107,97 @@ def _classify_cause_risk(percentage: float) -> str:
         return 'Moderate'
     else:
         return 'Low'
+
+
+def _calculate_prevent_risk(age: int, sex: str, risk_factors: dict) -> dict:
+    """
+    Calculate AHA PREVENT cardiovascular risk from user's risk factors.
+    Maps our risk factor format to PREVENT parameters.
+    """
+    try:
+        # Map sex to PREVENT format (0=male, 1=female)
+        sex_code = 1 if sex.lower() == 'female' else 0
+        
+        # Extract values from risk factors with defaults
+        tc = risk_factors.get('total_cholesterol')
+        hdl = risk_factors.get('hdl_cholesterol')
+        sbp = risk_factors.get('systolic_bp')
+        dm = 1 if risk_factors.get('diabetes', False) else 0
+        smoking = 1 if risk_factors.get('smoking_status') == 'current' else 0
+        bmi = risk_factors.get('bmi')
+        egfr = risk_factors.get('egfr')  # May need to calculate from creatinine
+        bptreat = 1 if risk_factors.get('bp_treated', False) else 0
+        statin = 1 if risk_factors.get('statin', False) else 0
+        
+        # Check if we have enough data for PREVENT
+        required_for_cvd = [tc, hdl, sbp, egfr]
+        required_for_hf = [sbp, bmi, egfr]
+        
+        has_cvd_data = all(v is not None for v in required_for_cvd)
+        has_hf_data = all(v is not None for v in required_for_hf)
+        
+        if not has_cvd_data and not has_hf_data:
+            return {
+                'available': False,
+                'message': 'Insufficient data for PREVENT calculation. Need: cholesterol, blood pressure, eGFR, and BMI.',
+                'missing_fields': [
+                    f for f, v in [
+                        ('total_cholesterol', tc),
+                        ('hdl_cholesterol', hdl),
+                        ('systolic_bp', sbp),
+                        ('egfr', egfr),
+                        ('bmi', bmi)
+                    ] if v is None
+                ]
+            }
+        
+        # Default missing values for calculation
+        if egfr is None:
+            egfr = 90  # Default normal eGFR
+        if bmi is None:
+            bmi = 25  # Default normal BMI
+        if tc is None:
+            tc = 200  # Default
+        if hdl is None:
+            hdl = 50  # Default
+        if sbp is None:
+            sbp = 120  # Default
+        
+        # Calculate PREVENT risk
+        result = prevent_base(
+            sex=sex_code,
+            age=age,
+            tc=tc,
+            hdl=hdl,
+            sbp=sbp,
+            dm=dm,
+            smoking=smoking,
+            bmi=bmi,
+            egfr=egfr,
+            bptreat=bptreat,
+            statin=statin
+        )
+        
+        return {
+            'available': True,
+            'risk_10yr_cvd': result.risk_10yr_cvd,
+            'risk_10yr_ascvd': result.risk_10yr_ascvd,
+            'risk_10yr_hf': result.risk_10yr_hf,
+            'risk_30yr_cvd': result.risk_30yr_cvd,
+            'risk_30yr_ascvd': result.risk_30yr_ascvd,
+            'risk_30yr_hf': result.risk_30yr_hf,
+            'model': result.model,
+            'errors': result.errors,
+            'source': get_prevent_source_info()
+        }
+        
+    except Exception as e:
+        return {
+            'available': False,
+            'error': str(e),
+            'message': 'PREVENT calculation failed'
+        }
+
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
@@ -245,6 +337,9 @@ def calculate_risk():
                     'url': 'Unknown'
                 }
         
+        # Calculate AHA PREVENT risk
+        prevent_result = _calculate_prevent_risk(age, sex, risk_factors)
+        
         # Prepare response in the format expected by frontend
         response = {
             'success': True,
@@ -261,6 +356,7 @@ def calculate_risk():
                 'source': pce_result.get('source', {}),
                 'error': pce_result.get('error', None)
             },
+            'preventRisk': prevent_result,
             'metadata': {
                 'baseline_risk': mortality_result['baseline_risk'],
                 'risk_level': mortality_result['risk_level'],
@@ -283,6 +379,11 @@ def calculate_risk():
                     'source': 'Pooled Cohort Equations (PCE) - 2013 ACC/AHA Guidelines',
                     'url': 'https://www.ahajournals.org/doi/10.1161/01.cir.0000437741.48606.98',
                     'description': 'U.S. population-specific 10-year ASCVD risk prediction'
+                },
+                'prevent': {
+                    'source': 'AHA PREVENT Equations - Khan et al. 2024',
+                    'url': 'https://doi.org/10.1161/CIRCULATIONAHA.123.067626',
+                    'description': '10-year and 30-year CVD, ASCVD, and heart failure risk prediction'
                 }
             }
         }
