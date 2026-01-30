@@ -13,6 +13,39 @@ export default function Home() {
   const [showDetailedForm, setShowDetailedForm] = useState(false)
   const [riskFactors, setRiskFactors] = useState<RiskFactors>({})
   const [showInfoModal, setShowInfoModal] = useState<string | null>(null)
+  
+  // BMI Calculator state
+  const [showBmiCalculator, setShowBmiCalculator] = useState(false)
+  const [bmiUnits, setBmiUnits] = useState<'imperial' | 'metric'>('imperial')
+  const [heightFeet, setHeightFeet] = useState('')
+  const [heightInches, setHeightInches] = useState('')
+  const [heightCm, setHeightCm] = useState('')
+  const [weightLbs, setWeightLbs] = useState('')
+  const [weightKg, setWeightKg] = useState('')
+
+  const calculateBmi = () => {
+    let bmi: number | null = null
+    
+    if (bmiUnits === 'imperial') {
+      const totalInches = (parseFloat(heightFeet) || 0) * 12 + (parseFloat(heightInches) || 0)
+      const lbs = parseFloat(weightLbs) || 0
+      if (totalInches > 0 && lbs > 0) {
+        bmi = (lbs * 703) / (totalInches * totalInches)
+      }
+    } else {
+      const cm = parseFloat(heightCm) || 0
+      const kg = parseFloat(weightKg) || 0
+      if (cm > 0 && kg > 0) {
+        const meters = cm / 100
+        bmi = kg / (meters * meters)
+      }
+    }
+    
+    if (bmi !== null && bmi >= 10 && bmi <= 60) {
+      setRiskFactors({...riskFactors, bmi: Math.round(bmi * 10) / 10})
+      setShowBmiCalculator(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -243,9 +276,18 @@ export default function Home() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          BMI (kg/m²)
-                        </label>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="block text-sm font-medium text-gray-700">
+                            BMI (kg/m²)
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => setShowBmiCalculator(!showBmiCalculator)}
+                            className="text-xs text-purple-600 hover:text-purple-800 font-medium"
+                          >
+                            {showBmiCalculator ? 'Hide calculator' : "Don't know? Calculate"}
+                          </button>
+                        </div>
                         <input
                           type="number"
                           value={riskFactors.bmi || ''}
@@ -257,6 +299,112 @@ export default function Home() {
                           step="0.1"
                         />
                         <p className="text-xs text-gray-500 mt-1">Normal: 18.5-24.9 | PREVENT range: 18.5-39.9</p>
+                        
+                        {/* BMI Calculator */}
+                        {showBmiCalculator && (
+                          <div className="mt-3 p-3 bg-white border border-purple-200 rounded-lg">
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="text-sm font-medium text-gray-700">BMI Calculator</span>
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => setBmiUnits('imperial')}
+                                  className={`px-2 py-1 text-xs rounded ${bmiUnits === 'imperial' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600'}`}
+                                >
+                                  ft/lbs
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setBmiUnits('metric')}
+                                  className={`px-2 py-1 text-xs rounded ${bmiUnits === 'metric' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600'}`}
+                                >
+                                  cm/kg
+                                </button>
+                              </div>
+                            </div>
+                            
+                            {bmiUnits === 'imperial' ? (
+                              <div className="space-y-2">
+                                <div>
+                                  <label className="block text-xs text-gray-600 mb-1">Height</label>
+                                  <div className="flex gap-2">
+                                    <div className="flex-1">
+                                      <input
+                                        type="number"
+                                        value={heightFeet}
+                                        onChange={(e) => setHeightFeet(e.target.value)}
+                                        className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
+                                        placeholder="5"
+                                        min="3"
+                                        max="8"
+                                      />
+                                      <span className="text-xs text-gray-500">feet</span>
+                                    </div>
+                                    <div className="flex-1">
+                                      <input
+                                        type="number"
+                                        value={heightInches}
+                                        onChange={(e) => setHeightInches(e.target.value)}
+                                        className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
+                                        placeholder="10"
+                                        min="0"
+                                        max="11"
+                                      />
+                                      <span className="text-xs text-gray-500">inches</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="block text-xs text-gray-600 mb-1">Weight (lbs)</label>
+                                  <input
+                                    type="number"
+                                    value={weightLbs}
+                                    onChange={(e) => setWeightLbs(e.target.value)}
+                                    className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
+                                    placeholder="170"
+                                    min="50"
+                                    max="500"
+                                  />
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="space-y-2">
+                                <div>
+                                  <label className="block text-xs text-gray-600 mb-1">Height (cm)</label>
+                                  <input
+                                    type="number"
+                                    value={heightCm}
+                                    onChange={(e) => setHeightCm(e.target.value)}
+                                    className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
+                                    placeholder="175"
+                                    min="100"
+                                    max="250"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-xs text-gray-600 mb-1">Weight (kg)</label>
+                                  <input
+                                    type="number"
+                                    value={weightKg}
+                                    onChange={(e) => setWeightKg(e.target.value)}
+                                    className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm"
+                                    placeholder="70"
+                                    min="20"
+                                    max="250"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                            
+                            <button
+                              type="button"
+                              onClick={calculateBmi}
+                              className="mt-3 w-full bg-purple-600 text-white py-1.5 px-3 rounded text-sm hover:bg-purple-700"
+                            >
+                              Calculate BMI
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
 
