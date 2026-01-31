@@ -53,7 +53,7 @@ const CustomTooltip = ({ active, payload, clickable }: any) => {
   return null;
 };
 
-const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, value }: any) => {
   if (percent < 0.05) return null; // Don't show labels for slices < 5%
   
   const RADIAN = Math.PI / 180;
@@ -71,7 +71,7 @@ const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent
       className="text-xs font-medium"
       style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}
     >
-      {`${(percent * 100).toFixed(0)}%`}
+      {`${value.toFixed(1)}%`}
     </text>
   );
 };
