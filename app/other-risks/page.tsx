@@ -19,6 +19,15 @@ const externalCausesBreakdown = [
 export default function OtherRisksPage() {
   const router = useRouter();
   const [environmentalData, setEnvironmentalData] = useState<any>(null);
+  const [showPersonalization, setShowPersonalization] = useState(false);
+  
+  // Personalization inputs (under construction)
+  const [livesAlone, setLivesAlone] = useState(false);
+  const [hasPool, setHasPool] = useState(false);
+  const [usesLadders, setUsesLadders] = useState(false);
+  const [ridesMotorcycle, setRidesMotorcycle] = useState(false);
+  const [usesFirearms, setUsesFirearms] = useState(false);
+  const [takesOpioids, setTakesOpioids] = useState(false);
 
   useEffect(() => {
     const storedData = sessionStorage.getItem('riskCalculationResult');
@@ -29,6 +38,11 @@ export default function OtherRisksPage() {
       }
     }
   }, []);
+
+  const handleCauseClick = (item: { name: string; value: number; id?: string }) => {
+    const id = item.id || item.name.toLowerCase().replace(/\s+/g, '-');
+    router.push(`/risks/${id}`);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50">
@@ -74,10 +88,12 @@ export default function OtherRisksPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <RiskPieChart
               title="External Causes of Death"
-              subtitle="Percentage of accidental/external deaths"
+              subtitle="Click a slice to learn more"
               data={externalCausesBreakdown}
               height={320}
               colors={['#dc2626', '#ea580c', '#d97706', '#ca8a04', '#65a30d', '#16a34a', '#0891b2', '#6366f1']}
+              clickable={true}
+              onSliceClick={handleCauseClick}
             />
 
             <div className="space-y-2">
@@ -95,6 +111,117 @@ export default function OtherRisksPage() {
           <p className="text-xs text-gray-500 mt-4 text-center">
             Data source: CDC National Vital Statistics, 2022. Percentages are of total unintentional injury deaths.
           </p>
+        </div>
+
+        {/* Personalize Your Risk - Under Construction */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <button
+            onClick={() => setShowPersonalization(!showPersonalization)}
+            className="w-full flex items-center justify-between"
+          >
+            <div className="flex items-center">
+              <div className="bg-yellow-100 rounded-full p-2 mr-3">
+                <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                </svg>
+              </div>
+              <div className="text-left">
+                <h2 className="text-lg font-semibold text-gray-900">Personalize Your External Risk</h2>
+                <p className="text-sm text-gray-500">Enter your lifestyle factors for tailored assessment</p>
+              </div>
+            </div>
+            <div className="flex items-center">
+              <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full mr-2">Under Construction</span>
+              <svg 
+                className={`w-5 h-5 text-gray-400 transform transition-transform ${showPersonalization ? 'rotate-180' : ''}`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </button>
+
+          {showPersonalization && (
+            <div className="mt-6 space-y-4 border-t pt-6">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                <p className="text-sm text-yellow-800">
+                  <strong>Coming Soon:</strong> We're working on personalized risk calculations based on your lifestyle factors. 
+                  For now, you can see what factors we'll be considering.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <label className="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                  <input
+                    type="checkbox"
+                    checked={livesAlone}
+                    onChange={(e) => setLivesAlone(e.target.checked)}
+                    className="mr-3"
+                  />
+                  <span className="text-sm text-gray-700">Lives Alone</span>
+                </label>
+                
+                <label className="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                  <input
+                    type="checkbox"
+                    checked={hasPool}
+                    onChange={(e) => setHasPool(e.target.checked)}
+                    className="mr-3"
+                  />
+                  <span className="text-sm text-gray-700">Has Swimming Pool</span>
+                </label>
+                
+                <label className="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                  <input
+                    type="checkbox"
+                    checked={usesLadders}
+                    onChange={(e) => setUsesLadders(e.target.checked)}
+                    className="mr-3"
+                  />
+                  <span className="text-sm text-gray-700">Uses Ladders Regularly</span>
+                </label>
+                
+                <label className="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                  <input
+                    type="checkbox"
+                    checked={ridesMotorcycle}
+                    onChange={(e) => setRidesMotorcycle(e.target.checked)}
+                    className="mr-3"
+                  />
+                  <span className="text-sm text-gray-700">Rides Motorcycle</span>
+                </label>
+                
+                <label className="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                  <input
+                    type="checkbox"
+                    checked={usesFirearms}
+                    onChange={(e) => setUsesFirearms(e.target.checked)}
+                    className="mr-3"
+                  />
+                  <span className="text-sm text-gray-700">Owns/Uses Firearms</span>
+                </label>
+                
+                <label className="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                  <input
+                    type="checkbox"
+                    checked={takesOpioids}
+                    onChange={(e) => setTakesOpioids(e.target.checked)}
+                    className="mr-3"
+                  />
+                  <span className="text-sm text-gray-700">Takes Prescription Opioids</span>
+                </label>
+              </div>
+
+              <button
+                disabled
+                className="w-full bg-gray-300 text-gray-500 py-3 px-4 rounded-lg font-medium cursor-not-allowed mt-4"
+              >
+                Personalized Calculation Coming Soon
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Your Environmental Risk Profile */}
