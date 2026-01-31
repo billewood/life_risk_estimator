@@ -235,27 +235,33 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Detailed Risk Factors */}
+            {/* Calculate Button - Primary Action */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 font-semibold text-lg"
+            >
+              {loading ? 'Calculating Risk...' : 'Calculate Risk'}
+            </button>
+
+            {/* Optional Sections - Smaller */}
             {/* Health Details Section */}
-            <div className="border-t pt-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-700">Health Details</h3>
-                  <p className="text-sm text-gray-500">Medical and lifestyle factors for cardiovascular risk assessment</p>
-                </div>
+            <div className="border-t pt-4 mt-4">
+              <div className="flex items-center justify-center">
                 <button
                   type="button"
                   onClick={() => setShowDetailedForm(!showDetailedForm)}
-                  className="text-blue-600 hover:text-blue-800 font-medium"
+                  className="text-blue-600 hover:text-blue-800 text-sm text-center"
                 >
-                  {showDetailedForm ? 'Hide Health Details' : 'Add Health Details'}
+                  <span className="font-medium">{showDetailedForm ? '− Hide Health Details' : '+ Add Health Details'}</span>
+                  <span className="block text-xs text-gray-500">(optional)</span>
                 </button>
               </div>
               
               {showDetailedForm && (
-                <div className="space-y-6">
+                <div className="space-y-4 mt-3">
                   {/* PREVENT Calculator Section */}
-                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 text-sm">
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <h4 className="font-semibold text-purple-800 flex items-center">
@@ -610,25 +616,22 @@ export default function Home() {
             </div>
 
             {/* Environmental & External Factors Section */}
-            <div className="border-t pt-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-700">Environmental & External Factors</h3>
-                  <p className="text-sm text-gray-500">Daily safety and environmental exposure risks</p>
-                </div>
+            <div className="border-t pt-4">
+              <div className="flex items-center justify-center">
                 <button
                   type="button"
                   onClick={() => setShowEnvironmentalFactors(!showEnvironmentalFactors)}
-                  className="text-green-600 hover:text-green-800 font-medium"
+                  className="text-green-600 hover:text-green-800 text-sm text-center"
                 >
-                  {showEnvironmentalFactors ? 'Hide Factors' : 'Add Environmental Factors'}
+                  <span className="font-medium">{showEnvironmentalFactors ? '− Hide Environmental Factors' : '+ Add Environmental Factors'}</span>
+                  <span className="block text-xs text-gray-500">(optional)</span>
                 </button>
               </div>
 
               {showEnvironmentalFactors && (
-                <div className="space-y-6">
+                <div className="space-y-4 mt-3">
                   {/* Daily Safety */}
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm">
                     <h4 className="font-semibold text-amber-800 mb-3 flex items-center">
                       <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -700,14 +703,6 @@ export default function Home() {
                 </div>
               )}
             </div>
-            
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 font-semibold"
-            >
-              {loading ? 'Calculating Risk...' : 'Calculate Risk'}
-            </button>
           </form>
         </div>
 
