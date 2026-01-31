@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { RiskCalculationResponse, RiskFactors, CardiovascularRisk } from '../shared/types/api'
+import RiskPieChart from './components/RiskPieChart'
 
 export default function Home() {
   const [age, setAge] = useState('')
@@ -884,20 +885,37 @@ export default function Home() {
             {/* Causes of Death */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold mb-4">Most Likely Causes of Death (Next Year)</h2>
-              <div className="space-y-3">
-                {result.causesOfDeath.slice(0, 5).map((cause: any, index: number) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <div className="font-medium">{cause.name}</div>
-                      <div className="text-sm text-gray-600">{cause.description}</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-semibold text-red-600">
-                        {(cause.probability * 100).toFixed(2)}%
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Pie Chart */}
+                <div>
+                  <RiskPieChart
+                    title="Risk Distribution"
+                    subtitle="Relative probability by cause"
+                    data={result.causesOfDeath.slice(0, 8).map((cause: any) => ({
+                      name: cause.name,
+                      value: parseFloat((cause.probability * 100).toFixed(2))
+                    }))}
+                    height={280}
+                  />
+                </div>
+
+                {/* List View */}
+                <div className="space-y-3">
+                  {result.causesOfDeath.slice(0, 5).map((cause: any, index: number) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <div className="font-medium">{cause.name}</div>
+                        <div className="text-sm text-gray-600">{cause.description}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-semibold text-red-600">
+                          {(cause.probability * 100).toFixed(2)}%
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
 
