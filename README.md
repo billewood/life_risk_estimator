@@ -193,22 +193,23 @@ Content-Type: application/json
 
 ## 🚀 **Deployment**
 
+### **Production**
+- **Live Site**: https://billewood.com
+- **Frontend**: Vercel (auto-deploys from `main` branch)
+- **Backend**: Render (https://life-risk-estimator.onrender.com)
+
 ### **Development**
 ```bash
-npm run dev:fullstack  # Starts both servers
+npm run dev:fullstack  # Starts both frontend and backend locally
 ```
 
-### **Production**
-```bash
-npm run build
-npm run start
-# Python backend should be deployed separately or integrated
-```
+### **Deployment Workflow**
+1. Create feature branch: `git checkout -b feature/your-feature`
+2. Make changes, commit, push
+3. Create Pull Request on GitHub → Vercel creates preview URL
+4. Test preview, then merge to `main` → Auto-deploys to production
 
-### **Docker (Coming Soon)**
-```bash
-docker-compose up  # Full-stack deployment
-```
+See [DEPLOYMENT_STRATEGY.md](DEPLOYMENT_STRATEGY.md) for full details.
 
 ## 📊 **Performance & Compliance**
 
