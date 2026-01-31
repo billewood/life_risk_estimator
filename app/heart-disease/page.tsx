@@ -5,10 +5,24 @@ import { useState, useEffect } from 'react';
 
 export default function HeartDiseasePage() {
   const router = useRouter();
-  const [showPreventCalculator, setShowPreventCalculator] = useState(false);
+  const [showPreventForm, setShowPreventForm] = useState(false);
+  const [loading, setLoading] = useState(false);
   
   // PREVENT calculator state (will be populated from stored data)
   const [preventData, setPreventData] = useState<any>(null);
+  
+  // Form inputs for PREVENT calculator
+  const [age, setAge] = useState('');
+  const [sex, setSex] = useState<'male' | 'female'>('male');
+  const [systolicBp, setSystolicBp] = useState('');
+  const [bpTreated, setBpTreated] = useState(false);
+  const [totalCholesterol, setTotalCholesterol] = useState('');
+  const [hdlCholesterol, setHdlCholesterol] = useState('');
+  const [egfr, setEgfr] = useState('');
+  const [diabetes, setDiabetes] = useState(false);
+  const [smoking, setSmoking] = useState(false);
+  const [bmi, setBmi] = useState('');
+  const [statin, setStatin] = useState(false);
 
   useEffect(() => {
     // Try to get stored calculation data
@@ -18,8 +32,52 @@ export default function HeartDiseasePage() {
       if (parsed.preventRisk) {
         setPreventData(parsed.preventRisk);
       }
+      // Pre-fill form from stored data if available
+      if (parsed.metadata?.input_summary) {
+        const summary = parsed.metadata.input_summary;
+        if (summary.age) setAge(summary.age.toString());
+        if (summary.sex) setSex(summary.sex);
+      }
     }
   }, []);
+
+  const calculatePrevent = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          age: parseInt(age),
+          sex,
+          race: 'white', // Default, PREVENT doesn't use race
+          risk_factors: {
+            systolic_bp: parseInt(systolicBp) || undefined,
+            bp_treated: bpTreated,
+            total_cholesterol: parseInt(totalCholesterol) || undefined,
+            hdl_cholesterol: parseInt(hdlCholesterol) || undefined,
+            egfr: parseInt(egfr) || undefined,
+            diabetes,
+            smoking_status: smoking ? 'current' : 'never',
+            bmi: parseFloat(bmi) || undefined,
+            statin,
+          }
+        })
+      });
+      
+      const data = await response.json();
+      if (data.success && data.preventRisk) {
+        setPreventData(data.preventRisk);
+        // Update session storage
+        sessionStorage.setItem('riskCalculationResult', JSON.stringify(data));
+        setShowPreventForm(false); // Collapse form after success
+      }
+    } catch (error) {
+      console.error('PREVENT calculation failed:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-50">
@@ -123,17 +181,183 @@ export default function HeartDiseasePage() {
               )}
             </div>
           ) : (
-            <div className="bg-gray-50 rounded-lg p-6 text-center">
-              <p className="text-gray-600 mb-4">
-                To get your personalized PREVENT risk score, we need additional health information 
-                including blood pressure, cholesterol levels, and kidney function (eGFR).
-              </p>
-              <button
-                onClick={() => router.push('/?showPrevent=true')}
-                className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                Complete PREVENT Calculator
-              </button>
+            <div>
+              {!showPreventForm ? (
+                <div className="bg-gray-50 rounded-lg p-6 text-center">
+                  <p className="text-gray-600 mb-4">
+                    To get your personalized PREVENT risk score, we need additional health information 
+                    including blood pressure, cholesterol levels, and kidney function (eGFR).
+                  </p>
+                  <button
+                    onClick={() => setShowPreventForm(true)}
+                    className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                  >
+                    Enter Health Data
+                  </button>
+                </div>
+              ) : (
+                <div className="bg-purple-50 rounded-lg p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-semibold text-purple-800">Enter Your Health Data</h3>
+                    <button
+                      onClick={() => setShowPreventForm(false)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {/* Basic Info */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
+                        <input
+                          type="number"
+                          value={age}
+                          onChange={(e) => setAge(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          placeholder="45"
+                          min="30"
+                          max="79"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Sex</label>
+                        <select
+                          value={sex}
+                          onChange={(e) => setSex(e.target.value as 'male' | 'female')}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                        >
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Blood Pressure */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Systolic BP (mmHg)</label>
+                        <input
+                          type="number"
+                          value={systolicBp}
+                          onChange={(e) => setSystolicBp(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          placeholder="120"
+                        />
+                      </div>
+                      <div className="flex items-end pb-2">
+                        <label className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={bpTreated}
+                            onChange={(e) => setBpTreated(e.target.checked)}
+                            className="mr-2"
+                          />
+                          <span className="text-sm text-gray-700">On BP medication</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Cholesterol */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Total Cholesterol (mg/dL)</label>
+                        <input
+                          type="number"
+                          value={totalCholesterol}
+                          onChange={(e) => setTotalCholesterol(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          placeholder="200"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">HDL Cholesterol (mg/dL)</label>
+                        <input
+                          type="number"
+                          value={hdlCholesterol}
+                          onChange={(e) => setHdlCholesterol(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          placeholder="50"
+                        />
+                      </div>
+                    </div>
+
+                    {/* eGFR & BMI */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">eGFR (mL/min/1.73m²)</label>
+                        <input
+                          type="number"
+                          value={egfr}
+                          onChange={(e) => setEgfr(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          placeholder="90"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Find on lab results</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">BMI (kg/m²)</label>
+                        <input
+                          type="number"
+                          value={bmi}
+                          onChange={(e) => setBmi(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          placeholder="25"
+                          step="0.1"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Checkboxes */}
+                    <div className="grid grid-cols-3 gap-4 pt-2">
+                      <label className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={diabetes}
+                          onChange={(e) => setDiabetes(e.target.checked)}
+                          className="mr-2"
+                        />
+                        <span className="text-sm text-gray-700">Diabetes</span>
+                      </label>
+                      <label className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={smoking}
+                          onChange={(e) => setSmoking(e.target.checked)}
+                          className="mr-2"
+                        />
+                        <span className="text-sm text-gray-700">Current Smoker</span>
+                      </label>
+                      <label className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={statin}
+                          onChange={(e) => setStatin(e.target.checked)}
+                          className="mr-2"
+                        />
+                        <span className="text-sm text-gray-700">On Statin</span>
+                      </label>
+                    </div>
+
+                    {/* Calculate Button */}
+                    <button
+                      onClick={calculatePrevent}
+                      disabled={loading || !age || !systolicBp || !totalCholesterol || !hdlCholesterol || !egfr}
+                      className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium mt-4"
+                    >
+                      {loading ? 'Calculating...' : 'Calculate PREVENT Risk'}
+                    </button>
+                    
+                    <p className="text-xs text-gray-500 text-center">
+                      Required: Age, Systolic BP, Total Cholesterol, HDL, eGFR
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
