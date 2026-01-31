@@ -11,7 +11,7 @@ interface RiskIconArrayProps {
 const PersonIcon = ({ filled }: { filled: boolean }) => (
   <svg
     viewBox="0 0 24 32"
-    className={`w-3 h-4 ${filled ? 'text-red-500' : 'text-gray-300'}`}
+    className={`w-3 h-4 ${filled ? 'text-red-500' : 'text-green-500'}`}
     fill="currentColor"
   >
     {/* Head */}
