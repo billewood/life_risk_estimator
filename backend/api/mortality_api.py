@@ -199,6 +199,93 @@ def _calculate_prevent_risk(age: int, sex: str, risk_factors: dict) -> dict:
         }
 
 
+def _calculate_environmental_risk(risk_factors: dict) -> dict:
+    """
+    Calculate environmental and external risk factors.
+    Returns risk adjustments for transportation, occupation, and firearm exposure.
+    """
+    environmental_risks = {
+        'available': True,
+        'factors': {},
+        'combined_rr': 1.0
+    }
+    
+    # Transportation risk (relative to car baseline)
+    transportation_mode = risk_factors.get('transportation_mode', 'car')
+    transportation_rr = {
+        'car': 1.0,
+        'motorcycle': 29.0,
+        'bicycle': 2.3,
+        'walk': 1.5,
+        'public_transit': 0.1,
+        'work_from_home': 0.05  # Minimal transportation risk
+    }
+    
+    # Note: Transportation risk applies to accident-related mortality, not all-cause
+    # We need to weight it by the proportion of deaths from accidents (~6% for most ages)
+    transport_rr = transportation_rr.get(transportation_mode, 1.0)
+    accident_proportion = 0.06  # ~6% of deaths are from accidents
+    # Adjusted RR = 1 + (accident_proportion * (transport_rr - 1))
+    adjusted_transport_rr = 1 + (accident_proportion * (transport_rr - 1))
+    
+    environmental_risks['factors']['transportation'] = {
+        'mode': transportation_mode,
+        'raw_rr': transport_rr,
+        'adjusted_rr': round(adjusted_transport_rr, 3),
+        'source': 'NHTSA/IIHS fatality data, adjusted for accident proportion of mortality'
+    }
+    
+    # Occupation risk
+    occupation_risk = risk_factors.get('occupation_risk', 'low')
+    occupation_rr = {
+        'low': 0.5,
+        'moderate': 1.0,
+        'high': 3.0,
+        'very_high': 8.0
+    }
+    
+    # Occupational fatalities are ~0.003% of deaths, so impact is small
+    occ_rr = occupation_rr.get(occupation_risk, 1.0)
+    occupation_proportion = 0.003  # ~0.3% of deaths are occupational
+    adjusted_occ_rr = 1 + (occupation_proportion * (occ_rr - 1))
+    
+    environmental_risks['factors']['occupation'] = {
+        'level': occupation_risk,
+        'raw_rr': occ_rr,
+        'adjusted_rr': round(adjusted_occ_rr, 4),
+        'source': 'BLS Census of Fatal Occupational Injuries'
+    }
+    
+    # Firearm in home
+    firearm_in_home = risk_factors.get('firearm_in_home', False)
+    if firearm_in_home:
+        # Suicide + homicide make up ~3% of deaths, firearm increases this by 1.9x
+        firearm_rr = 1.9
+        suicide_homicide_proportion = 0.03
+        adjusted_firearm_rr = 1 + (suicide_homicide_proportion * (firearm_rr - 1))
+        
+        environmental_risks['factors']['firearm'] = {
+            'present': True,
+            'raw_rr': firearm_rr,
+            'adjusted_rr': round(adjusted_firearm_rr, 3),
+            'source': 'Anglemyer et al. 2014, Ann Intern Med'
+        }
+    else:
+        adjusted_firearm_rr = 1.0
+        environmental_risks['factors']['firearm'] = {
+            'present': False,
+            'raw_rr': 1.0,
+            'adjusted_rr': 1.0,
+            'source': 'N/A'
+        }
+    
+    # Combined relative risk
+    combined_rr = adjusted_transport_rr * adjusted_occ_rr * adjusted_firearm_rr
+    environmental_risks['combined_rr'] = round(combined_rr, 4)
+    
+    return environmental_risks
+
+
 @app.route('/api/health', methods=['GET'])
 def health_check():
     """Health check endpoint"""
@@ -340,11 +427,17 @@ def calculate_risk():
         # Calculate AHA PREVENT risk
         prevent_result = _calculate_prevent_risk(age, sex, risk_factors)
         
+        # Calculate environmental risk factors
+        environmental_result = _calculate_environmental_risk(risk_factors)
+        
+        # Adjust mortality for environmental factors
+        adjusted_mortality = mortality_result['adjusted_total_risk'] * environmental_result['combined_rr']
+        
         # Prepare response in the format expected by frontend
         response = {
             'success': True,
-            'lifeExpectancy': _calculate_life_expectancy(age, sex, mortality_result['adjusted_total_risk']),
-            'oneYearMortality': mortality_result['adjusted_total_risk'],
+            'lifeExpectancy': _calculate_life_expectancy(age, sex, adjusted_mortality),
+            'oneYearMortality': adjusted_mortality,
             'riskFactors': risk_adjustments_with_sources,
             'causesOfDeath': _format_causes_of_death(mortality_result['top_causes']),
             'cardiovascularRisk': {
@@ -357,6 +450,7 @@ def calculate_risk():
                 'error': pce_result.get('error', None)
             },
             'preventRisk': prevent_result,
+            'environmentalRisk': environmental_result,
             'metadata': {
                 'baseline_risk': mortality_result['baseline_risk'],
                 'risk_level': mortality_result['risk_level'],
@@ -384,6 +478,23 @@ def calculate_risk():
                     'source': 'AHA PREVENT Equations - Khan et al. 2024',
                     'url': 'https://doi.org/10.1161/CIRCULATIONAHA.123.067626',
                     'description': '10-year and 30-year CVD, ASCVD, and heart failure risk prediction'
+                },
+                'environmental': {
+                    'transportation': {
+                        'source': 'NHTSA Traffic Safety Facts, IIHS Fatality Statistics',
+                        'url': 'https://www.iihs.org/topics/fatality-statistics',
+                        'description': 'Fatality rates per mile by transportation mode'
+                    },
+                    'occupation': {
+                        'source': 'BLS Census of Fatal Occupational Injuries 2022',
+                        'url': 'https://www.bls.gov/iif/oshcfoi1.htm',
+                        'description': 'Occupational fatality rates by industry'
+                    },
+                    'firearm': {
+                        'source': 'Anglemyer et al. Ann Intern Med 2014',
+                        'url': 'https://www.acpjournals.org/doi/10.7326/M13-1301',
+                        'description': 'Firearm access and mortality risk meta-analysis'
+                    }
                 }
             }
         }

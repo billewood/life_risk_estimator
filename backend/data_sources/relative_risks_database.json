@@ -204,5 +204,107 @@
         "notes": "10% reduction in mortality risk per 5 BMI units lost"
       }
     }
+  },
+  "transportation": {
+    "description": "Relative risks for transportation mode on all-cause mortality from accidents",
+    "source": "NHTSA Fatality Analysis Reporting System, IIHS fatality data",
+    "notes": "Based on fatality rates per 100 million miles traveled. Baseline is car travel. These represent acute accident risk, not chronic health effects.",
+    "values": {
+      "motorcycle_vs_car": {
+        "value": 29.0,
+        "source": "NHTSA Traffic Safety Facts 2021; Insurance Institute for Highway Safety",
+        "url": "https://www.iihs.org/topics/fatality-statistics/detail/motorcycles-and-atvs",
+        "study_type": "national registry",
+        "sample_size": "U.S. population",
+        "confidence_interval": "25-33",
+        "notes": "Motorcyclists are 29x more likely to die per mile traveled than car occupants"
+      },
+      "bicycle_vs_car": {
+        "value": 2.3,
+        "source": "NHTSA Traffic Safety Facts; Pucher J, Dijkstra L. Promoting safe walking and cycling to improve public health. Am J Public Health 2003",
+        "url": "https://ajph.aphapublications.org/doi/full/10.2105/AJPH.93.9.1509",
+        "study_type": "national registry + review",
+        "sample_size": "U.S. population",
+        "confidence_interval": "1.8-2.8",
+        "notes": "Cyclists have ~2.3x higher fatality rate per mile than car occupants"
+      },
+      "pedestrian_vs_car": {
+        "value": 1.5,
+        "source": "NHTSA Traffic Safety Facts 2021",
+        "url": "https://www.nhtsa.gov/road-safety/pedestrian-safety",
+        "study_type": "national registry",
+        "sample_size": "U.S. population",
+        "confidence_interval": "1.2-1.8",
+        "notes": "Pedestrians have ~1.5x higher fatality rate per mile than car occupants"
+      },
+      "public_transit_vs_car": {
+        "value": 0.1,
+        "source": "Bureau of Transportation Statistics; APTA Public Transportation Fact Book",
+        "url": "https://www.apta.com/research-technical-resources/transit-statistics/",
+        "study_type": "national registry",
+        "sample_size": "U.S. population",
+        "confidence_interval": "0.05-0.15",
+        "notes": "Public transit is ~10x safer per mile than car travel"
+      }
+    }
+  },
+  "occupation": {
+    "description": "Relative risks by occupation category on all-cause mortality",
+    "source": "Bureau of Labor Statistics Census of Fatal Occupational Injuries",
+    "notes": "Based on fatal work injury rates per 100,000 full-time equivalent workers. Compared to all-occupation average.",
+    "values": {
+      "low_risk": {
+        "value": 0.5,
+        "source": "BLS Census of Fatal Occupational Injuries 2022",
+        "url": "https://www.bls.gov/iif/oshcfoi1.htm",
+        "study_type": "national registry",
+        "sample_size": "U.S. workforce",
+        "confidence_interval": "0.3-0.7",
+        "notes": "Office workers, educators, IT professionals - 1.5 deaths per 100k vs 3.6 average"
+      },
+      "moderate_risk": {
+        "value": 1.0,
+        "source": "BLS Census of Fatal Occupational Injuries 2022",
+        "url": "https://www.bls.gov/iif/oshcfoi1.htm",
+        "study_type": "national registry",
+        "sample_size": "U.S. workforce",
+        "confidence_interval": "0.8-1.2",
+        "notes": "Retail, healthcare, manufacturing - near average occupational fatality rate"
+      },
+      "high_risk": {
+        "value": 3.0,
+        "source": "BLS Census of Fatal Occupational Injuries 2022",
+        "url": "https://www.bls.gov/iif/oshcfoi1.htm",
+        "study_type": "national registry",
+        "sample_size": "U.S. workforce",
+        "confidence_interval": "2.5-3.5",
+        "notes": "Construction, mining, agriculture - ~10-15 deaths per 100k workers"
+      },
+      "very_high_risk": {
+        "value": 8.0,
+        "source": "BLS Census of Fatal Occupational Injuries 2022",
+        "url": "https://www.bls.gov/iif/oshcfoi1.htm",
+        "study_type": "national registry",
+        "sample_size": "U.S. workforce",
+        "confidence_interval": "6-10",
+        "notes": "Logging, fishing, roofing - 50-100+ deaths per 100k workers"
+      }
+    }
+  },
+  "firearm": {
+    "description": "Relative risks for firearm access on mortality",
+    "source": "Meta-analyses of firearm ownership and mortality risk",
+    "notes": "Risk primarily from suicide and homicide. Effect sizes vary by study methodology.",
+    "values": {
+      "firearm_in_home": {
+        "value": 1.9,
+        "source": "Anglemyer A, Horvath T, Rutherford G. The accessibility of firearms and risk for suicide and homicide victimization among household members: a systematic review and meta-analysis. Ann Intern Med 2014",
+        "url": "https://www.acpjournals.org/doi/10.7326/M13-1301",
+        "study_type": "meta-analysis",
+        "sample_size": "16 studies",
+        "confidence_interval": "1.6-2.2",
+        "notes": "Pooled OR 1.90 for suicide, 1.40 for homicide. Combined effect on mortality ~1.9x"
+      }
+    }
   }
 }

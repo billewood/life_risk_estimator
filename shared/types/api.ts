@@ -10,6 +10,7 @@ export interface RiskCalculationRequest {
 }
 
 export interface RiskFactors {
+  // Health factors
   smoking_status?: 'never' | 'former' | 'current'
   years_since_quit?: number
   systolic_bp?: number
@@ -23,6 +24,12 @@ export interface RiskFactors {
   hdl_cholesterol?: number
   egfr?: number
   statin?: boolean
+  
+  // Environmental & External factors
+  transportation_mode?: 'car' | 'motorcycle' | 'bicycle' | 'public_transit' | 'walk' | 'work_from_home'
+  miles_driven_weekly?: number
+  occupation_risk?: 'low' | 'moderate' | 'high' | 'very_high'
+  firearm_in_home?: boolean
 }
 
 export interface RiskFactorAdjustment {
