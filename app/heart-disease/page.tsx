@@ -71,6 +71,73 @@ export default function HeartDiseasePage() {
           </div>
         </div>
 
+        {/* AHA PREVENT Calculator Section - Second from top */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <h2 className="text-xl font-semibold mb-4">AHA PREVENT Calculator</h2>
+          <p className="text-gray-600 mb-4">
+            The American Heart Association PREVENT equations provide personalized 10-year and 30-year 
+            cardiovascular disease risk predictions based on your specific health data.
+          </p>
+
+          {preventData?.available ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-purple-50 rounded-lg p-4">
+                  <div className="text-sm text-purple-600 mb-1">10-Year Total CVD Risk</div>
+                  <div className="text-2xl font-bold text-purple-700">
+                    {preventData.risk_10yr_cvd ? `${(preventData.risk_10yr_cvd * 100).toFixed(1)}%` : 'N/A'}
+                  </div>
+                </div>
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <div className="text-sm text-blue-600 mb-1">10-Year ASCVD Risk</div>
+                  <div className="text-2xl font-bold text-blue-700">
+                    {preventData.risk_10yr_ascvd ? `${(preventData.risk_10yr_ascvd * 100).toFixed(1)}%` : 'N/A'}
+                  </div>
+                </div>
+                <div className="bg-red-50 rounded-lg p-4">
+                  <div className="text-sm text-red-600 mb-1">10-Year Heart Failure Risk</div>
+                  <div className="text-2xl font-bold text-red-700">
+                    {preventData.risk_10yr_hf ? `${(preventData.risk_10yr_hf * 100).toFixed(1)}%` : 'N/A'}
+                  </div>
+                </div>
+              </div>
+              
+              {preventData.risk_30yr_cvd && (
+                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                  <h3 className="font-semibold text-gray-700 mb-2">30-Year Projections</h3>
+                  <div className="grid grid-cols-3 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-600">CVD: </span>
+                      <span className="font-semibold">{(preventData.risk_30yr_cvd * 100).toFixed(1)}%</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">ASCVD: </span>
+                      <span className="font-semibold">{preventData.risk_30yr_ascvd ? `${(preventData.risk_30yr_ascvd * 100).toFixed(1)}%` : 'N/A'}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Heart Failure: </span>
+                      <span className="font-semibold">{preventData.risk_30yr_hf ? `${(preventData.risk_30yr_hf * 100).toFixed(1)}%` : 'N/A'}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="bg-gray-50 rounded-lg p-6 text-center">
+              <p className="text-gray-600 mb-4">
+                To get your personalized PREVENT risk score, we need additional health information 
+                including blood pressure, cholesterol levels, and kidney function (eGFR).
+              </p>
+              <button
+                onClick={() => router.push('/?showPrevent=true')}
+                className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                Complete PREVENT Calculator
+              </button>
+            </div>
+          )}
+        </div>
+
         {/* Risk Factors */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Key Risk Factors</h2>
@@ -136,73 +203,6 @@ export default function HeartDiseasePage() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* AHA PREVENT Calculator Section */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">AHA PREVENT Calculator</h2>
-          <p className="text-gray-600 mb-4">
-            The American Heart Association PREVENT equations provide personalized 10-year and 30-year 
-            cardiovascular disease risk predictions based on your specific health data.
-          </p>
-
-          {preventData?.available ? (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-purple-50 rounded-lg p-4">
-                  <div className="text-sm text-purple-600 mb-1">10-Year Total CVD Risk</div>
-                  <div className="text-2xl font-bold text-purple-700">
-                    {preventData.risk_10yr_cvd ? `${(preventData.risk_10yr_cvd * 100).toFixed(1)}%` : 'N/A'}
-                  </div>
-                </div>
-                <div className="bg-blue-50 rounded-lg p-4">
-                  <div className="text-sm text-blue-600 mb-1">10-Year ASCVD Risk</div>
-                  <div className="text-2xl font-bold text-blue-700">
-                    {preventData.risk_10yr_ascvd ? `${(preventData.risk_10yr_ascvd * 100).toFixed(1)}%` : 'N/A'}
-                  </div>
-                </div>
-                <div className="bg-red-50 rounded-lg p-4">
-                  <div className="text-sm text-red-600 mb-1">10-Year Heart Failure Risk</div>
-                  <div className="text-2xl font-bold text-red-700">
-                    {preventData.risk_10yr_hf ? `${(preventData.risk_10yr_hf * 100).toFixed(1)}%` : 'N/A'}
-                  </div>
-                </div>
-              </div>
-              
-              {preventData.risk_30yr_cvd && (
-                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                  <h3 className="font-semibold text-gray-700 mb-2">30-Year Projections</h3>
-                  <div className="grid grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-600">CVD: </span>
-                      <span className="font-semibold">{(preventData.risk_30yr_cvd * 100).toFixed(1)}%</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">ASCVD: </span>
-                      <span className="font-semibold">{preventData.risk_30yr_ascvd ? `${(preventData.risk_30yr_ascvd * 100).toFixed(1)}%` : 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Heart Failure: </span>
-                      <span className="font-semibold">{preventData.risk_30yr_hf ? `${(preventData.risk_30yr_hf * 100).toFixed(1)}%` : 'N/A'}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="bg-gray-50 rounded-lg p-6 text-center">
-              <p className="text-gray-600 mb-4">
-                To get your personalized PREVENT risk score, we need additional health information 
-                including blood pressure, cholesterol levels, and kidney function (eGFR).
-              </p>
-              <button
-                onClick={() => router.push('/?showPrevent=true')}
-                className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                Complete PREVENT Calculator
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Prevention Tips */}
