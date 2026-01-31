@@ -11,7 +11,6 @@ const riskInfo: Record<string, {
   description: string;
   facts: string[];
   prevention: string[];
-  imageDescription?: string;
 }> = {
   overdose: {
     title: 'Drug Overdose & Poisoning',
@@ -35,8 +34,7 @@ const riskInfo: Record<string, {
       'Never eat wild mushrooms unless identified by an expert',
       'Keep medications locked away from children',
       'Dispose of unused medications properly'
-    ],
-    imageDescription: 'Death cap mushroom (Amanita phalloides) - responsible for most fatal mushroom poisonings'
+    ]
   },
   motor_vehicle: {
     title: 'Motor Vehicle Accidents',
@@ -260,20 +258,6 @@ export default function RiskDetailPage() {
 
           <p className="text-gray-700">{risk.description}</p>
         </div>
-
-        {/* Image placeholder for poisoning */}
-        {id === 'overdose' && (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <div className="bg-gradient-to-br from-green-800 to-green-900 rounded-lg p-8 text-center">
-              <div className="text-6xl mb-4">🍄</div>
-              <p className="text-green-100 text-sm italic">{risk.imageDescription}</p>
-            </div>
-            <p className="text-xs text-gray-500 mt-2 text-center">
-              Note: Never eat wild mushrooms unless positively identified by a mycology expert. 
-              The death cap looks similar to edible mushrooms and has no antidote.
-            </p>
-          </div>
-        )}
 
         {/* Key Facts */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
