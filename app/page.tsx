@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { RiskCalculationResponse, RiskFactors, CardiovascularRisk } from '../shared/types/api'
 import RiskPieChart from './components/RiskPieChart'
+import RiskIconArray from './components/RiskIconArray'
 
 export default function Home() {
   const [age, setAge] = useState('')
@@ -881,6 +882,43 @@ export default function Home() {
                 </div>
               </div>
             )}
+
+            {/* 1-Year Mortality Visualization */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-xl font-semibold mb-4">Your 1-Year Mortality Risk</h2>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Icon Array */}
+                <RiskIconArray
+                  probability={result.oneYearMortality}
+                  title="Visual Risk Representation"
+                  subtitle="Each figure represents 1 person out of 100"
+                />
+
+                {/* Key Statistics */}
+                <div className="flex flex-col justify-center space-y-4">
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <div className="text-3xl font-bold text-blue-700">
+                      {(result.oneYearMortality * 100).toFixed(2)}%
+                    </div>
+                    <div className="text-sm text-blue-600">Probability of dying in the next year</div>
+                  </div>
+                  
+                  <div className="bg-green-50 rounded-lg p-4">
+                    <div className="text-3xl font-bold text-green-700">
+                      {((1 - result.oneYearMortality) * 100).toFixed(2)}%
+                    </div>
+                    <div className="text-sm text-green-600">Probability of surviving the next year</div>
+                  </div>
+
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="text-3xl font-bold text-gray-700">
+                      {result.lifeExpectancy.toFixed(1)} years
+                    </div>
+                    <div className="text-sm text-gray-600">Estimated life expectancy</div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* Causes of Death */}
             <div className="bg-white rounded-lg shadow-md p-6">
