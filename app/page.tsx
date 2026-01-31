@@ -1,13 +1,14 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { RiskCalculationResponse, RiskFactors, CardiovascularRisk } from '../shared/types/api'
 import RiskPieChart from './components/RiskPieChart'
 import RiskIconArray from './components/RiskIconArray'
 
-export default function Home() {
+function HomeContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   
   // View state: 'input' or 'results'
   const [currentView, setCurrentView] = useState<'input' | 'results'>('input')
@@ -33,6 +34,23 @@ export default function Home() {
   const [heightCm, setHeightCm] = useState('')
   const [weightLbs, setWeightLbs] = useState('')
   const [weightKg, setWeightKg] = useState('')
+
+  // Check if we should show results view on page load (returning from detail page)
+  useEffect(() => {
+    const viewParam = searchParams.get('view')
+    if (viewParam === 'results') {
+      const storedData = sessionStorage.getItem('riskCalculationResult')
+      if (storedData) {
+        try {
+          const parsed = JSON.parse(storedData)
+          setResult(parsed)
+          setCurrentView('results')
+        } catch (e) {
+          console.error('Failed to parse stored results:', e)
+        }
+      }
+    }
+  }, [searchParams])
 
   const calculateBmi = () => {
     let bmi: number | null = null
@@ -1071,5 +1089,13 @@ export default function Home() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">Loading...</div>}>
+      <HomeContent />
+    </Suspense>
   )
 }
