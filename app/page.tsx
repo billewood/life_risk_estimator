@@ -37,7 +37,10 @@ function HomeContent() {
 
   // Check if we should show results view on page load (returning from detail page)
   useEffect(() => {
-    const viewParam = searchParams.get('view')
+    // Check URL params first
+    const urlParams = new URLSearchParams(window.location.search)
+    const viewParam = urlParams.get('view') || searchParams.get('view')
+    
     if (viewParam === 'results') {
       const storedData = sessionStorage.getItem('riskCalculationResult')
       if (storedData) {
@@ -45,6 +48,8 @@ function HomeContent() {
           const parsed = JSON.parse(storedData)
           setResult(parsed)
           setCurrentView('results')
+          // Clean up URL without triggering navigation
+          window.history.replaceState({}, '', '/')
         } catch (e) {
           console.error('Failed to parse stored results:', e)
         }

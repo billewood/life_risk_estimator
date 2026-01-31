@@ -22,7 +22,9 @@ export default function OtherRisksPage() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Back Button */}
         <button
-          onClick={() => router.push('/?view=results')}
+          onClick={() => {
+            window.location.href = '/?view=results'
+          }}
           className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
         >
           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
