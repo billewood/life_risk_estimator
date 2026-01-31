@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import RiskPieChart from '../components/RiskPieChart';
 
@@ -19,6 +20,30 @@ const cancerBreakdown = [
 
 export default function CancerPage() {
   const router = useRouter();
+  const [showRiskFactors, setShowRiskFactors] = useState(false);
+  
+  // Personalized risk factor inputs
+  const [smokingStatus, setSmokingStatus] = useState<'never' | 'former' | 'current'>('never');
+  const [packYears, setPackYears] = useState('');
+  const [alcoholDrinks, setAlcoholDrinks] = useState('');
+  const [bmi, setBmi] = useState('');
+  const [familyHistory, setFamilyHistory] = useState<string[]>([]);
+  const [sunExposure, setSunExposure] = useState<'low' | 'moderate' | 'high'>('moderate');
+  const [exerciseHours, setExerciseHours] = useState('');
+  const [redMeatServings, setRedMeatServings] = useState('');
+  const [processedMeatServings, setProcessedMeatServings] = useState('');
+
+  const toggleFamilyHistory = (cancer: string) => {
+    if (familyHistory.includes(cancer)) {
+      setFamilyHistory(familyHistory.filter(c => c !== cancer));
+    } else {
+      setFamilyHistory([...familyHistory, cancer]);
+    }
+  };
+
+  // TODO: Implement personalized risk calculation
+  // For now, this just shows the form - calculation logic to be added
+  const hasPersonalizedData = smokingStatus !== 'never' || alcoholDrinks || bmi || familyHistory.length > 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
@@ -70,6 +95,187 @@ export default function CancerPage() {
               <div className="text-sm text-green-600">Of deaths are potentially preventable</div>
             </div>
           </div>
+        </div>
+
+        {/* Personalized Risk Factors Section */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <button
+            onClick={() => setShowRiskFactors(!showRiskFactors)}
+            className="w-full flex items-center justify-between"
+          >
+            <div className="flex items-center">
+              <div className="bg-orange-100 rounded-full p-2 mr-3">
+                <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <div className="text-left">
+                <h2 className="text-lg font-semibold text-gray-900">Personalize Your Cancer Risk</h2>
+                <p className="text-sm text-gray-500">Enter your lifestyle factors for a tailored assessment</p>
+              </div>
+            </div>
+            <svg 
+              className={`w-5 h-5 text-gray-400 transform transition-transform ${showRiskFactors ? 'rotate-180' : ''}`} 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {showRiskFactors && (
+            <div className="mt-6 space-y-6 border-t pt-6">
+              {/* Smoking */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Smoking Status</label>
+                <div className="flex gap-3">
+                  {(['never', 'former', 'current'] as const).map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => setSmokingStatus(status)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        smokingStatus === status
+                          ? 'bg-orange-600 text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {status === 'never' ? 'Never Smoked' : status === 'former' ? 'Former Smoker' : 'Current Smoker'}
+                    </button>
+                  ))}
+                </div>
+                {(smokingStatus === 'former' || smokingStatus === 'current') && (
+                  <div className="mt-3">
+                    <label className="block text-xs text-gray-600 mb-1">Pack-years (packs/day × years smoked)</label>
+                    <input
+                      type="number"
+                      value={packYears}
+                      onChange={(e) => setPackYears(e.target.value)}
+                      className="w-32 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                      placeholder="e.g., 20"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Alcohol */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Alcohol Consumption</label>
+                <p className="text-xs text-gray-500 mb-2">Average drinks per week (1 drink = 12oz beer, 5oz wine, 1.5oz spirits)</p>
+                <input
+                  type="number"
+                  value={alcoholDrinks}
+                  onChange={(e) => setAlcoholDrinks(e.target.value)}
+                  className="w-32 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  placeholder="0"
+                />
+              </div>
+
+              {/* BMI */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">BMI</label>
+                <input
+                  type="number"
+                  value={bmi}
+                  onChange={(e) => setBmi(e.target.value)}
+                  className="w-32 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  placeholder="25"
+                  step="0.1"
+                />
+                <p className="text-xs text-gray-500 mt-1">Normal: 18.5-24.9 | Overweight: 25-29.9 | Obese: 30+</p>
+              </div>
+
+              {/* Diet */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Red Meat (servings/week)</label>
+                  <input
+                    type="number"
+                    value={redMeatServings}
+                    onChange={(e) => setRedMeatServings(e.target.value)}
+                    className="w-32 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                    placeholder="3"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Processed Meat (servings/week)</label>
+                  <input
+                    type="number"
+                    value={processedMeatServings}
+                    onChange={(e) => setProcessedMeatServings(e.target.value)}
+                    className="w-32 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                    placeholder="2"
+                  />
+                </div>
+              </div>
+
+              {/* Exercise */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Exercise (hours/week of moderate activity)</label>
+                <input
+                  type="number"
+                  value={exerciseHours}
+                  onChange={(e) => setExerciseHours(e.target.value)}
+                  className="w-32 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  placeholder="2.5"
+                  step="0.5"
+                />
+              </div>
+
+              {/* Sun Exposure */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Sun Exposure (without protection)</label>
+                <div className="flex gap-3">
+                  {(['low', 'moderate', 'high'] as const).map((level) => (
+                    <button
+                      key={level}
+                      onClick={() => setSunExposure(level)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        sunExposure === level
+                          ? 'bg-orange-600 text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {level.charAt(0).toUpperCase() + level.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Family History */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Family History of Cancer (first-degree relatives)</label>
+                <div className="flex flex-wrap gap-2">
+                  {['Breast', 'Colorectal', 'Lung', 'Prostate', 'Ovarian', 'Pancreatic', 'Melanoma'].map((cancer) => (
+                    <button
+                      key={cancer}
+                      onClick={() => toggleFamilyHistory(cancer)}
+                      className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                        familyHistory.includes(cancer)
+                          ? 'bg-red-100 text-red-700 border-2 border-red-400'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-2 border-transparent'
+                      }`}
+                    >
+                      {cancer}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Calculate Button - Placeholder for now */}
+              <div className="pt-4 border-t">
+                <button
+                  disabled
+                  className="w-full bg-gray-300 text-gray-500 py-3 px-4 rounded-lg font-medium cursor-not-allowed"
+                >
+                  Personalized Calculation Coming Soon
+                </button>
+                <p className="text-xs text-gray-500 text-center mt-2">
+                  We're working on integrating evidence-based relative risk data to provide personalized cancer risk estimates.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Cancer Type Breakdown */}
