@@ -21,6 +21,11 @@ const cancerBreakdown = [
 export default function CancerPage() {
   const router = useRouter();
   const [showRiskFactors, setShowRiskFactors] = useState(false);
+
+  const handleCancerClick = (item: { name: string; value: number; id?: string }) => {
+    const id = item.id || item.name.toLowerCase().replace(/\s+/g, '-');
+    router.push(`/cancers/${id}`);
+  };
   
   // Personalized risk factor inputs
   const [smokingStatus, setSmokingStatus] = useState<'never' | 'former' | 'current'>('never');
@@ -285,9 +290,11 @@ export default function CancerPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <RiskPieChart
               title="Distribution of Cancer Deaths"
-              subtitle="Percentage of total cancer mortality"
+              subtitle="Click a slice to learn more"
               data={cancerBreakdown}
               height={320}
+              clickable={true}
+              onSliceClick={handleCancerClick}
             />
 
             <div className="space-y-2">
