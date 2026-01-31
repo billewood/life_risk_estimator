@@ -1,264 +1,151 @@
 # Deployment Strategy
-## Production Deployment Options for Life Risk Calculator
 
-**Current Setup**: Next.js frontend + Python Flask backend  
-**Goal**: Deploy to production while maintaining data integrity and real calculations
+## Current Production Setup
+
+**Frontend**: Vercel (billewood.com)  
+**Backend**: Render (life-risk-estimator.onrender.com)  
+**Domain**: Porkbun (billewood.com)
 
 ---
 
-## 🎯 **Deployment Options**
+## Architecture
 
-### **Option 1: Vercel Frontend + Separate Python Backend (RECOMMENDED)**
-
-#### **Frontend (Vercel)**
-- ✅ **Next.js App**: Deploy to Vercel automatically
-- ✅ **API Routes**: Next.js API routes handle frontend-backend communication
-- ✅ **Static Assets**: Optimized by Vercel
-- ✅ **CDN**: Global content delivery
-
-#### **Backend (Separate Service)**
-- **Options**:
-  - **Railway**: Python hosting with easy deployment
-  - **Render**: Free tier available, good for Python
-  - **Heroku**: Classic choice, but paid
-  - **DigitalOcean App Platform**: Good performance
-  - **AWS Lambda**: Serverless Python functions
-
-#### **Implementation**
-```typescript
-// Frontend API route calls external backend
-const response = await fetch('https://your-backend-url.com/api/calculate-risk', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(request)
-})
+```
+┌─────────────────────────────────────────────────────────────┐
+│                         User                                 │
+│                          │                                   │
+│                          ▼                                   │
+│              billewood.com (Vercel)                          │
+│                    Next.js Frontend                          │
+│                          │                                   │
+│                          ▼                                   │
+│              /api/calculate (Next.js API Route)              │
+│                          │                                   │
+│                          ▼                                   │
+│     life-risk-estimator.onrender.com (Render)               │
+│                 Python Flask Backend                         │
+│              /api/calculate-risk endpoint                    │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-### **Option 2: Full Vercel Deployment (Next.js API Routes Only)**
+## Environment Variables
 
-#### **Limitations**
-- ⚠️ **Python Backend**: Cannot run Python directly on Vercel
-- ⚠️ **Data Processing**: Complex calculations may hit Vercel limits
-- ⚠️ **File System**: No persistent storage for data files
-
-#### **Workaround**
-- Move Python logic to Next.js API routes
-- Use external data APIs instead of local files
-- Implement calculations in TypeScript/JavaScript
-
----
-
-### **Option 3: Docker Container Deployment**
-
-#### **Single Container**
-```dockerfile
-FROM node:18-alpine
-# Install Python and dependencies
-RUN apk add --no-cache python3 py3-pip
-COPY requirements.txt .
-RUN pip3 install -r requirements.txt
-# Install Node dependencies
-COPY package*.json ./
-RUN npm install
-# Copy application
-COPY . .
-# Start both services
-CMD ["npm", "run", "dev:fullstack"]
-```
-
-#### **Deployment Platforms**
-- **Railway**: Supports Docker containers
-- **Render**: Docker deployment available
-- **Google Cloud Run**: Serverless containers
-- **AWS ECS**: Container orchestration
-
----
-
-## 🚀 **Recommended Approach: Hybrid Deployment**
-
-### **Why This Works Best**
-1. **Vercel Frontend**: Optimal for Next.js, great performance
-2. **Separate Python Backend**: Maintains data integrity and real calculations
-3. **Scalability**: Each service scales independently
-4. **Cost Effective**: Vercel free tier + cheap backend hosting
-
-### **Implementation Steps**
-
-#### **1. Deploy Backend to Railway/Render**
+### Vercel (Frontend)
 ```bash
-# Create account on Railway or Render
-# Connect your GitHub repository
-# Set environment variables
-# Deploy from backend/ directory
+BACKEND_URL=https://life-risk-estimator.onrender.com
 ```
 
-#### **2. Update Frontend API Routes**
-```typescript
-// app/api/calculate/route.ts
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000'
-
-const response = await fetch(`${BACKEND_URL}/api/calculate-risk`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(request)
-})
-```
-
-#### **3. Deploy Frontend to Vercel**
+### Render (Backend)
 ```bash
-# Connect GitHub to Vercel
-# Set environment variable: BACKEND_URL=https://your-backend-url.com
-# Deploy automatically
-```
-
----
-
-## 🔧 **Environment Configuration**
-
-### **Backend Environment Variables**
-```bash
-# Production backend
 FLASK_ENV=production
-PORT=5000
+PORT=5001
 ```
 
-### **Frontend Environment Variables**
+---
+
+## Deployment Workflow
+
+### Making Changes
+
+1. **Create a feature branch**:
+   ```bash
+   git checkout -b feature/your-feature
+   ```
+
+2. **Make changes, commit, and push**:
+   ```bash
+   git add .
+   git commit -m "Description of changes"
+   git push -u origin feature/your-feature
+   ```
+
+3. **Create a Pull Request** on GitHub:
+   - Go to: https://github.com/billewood/life_risk_estimator
+   - Click "Compare & pull request"
+   - Set base to `main`
+   - Vercel automatically creates a preview deployment
+
+4. **Test the preview** (Vercel comments with preview URL on the PR)
+
+5. **Merge to main** when ready:
+   - Click "Merge pull request" on GitHub
+   - Vercel automatically redeploys billewood.com
+   - Render automatically redeploys the backend (if backend files changed)
+
+---
+
+## Service Details
+
+### Vercel (Frontend)
+- **Dashboard**: https://vercel.com/dashboard
+- **Domain**: billewood.com
+- **Auto-deploys**: On push to `main` branch
+- **Preview deploys**: On pull requests
+
+### Render (Backend)
+- **Dashboard**: https://dashboard.render.com
+- **URL**: https://life-risk-estimator.onrender.com
+- **Health check**: https://life-risk-estimator.onrender.com/api/health
+- **Auto-deploys**: On push to `main` branch (backend directory)
+
+### Porkbun (Domain)
+- **Dashboard**: https://porkbun.com/account/domainsSpe498
+- **DNS**: A record pointing to Vercel
+
+---
+
+## Testing Endpoints
+
+### Backend Health Check
 ```bash
-# Vercel environment variables
-BACKEND_URL=https://your-backend-url.com
-NEXT_PUBLIC_API_URL=https://your-backend-url.com
+curl https://life-risk-estimator.onrender.com/api/health
+```
+
+### Full Calculation Test
+```bash
+curl -X POST https://life-risk-estimator.onrender.com/api/calculate-risk \
+  -H "Content-Type: application/json" \
+  -d '{"age": 45, "sex": "male", "race": "white", "risk_factors": {}}'
 ```
 
 ---
 
-## 📊 **Data Management Strategy**
+## Cost
 
-### **Current Data Files**
-- `ssa_life_tables_2021.csv` - Real SSA data
-- `relative_risks_database.json` - Risk factor database
-- `goff2014.pdf` - PCE source paper
+| Service | Plan | Cost |
+|---------|------|------|
+| Vercel | Free/Hobby | $0/month |
+| Render | Free tier | $0/month |
+| Porkbun | Domain | ~$10/year |
 
-### **Production Options**
-1. **Include in Deployment**: Bundle data files with backend
-2. **External Storage**: Use cloud storage (AWS S3, etc.)
-3. **Database**: Move to PostgreSQL/MongoDB
-4. **API Integration**: Use external data APIs
-
-### **Recommended: Bundle with Backend**
-- ✅ **Simple**: No additional services needed
-- ✅ **Reliable**: Data always available
-- ✅ **Fast**: No external API calls
-- ✅ **Cost Effective**: No additional storage costs
+**Note**: Render free tier may spin down after inactivity. First request after idle period may take 30-60 seconds.
 
 ---
 
-## 🎯 **Quick Start Deployment**
+## Troubleshooting
 
-### **Step 1: Deploy Backend**
-1. Sign up for Railway or Render
-2. Connect GitHub repository
-3. Set root directory to `backend/`
-4. Deploy automatically
+### "Python backend not running" error
+- Check Render dashboard for deployment status
+- Test health endpoint: `curl https://life-risk-estimator.onrender.com/api/health`
+- Check Render logs for errors
 
-### **Step 2: Deploy Frontend**
-1. Connect GitHub to Vercel
-2. Set environment variable: `BACKEND_URL=https://your-backend-url.com`
-3. Deploy automatically
+### Preview deployment not appearing
+- Ensure PR is created on GitHub
+- Check Vercel dashboard → Deployments tab
+- Vercel should comment on the PR with preview URL
 
-### **Step 3: Test**
-1. Visit Vercel URL
-2. Test risk calculations
-3. Verify data sources and real calculations
-
----
-
-## 💰 **Cost Estimation**
-
-### **Vercel Frontend**
-- **Free Tier**: 100GB bandwidth, unlimited static sites
-- **Pro**: $20/month for advanced features
-
-### **Backend Hosting**
-- **Railway**: $5/month for hobby plan
-- **Render**: Free tier available, $7/month for paid
-- **Heroku**: $7/month for basic dyno
-
-### **Total Cost**: $0-27/month depending on usage
+### Domain not working
+- Check DNS propagation: https://dnschecker.org
+- Verify Vercel domain settings
+- Check Porkbun DNS records
 
 ---
 
-## 🔒 **Security Considerations**
+## Security Notes
 
-### **API Security**
-- Rate limiting on backend
-- Input validation and sanitization
-- HTTPS everywhere
-- Environment variable protection
-
-### **Data Protection**
-- No sensitive user data stored
+- No sensitive user data is stored
 - All calculations use public health data
-- Source attribution for transparency
-
----
-
-## 📈 **Scaling Strategy**
-
-### **Low Traffic (< 1000 users/day)**
-- Current setup handles this easily
-- Single backend instance sufficient
-
-### **Medium Traffic (1000-10000 users/day)**
-- Add backend load balancing
-- Consider caching for repeated calculations
-- Monitor performance metrics
-
-### **High Traffic (> 10000 users/day)**
-- Move to microservices architecture
-- Use CDN for static assets
-- Consider serverless functions for calculations
-
----
-
-## ✅ **Deployment Checklist**
-
-### **Pre-Deployment**
-- [ ] Test backend locally
-- [ ] Test frontend-backend communication
-- [ ] Verify all data sources work
-- [ ] Check environment variables
-
-### **Backend Deployment**
-- [ ] Deploy to Railway/Render
-- [ ] Test API endpoints
-- [ ] Verify data files are included
-- [ ] Check logs for errors
-
-### **Frontend Deployment**
-- [ ] Deploy to Vercel
-- [ ] Set backend URL environment variable
-- [ ] Test full application flow
-- [ ] Verify real calculations work
-
-### **Post-Deployment**
-- [ ] Test complete user journey
-- [ ] Verify data source attribution
-- [ ] Check performance metrics
-- [ ] Monitor error logs
-
----
-
-## 🎉 **Conclusion**
-
-**Recommended Path**: Vercel frontend + Railway/Render backend
-
-This approach:
-- ✅ **Maintains data integrity** with real Python calculations
-- ✅ **Scales independently** for each service
-- ✅ **Cost effective** with free/low-cost hosting
-- ✅ **Easy to deploy** with automatic GitHub integration
-- ✅ **Production ready** with proper environment management
-
-**Your application is ready for production deployment!** 🚀
+- HTTPS everywhere
+- Environment variables protected in Vercel/Render dashboards

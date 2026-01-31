@@ -110,3 +110,6 @@ temp/
 # OS generated files
 Thumbs.db
 ehthumbs.db
+
+# Large data files
+backend/data_sources/packaged/cdc_socrata_cause_allocation.csv

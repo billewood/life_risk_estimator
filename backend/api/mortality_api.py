@@ -79,8 +79,8 @@ def _format_causes_of_death(top_causes: List[Dict]) -> List[Dict]:
             'description': 'Diabetes mellitus and related complications'
         },
         'other': {
-            'name': 'Other Causes',
-            'description': 'Other medical conditions and causes'
+            'name': 'Accidents & Injuries',
+            'description': 'Unintentional injuries and external causes'
         }
     }
     
