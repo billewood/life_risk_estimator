@@ -2,6 +2,19 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import RiskPieChart from '../components/RiskPieChart';
+
+// External causes breakdown (CDC data - annual U.S. deaths)
+const externalCausesBreakdown = [
+  { name: 'Drug Overdose/Poisoning', value: 39.3, id: 'overdose' },
+  { name: 'Motor Vehicle Accidents', value: 14.0, id: 'motor_vehicle' },
+  { name: 'Firearm Deaths', value: 16.5, id: 'firearm' },
+  { name: 'Falls', value: 16.2, id: 'falls' },
+  { name: 'Suffocation', value: 6.2, id: 'suffocation' },
+  { name: 'Drowning', value: 1.5, id: 'drowning' },
+  { name: 'Fire/Burns', value: 1.1, id: 'fire' },
+  { name: 'Other Accidents', value: 5.2, id: 'other' },
+];
 
 export default function OtherRisksPage() {
   const router = useRouter();
@@ -51,6 +64,36 @@ export default function OtherRisksPage() {
             While chronic diseases account for the majority of deaths, external factors like accidents, 
             occupational hazards, and environmental exposures also contribute significantly to mortality risk.
             Many of these risks are modifiable through lifestyle choices and safety practices.
+          </p>
+        </div>
+
+        {/* External Causes Breakdown Pie Chart */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <h2 className="text-xl font-semibold mb-4">Breakdown of External Causes</h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <RiskPieChart
+              title="External Causes of Death"
+              subtitle="Percentage of accidental/external deaths"
+              data={externalCausesBreakdown}
+              height={320}
+              colors={['#dc2626', '#ea580c', '#d97706', '#ca8a04', '#65a30d', '#16a34a', '#0891b2', '#6366f1']}
+            />
+
+            <div className="space-y-2">
+              {externalCausesBreakdown.map((cause) => (
+                <div key={cause.id} className="border rounded-lg p-3 bg-gray-50">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-gray-800">{cause.name}</span>
+                    <span className="text-sm font-semibold text-amber-600">{cause.value}%</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <p className="text-xs text-gray-500 mt-4 text-center">
+            Data source: CDC National Vital Statistics, 2022. Percentages are of total unintentional injury deaths.
           </p>
         </div>
 
