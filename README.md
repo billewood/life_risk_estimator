@@ -1,270 +1,99 @@
-# Life Risk Calculator 
+# Life Risk Calculator
 
-A comprehensive mortality and cardiovascular risk calculator built with Next.js frontend and Python backend, using only real data from authoritative sources.
+A mortality and health risk calculator that provides personalized risk assessments using real data from authoritative sources.
 
-## 🎯 **Key Features**
+**Live site:** https://billewood.com
 
-### **Real Data Only**
-- ✅ **No fake data, estimates, or placeholders anywhere**
-- ✅ **SSA Life Tables**: Official U.S. mortality data
-- ✅ **Pooled Cohort Equations (PCE)**: Real coefficients from Goff et al. 2013
-- ✅ **Relative Risk Database**: Peer-reviewed literature with complete source attribution
-- ✅ **Complete Traceability**: Every calculation linked to its source
+## About
 
-### **Comprehensive Risk Assessment**
-- **All-Cause Mortality**: 1-year, 5-year, 10-year risk predictions
-- **Cardiovascular Risk**: PCE-based ASCVD risk calculations
-- **Risk Factor Analysis**: Smoking, blood pressure, BMI, fitness, diabetes, cholesterol
-- **Cause of Death**: Breakdown by leading causes
-- **Life Expectancy**: Adjusted for individual risk factors
+This calculator estimates your 1-year mortality risk and breaks down the most likely causes of death based on your age, sex, and lifestyle factors. It uses data from:
 
-### **Modern Technology Stack**
-- **Frontend**: Next.js 15, React 18, TypeScript, Tailwind CSS
-- **Backend**: Python 3.9, Flask, Pandas, NumPy
-- **Data Sources**: SSA, CDC, GBD, Peer-reviewed literature
-- **Type Safety**: Shared TypeScript interfaces between frontend and backend
+- **Social Security Administration Life Tables** - Official U.S. mortality data
+- **CDC Cause of Death Data** - Leading causes of death by age/sex
+- **AHA PREVENT Equations** - Cardiovascular disease risk prediction
+- **Peer-reviewed literature** - Relative risk data for lifestyle factors
 
-## 🚀 **Quick Start**
+All calculations include source attribution so you can verify the data.
 
-### **Prerequisites**
-- Node.js 18+ 
-- Python 3.9+
-- pip3
+## Features
 
-### **Installation**
+### Current Features
 
-**THIS IS NOT TESTED TO RUN ON OTHER SYSTEMS DONT EXPECT THIS TO WORK**
+**Mortality Risk Assessment**
+- 1-year mortality probability based on age and sex
+- Adjustments for smoking, BMI, blood pressure, diabetes, alcohol, and fitness
+- Visual representation with icon array (100 figures)
+- Pie chart breakdown of most likely causes of death
 
-1. **Clone and setup**:
-```bash
-cd life-risk-app
-npm install
-npm run setup  # Installs Python dependencies
-```
+**Cardiovascular Risk (AHA PREVENT)**
+- 10-year and 30-year cardiovascular disease risk
+- Requires blood pressure, cholesterol, and eGFR values
+- Expandable calculator on the Heart Disease detail page
 
-2. **Start development servers**:
-```bash
-# Option 1: Start both frontend and backend
-npm run dev:fullstack
+**Interactive Detail Pages**
+- Click pie chart slices to explore specific risks
+- Heart Disease page with PREVENT calculator
+- Cancer page with breakdown by cancer type
+- Accidents & Injuries page with external cause breakdown
 
-# Option 2: Start separately
-npm run dev:backend  # Python backend on port 5000
-npm run dev          # Next.js frontend on port 3000
-```
+**Cancer Information**
+- Individual pages for each major cancer type (lung, breast, colorectal, etc.)
+- Risk factors, symptoms, screening recommendations, and prevention tips
+- Personalization form (calculation coming soon)
 
-3. **Open application**: http://localhost:3000
+**External Risk Information**  
+- Pages for drug overdose, motor vehicle accidents, falls, drowning, firearms, etc.
+- Prevention strategies for each risk type
 
-### **Testing**
-```bash
-npm run test:backend  # Test Python backend
-npm run lint          # Lint frontend code
-```
+### Under Development
 
-## 📁 **Project Structure**
+**Personalized Cancer Risk**
+- UI form exists to collect smoking, alcohol, BMI, diet, exercise, family history
+- Backend calculation using relative risk multipliers is not yet implemented
+- Will use validated models (PLCOm2012 for lung, Gail for breast) where available
 
-```
-life-risk-app/
-├── app/                          # Next.js app directory
-│   ├── api/calculate/           # API route for risk calculations
-│   ├── page.tsx                 # Main application page
-│   └── globals.css              # Global styles
-├── backend/                     # Python backend
-│   ├── api/
-│   │   ├── mortality_api.py     # Flask API server
-│   │   └── risk_factor_schema.py # Risk factor definitions
-│   ├── calculators/
-│   │   └── mortality_calculator.py # Main calculation logic
-│   ├── models/
-│   │   ├── mortality_models.py  # Baseline mortality models
-│   │   └── pce_real_coefficients.py # PCE implementation
-│   ├── data_sources/
-│   │   ├── ssa_life_tables_2021.csv # Real SSA data
-│   │   ├── relative_risks_database.json # RR database
-│   │   └── goff2014.pdf         # PCE source paper
-│   ├── requirements.txt         # Python dependencies
-│   └── data_logger.py           # Data source tracking
-├── shared/
-│   └── types/
-│       └── api.ts               # Shared TypeScript types
-├── docs/                        # Documentation
-│   ├── FINAL_SYSTEM_STATUS.md   # System compliance report
-│   ├── FRONTEND_INTEGRATION_GUIDE.md
-│   └── DATA_DOWNLOAD_GUIDE.md
-└── package.json                 # Node.js dependencies
-```
+**Personalized External Risk**
+- UI form exists for lifestyle factors (pool ownership, motorcycle use, firearm ownership, etc.)
+- Backend calculation not yet implemented
 
-## 🔬 **Data Sources & Validation**
+**10-Year Mortality Projections**
+- Currently only showing 1-year risk
+- Need validated actuarial approach for multi-year projections
 
-### **Baseline Mortality**
-- **Source**: Social Security Administration Life Tables 2021
-- **URL**: https://www.ssa.gov/oact/STATS/table4c6.html
-- **Validation**: Downloaded and parsed from official HTML tables
+**PWA Support**
+- Planning to add manifest and service worker for mobile app experience
 
-### **Cardiovascular Risk (PCE)**
-- **Source**: 2013 ACC/AHA Pooled Cohort Equations (Goff et al. 2013)
-- **DOI**: 10.1161/01.cir.0000437741.48606.98
-- **Validation**: Real coefficients extracted from Table A
-- **Test Case**: Validated against paper example (5.3% expected vs 5.4% calculated)
+## Data Sources
 
-### **Relative Risk Factors**
-- **Smoking**: U.S.-specific RR 2.3x (Jha et al. 2013) + Global RR 2.5x (GBD)
-- **Blood Pressure**: Meta-analysis RRs by BP category
-- **BMI**: U-shaped risk curve with optimal range
-- **Fitness**: Physical activity guidelines-based RRs
-- **Alcohol**: J-curve relationship with optimal moderate consumption
-- **Diabetes**: Type 2 diabetes RR from multiple studies
+| Data | Source | Description |
+|------|--------|-------------|
+| Baseline mortality | SSA Life Tables 2021 | Official U.S. mortality by age/sex |
+| Cause allocation | CDC WONDER | Cause of death percentages by age |
+| Cardiovascular risk | AHA PREVENT (2024) | 10-year and 30-year CVD prediction |
+| Smoking RR | Jha et al. 2013 | U.S.-specific relative risk 2.3x |
+| BMI RR | Global Burden of Disease | U-shaped risk curve |
+| Blood pressure RR | Meta-analyses | RR by BP category |
+| Alcohol RR | Di Castelnuovo et al. | J-curve relationship |
 
-### **Source Attribution**
-Every calculation includes:
-- Original study/paper citation
-- URL/link to source
-- Sample size and study type
-- Confidence intervals where available
-- Population specificity (U.S. vs. global)
+## Technology
 
-## 🎨 **Frontend Features**
+- **Frontend:** Next.js, React, TypeScript, Tailwind CSS, Recharts
+- **Backend:** Python, Flask
+- **Hosting:** Vercel (frontend), Render (backend)
 
-### **Dynamic Form Generation**
-- Uses risk factor schema for form building
-- Real-time validation against backend rules
-- Conditional fields (e.g., years since quit for former smokers)
-- Type-safe form handling
+## Privacy
 
-### **Comprehensive Results Display**
-- **Life Expectancy**: Adjusted for risk factors
-- **Mortality Risk**: 1-year, 5-year, 10-year predictions
-- **Cardiovascular Risk**: PCE-based ASCVD risk with risk levels
-- **Risk Factors**: Individual impact with source attribution
-- **Causes of Death**: Leading causes with probabilities
+This calculator does not store, retrieve, or track any personal information. All calculations happen in real-time and no data is saved.
 
-### **User Experience**
-- **Responsive Design**: Works on desktop and mobile
-- **Loading States**: Clear feedback during calculations
-- **Error Handling**: Graceful fallbacks and error messages
-- **Source Transparency**: Click to see data sources
-- **Interactive Elements**: Expandable sections and modals
+## Contributing
 
-## 🔧 **API Documentation**
+Suggestions and feedback are welcome! Please open an issue on this repository.
 
-### **Risk Calculation Endpoint**
-```
-POST /api/calculate
-Content-Type: application/json
+This is a work in progress. All contributions should:
+- Use only real data from authoritative sources
+- Include source attribution for any new data
+- Maintain scientific accuracy
 
-{
-  "age": 45,
-  "sex": "male",
-  "race": "white",
-  "risk_factors": {
-    "smoking_status": "former",
-    "years_since_quit": 5,
-    "systolic_bp": 130,
-    "bp_treated": false,
-    "bmi": 28,
-    "fitness_level": "moderate",
-    "diabetes": false,
-    "total_cholesterol": 220,
-    "hdl_cholesterol": 45
-  },
-  "time_horizon": "1_year"
-}
-```
-
-### **Response Format**
-```typescript
-{
-  "success": true,
-  "lifeExpectancy": 78.2,
-  "oneYearMortality": 0.0045,
-  "riskFactors": { /* risk factor adjustments with sources */ },
-  "causesOfDeath": [ /* leading causes with probabilities */ ],
-  "cardiovascularRisk": {
-    "risk_10_year": 0.087,
-    "risk_5_year": 0.043,
-    "risk_1_year": 0.009,
-    "risk_level": "Intermediate",
-    "available": true,
-    "source": { /* PCE source information */ }
-  },
-  "metadata": { /* calculation metadata */ },
-  "data_sources": { /* source attribution */ }
-}
-```
-
-## 🚀 **Deployment**
-
-### **Production**
-- **Live Site**: https://billewood.com
-- **Frontend**: Vercel (auto-deploys from `main` branch)
-- **Backend**: Render (https://life-risk-estimator.onrender.com)
-
-### **Development**
-```bash
-npm run dev:fullstack  # Starts both frontend and backend locally
-```
-
-### **Deployment Workflow**
-1. Create feature branch: `git checkout -b feature/your-feature`
-2. Make changes, commit, push
-3. Create Pull Request on GitHub → Vercel creates preview URL
-4. Test preview, then merge to `main` → Auto-deploys to production
-
-See [DEPLOYMENT_STRATEGY.md](DEPLOYMENT_STRATEGY.md) for full details.
-
-## 📊 **Performance & Compliance**
-
-### **Data Integrity**
-- ✅ **100% Real Data**: No fake data, estimates, or placeholders
-- ✅ **Source Attribution**: Every value traceable to original source
-- ✅ **Validation**: All calculations validated against source papers
-- ✅ **Logging**: Complete audit trail of data usage
-
-### **Technical Performance**
-- **Backend**: Optimized Python calculations with caching
-- **Frontend**: Next.js with optimized rendering
-- **API**: RESTful design with proper error handling
-- **Types**: Full TypeScript coverage for type safety
-
-## 🔬 **Scientific Validation**
-
-### **PCE Validation**
-- **Paper Example**: 60-year-old white male, non-smoker, BP 140/90, TC 213, HDL 50
-- **Expected**: 5.3% 10-year ASCVD risk
-- **Calculated**: 5.4% 10-year ASCVD risk
-- **Difference**: 0.1% (within acceptable range)
-
-### **Relative Risk Validation**
-- All RR values sourced from peer-reviewed literature
-- U.S.-specific estimates preferred over global estimates
-- Confidence intervals provided where available
-- Population specificity clearly documented
-
-## 📚 **Documentation**
-
-- **[System Status](docs/FINAL_SYSTEM_STATUS.md)**: Complete compliance report
-- **[Frontend Guide](docs/FRONTEND_INTEGRATION_GUIDE.md)**: Integration instructions
-- **[Data Guide](docs/DATA_DOWNLOAD_GUIDE.md)**: Manual data download instructions
-- **[API Reference](docs/API_REFERENCE.md)**: Complete API documentation
-
-## 🤝 **Contributing**
-
-This is a research-grade mortality risk calculator. All contributions must maintain:
-- **No fake data policy**: Only real data from authoritative sources
-- **Complete source attribution**: Every value must be traceable
-- **Scientific validation**: All calculations must be validated against source papers
-- **Type safety**: Full TypeScript coverage required
-
-## 📄 **License**
+## License
 
 Research and educational use. Please cite original data sources when using results.
-
-## 🏆 **Achievements**
-
-- ✅ **Complete Real Data Implementation**: No fake data anywhere
-- ✅ **PCE Integration**: Real coefficients from Goff et al. 2013
-- ✅ **Source Attribution**: Every calculation traceable
-- ✅ **Type Safety**: Full TypeScript integration
-- ✅ **Modern UI**: Professional, responsive design
-- ✅ **Scientific Validation**: Tested against paper examples
-
-**This is a production-ready, evidence-based mortality risk calculator with complete data integrity and modern user experience.**
