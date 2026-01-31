@@ -34,9 +34,6 @@ function HomeContent() {
   const [heightCm, setHeightCm] = useState('')
   const [weightLbs, setWeightLbs] = useState('')
   const [weightKg, setWeightKg] = useState('')
-  
-  // Time horizon toggle for mortality display
-  const [timeHorizon, setTimeHorizon] = useState<'1_year' | '10_year'>('1_year')
 
   // Check if we should show results view on page load (returning from detail page)
   useEffect(() => {
@@ -541,93 +538,46 @@ function HomeContent() {
               </div>
             )}
 
-            {/* Mortality Visualization with Time Horizon Tabs */}
+            {/* 1-Year Mortality Visualization */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              {/* Tab Navigation */}
-              <div className="flex border-b border-gray-200 mb-6">
-                <button
-                  onClick={() => setTimeHorizon('1_year')}
-                  className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-                    timeHorizon === '1_year'
-                      ? 'border-blue-600 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  1-Year Risk
-                </button>
-                <button
-                  onClick={() => setTimeHorizon('10_year')}
-                  className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-                    timeHorizon === '10_year'
-                      ? 'border-blue-600 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  10-Year Risk
-                </button>
-              </div>
+              <h2 className="text-xl font-semibold mb-4">Your 1-Year Mortality Risk</h2>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Icon Array */}
+                <RiskIconArray
+                  probability={result.oneYearMortality}
+                  title="Visual Risk Representation"
+                  subtitle="Each figure represents 1 person out of 100"
+                />
 
-              {/* Calculate 10-year mortality from 1-year */}
-              {(() => {
-                const oneYearMortality = result.oneYearMortality;
-                const tenYearMortality = 1 - Math.pow(1 - oneYearMortality, 10);
-                const displayMortality = timeHorizon === '1_year' ? oneYearMortality : tenYearMortality;
-                const periodLabel = timeHorizon === '1_year' ? 'next year' : 'next 10 years';
-                const periodLabelShort = timeHorizon === '1_year' ? '1 year' : '10 years';
-
-                return (
-                  <>
-                    <h2 className="text-xl font-semibold mb-4">
-                      Your {timeHorizon === '1_year' ? '1-Year' : '10-Year'} Mortality Risk
-                    </h2>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      {/* Icon Array */}
-                      <RiskIconArray
-                        probability={displayMortality}
-                        title="Visual Risk Representation"
-                        subtitle={`Each figure represents 1 person out of 100 over ${periodLabelShort}`}
-                      />
-
-                      {/* Key Statistics */}
-                      <div className="flex flex-col justify-center space-y-4">
-                        <div className="bg-blue-50 rounded-lg p-4">
-                          <div className="text-3xl font-bold text-blue-700">
-                            {(displayMortality * 100).toFixed(2)}%
-                          </div>
-                          <div className="text-sm text-blue-600">Probability of dying in the {periodLabel}</div>
-                        </div>
-                        
-                        <div className="bg-green-50 rounded-lg p-4">
-                          <div className="text-3xl font-bold text-green-700">
-                            {((1 - displayMortality) * 100).toFixed(2)}%
-                          </div>
-                          <div className="text-sm text-green-600">Probability of surviving the {periodLabel}</div>
-                        </div>
-
-                        <div className="bg-gray-50 rounded-lg p-4">
-                          <div className="text-3xl font-bold text-gray-700">
-                            {result.lifeExpectancy.toFixed(1)} years
-                          </div>
-                          <div className="text-sm text-gray-600">Estimated life expectancy</div>
-                        </div>
-                      </div>
+                {/* Key Statistics */}
+                <div className="flex flex-col justify-center space-y-4">
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <div className="text-3xl font-bold text-blue-700">
+                      {(result.oneYearMortality * 100).toFixed(2)}%
                     </div>
-                    
-                    {timeHorizon === '10_year' && (
-                      <p className="text-xs text-gray-500 mt-4 text-center">
-                        10-year risk is estimated from annual mortality rate. Actual risk may vary with age progression and lifestyle changes.
-                      </p>
-                    )}
-                  </>
-                );
-              })()}
+                    <div className="text-sm text-blue-600">Probability of dying in the next year</div>
+                  </div>
+                  
+                  <div className="bg-green-50 rounded-lg p-4">
+                    <div className="text-3xl font-bold text-green-700">
+                      {((1 - result.oneYearMortality) * 100).toFixed(2)}%
+                    </div>
+                    <div className="text-sm text-green-600">Probability of surviving the next year</div>
+                  </div>
+
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="text-3xl font-bold text-gray-700">
+                      {result.lifeExpectancy.toFixed(1)} years
+                    </div>
+                    <div className="text-sm text-gray-600">Estimated life expectancy</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Causes of Death */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold mb-4">
-                Most Likely Causes of Death ({timeHorizon === '1_year' ? 'Next Year' : 'Next 10 Years'})
-              </h2>
+              <h2 className="text-xl font-semibold mb-4">Most Likely Causes of Death (Next Year)</h2>
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Pie Chart - Clickable */}
