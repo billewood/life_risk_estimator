@@ -67,7 +67,7 @@ def _format_causes_of_death(top_causes: List[Dict]) -> List[Dict]:
             'description': 'Malignant neoplasms of various types'
         },
         'accidents': {
-            'name': 'Accidents & Injuries',
+            'name': 'Accidents',
             'description': 'Unintentional injuries including falls, motor vehicle accidents'
         },
         'stroke': {
@@ -79,8 +79,8 @@ def _format_causes_of_death(top_causes: List[Dict]) -> List[Dict]:
             'description': 'Diabetes mellitus and related complications'
         },
         'other': {
-            'name': 'Other External Causes',
-            'description': 'Other medical conditions and external causes'
+            'name': 'Accidents & Injuries',
+            'description': 'Unintentional injuries and external causes'
         }
     }
     
