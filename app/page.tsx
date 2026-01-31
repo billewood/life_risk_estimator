@@ -1,11 +1,17 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { RiskCalculationResponse, RiskFactors, CardiovascularRisk } from '../shared/types/api'
 import RiskPieChart from './components/RiskPieChart'
 import RiskIconArray from './components/RiskIconArray'
 
 export default function Home() {
+  const router = useRouter()
+  
+  // View state: 'input' or 'results'
+  const [currentView, setCurrentView] = useState<'input' | 'results'>('input')
+  
   const [age, setAge] = useState('')
   const [sex, setSex] = useState<'male' | 'female' | ''>('')
   const [race, setRace] = useState<'white' | 'black' | 'african_american' | 'hispanic' | 'asian' | 'native_american' | 'pacific_islander' | 'mixed' | 'other'>('white')
@@ -78,6 +84,9 @@ export default function Home() {
       
       if (data.success) {
         setResult(data)
+        // Store in sessionStorage for detail pages
+        sessionStorage.setItem('riskCalculationResult', JSON.stringify(data))
+        setCurrentView('results')
       } else {
         setError(data.error || 'Calculation failed')
         
@@ -105,26 +114,47 @@ export default function Home() {
     return 'text-gray-600'
   }
 
+  // Handle pie chart slice clicks
+  const handleCauseClick = (item: { name: string; value: number; id?: string }) => {
+    const name = item.name.toLowerCase()
+    if (name.includes('heart') || name.includes('cardiovascular') || name.includes('cerebrovascular')) {
+      router.push('/heart-disease')
+    } else if (name.includes('cancer') || name.includes('malignant')) {
+      router.push('/cancer')
+    } else {
+      router.push('/other-risks')
+    }
+  }
+
+  // Back to input view
+  const handleBackToInput = () => {
+    setCurrentView('input')
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-6xl mx-auto py-8 px-4">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Mortality Risk Calculator
-          </h1>
-          <p className="text-lg text-gray-600">
-            Evidence-based risk assessment using real data from authoritative sources
-          </p>
-                 <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                   <p className="text-sm text-blue-800">
-                     <strong>Privacy Protected:</strong> We don't store, retrieve, or track any of your personal information. Completely anonymous.
-                   </p>
-                 </div>
-        </div>
         
-        {/* Input Form */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        {/* === INPUT VIEW === */}
+        {currentView === 'input' && (
+          <>
+            <div className="text-center mb-8">
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                Mortality Risk Calculator
+              </h1>
+              <p className="text-lg text-gray-600">
+                Evidence-based risk assessment using real data from authoritative sources
+              </p>
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <strong>Privacy Protected:</strong> We don't store, retrieve, or track any of your personal information. Completely anonymous.
+                </p>
+              </div>
+            </div>
+            
+            {/* Input Form */}
+            <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+              <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Information */}
             <div className="border-b pb-4">
               <h3 className="text-lg font-semibold text-gray-700 mb-4">Basic Information (Required)</h3>
@@ -699,11 +729,30 @@ export default function Home() {
             </div>
           </div>
         )}
+          </>
+        )}
 
-        {/* Results */}
-        {result && result.success && (
-          <div className="space-y-8">
-            {/* Key Metrics */}
+        {/* === RESULTS VIEW === */}
+        {currentView === 'results' && result && result.success && (
+          <div className="space-y-6">
+            {/* Back Button */}
+            <button
+              onClick={handleBackToInput}
+              className="flex items-center text-gray-600 hover:text-gray-900"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to Calculator
+            </button>
+
+            {/* Header */}
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Your Risk Assessment</h1>
+              <p className="text-gray-600">Based on your provided information</p>
+            </div>
+
+            {/* Key Metrics - Simplified */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-white rounded-lg shadow-md p-6 text-center">
                 <div className="flex items-center justify-center mb-2">
@@ -925,16 +974,19 @@ export default function Home() {
               <h2 className="text-xl font-semibold mb-4">Most Likely Causes of Death (Next Year)</h2>
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Pie Chart */}
+                {/* Pie Chart - Clickable */}
                 <div>
                   <RiskPieChart
                     title="Risk Distribution"
                     subtitle="Relative probability by cause"
                     data={result.causesOfDeath.slice(0, 8).map((cause: any) => ({
                       name: cause.name,
-                      value: parseFloat((cause.probability * 100).toFixed(2))
+                      value: parseFloat((cause.probability * 100).toFixed(2)),
+                      id: cause.name.toLowerCase().replace(/\s+/g, '-')
                     }))}
                     height={280}
+                    clickable={true}
+                    onSliceClick={handleCauseClick}
                   />
                 </div>
 

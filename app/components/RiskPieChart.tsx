@@ -6,6 +6,7 @@ interface ChartDataItem {
   name: string;
   value: number;
   color?: string;
+  id?: string; // Optional ID for click handling
 }
 
 interface RiskPieChartProps {
@@ -16,6 +17,8 @@ interface RiskPieChartProps {
   showLegend?: boolean;
   showLabels?: boolean;
   height?: number;
+  onSliceClick?: (item: ChartDataItem) => void;
+  clickable?: boolean;
 }
 
 // Default color palette - modern, accessible colors
@@ -32,7 +35,7 @@ const DEFAULT_COLORS = [
   '#84CC16', // lime
 ];
 
-const CustomTooltip = ({ active, payload }: any) => {
+const CustomTooltip = ({ active, payload, clickable }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
@@ -41,6 +44,9 @@ const CustomTooltip = ({ active, payload }: any) => {
         <p className="text-gray-600">
           {typeof data.value === 'number' ? data.value.toFixed(1) : data.value}%
         </p>
+        {clickable && (
+          <p className="text-xs text-blue-500 mt-1">Click to explore →</p>
+        )}
       </div>
     );
   }
@@ -78,6 +84,8 @@ export default function RiskPieChart({
   showLegend = true,
   showLabels = true,
   height = 300,
+  onSliceClick,
+  clickable = false,
 }: RiskPieChartProps) {
   // Ensure we have valid data
   const chartData = data.filter(item => item.value > 0);
@@ -89,6 +97,12 @@ export default function RiskPieChart({
       </div>
     );
   }
+
+  const handleClick = (data: any) => {
+    if (onSliceClick && data) {
+      onSliceClick(data);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -110,6 +124,8 @@ export default function RiskPieChart({
             dataKey="value"
             animationBegin={0}
             animationDuration={800}
+            onClick={clickable ? handleClick : undefined}
+            style={clickable ? { cursor: 'pointer' } : undefined}
           >
             {chartData.map((entry, index) => (
               <Cell 
@@ -117,10 +133,11 @@ export default function RiskPieChart({
                 fill={entry.color || colors[index % colors.length]}
                 stroke="white"
                 strokeWidth={2}
+                style={clickable ? { cursor: 'pointer' } : undefined}
               />
             ))}
           </Pie>
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<CustomTooltip clickable={clickable} />} />
           {showLegend && (
             <Legend
               layout="horizontal"
@@ -130,10 +147,17 @@ export default function RiskPieChart({
               formatter={(value) => (
                 <span className="text-sm text-gray-700">{value}</span>
               )}
+              onClick={clickable ? (e) => {
+                const item = chartData.find(d => d.name === e.value);
+                if (item && onSliceClick) onSliceClick(item);
+              } : undefined}
             />
           )}
         </PieChart>
       </ResponsiveContainer>
+      {clickable && (
+        <p className="text-xs text-center text-gray-500 mt-2">Click on a section to explore in detail</p>
+      )}
     </div>
   );
 }
