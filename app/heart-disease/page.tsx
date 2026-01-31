@@ -321,7 +321,7 @@ export default function HeartDiseasePage() {
                           onChange={(e) => setDiabetes(e.target.checked)}
                           className="mr-2"
                         />
-                        <span className="text-sm text-gray-700">Diabetes</span>
+                        <span className="text-sm text-gray-700">Has Diabetes</span>
                       </label>
                       <label className="flex items-center">
                         <input
