@@ -18,7 +18,9 @@ export interface RiskFactors {
   bp_treated?: boolean
   bmi?: number
   fitness_level?: 'sedentary' | 'moderate' | 'high'
+  exercise_hours_per_week?: number
   alcohol_pattern?: 'none' | 'moderate' | 'heavy' | 'binge'
+  alcohol_drinks_per_week?: number
   diabetes?: boolean
   total_cholesterol?: number
   hdl_cholesterol?: number

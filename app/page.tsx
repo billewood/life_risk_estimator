@@ -281,6 +281,136 @@ function HomeContent() {
               </div>
             </div>
 
+            {/* Lifestyle Factors - Always Visible */}
+            <div className="border-b pb-6">
+              <h3 className="text-lg font-semibold text-gray-700 mb-4">Lifestyle Factors</h3>
+              
+              {/* Smoking Status - Radio Buttons */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-3">Smoking Status</label>
+                <div className="flex flex-wrap gap-4">
+                  {[
+                    { value: 'never', label: 'Never Smoked' },
+                    { value: 'former', label: 'Former Smoker' },
+                    { value: 'current', label: 'Current Smoker' }
+                  ].map((option) => (
+                    <label key={option.value} className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="smoking_status"
+                        value={option.value}
+                        checked={riskFactors.smoking_status === option.value}
+                        onChange={(e) => setRiskFactors({...riskFactors, smoking_status: e.target.value as any})}
+                        className="mr-2 h-4 w-4 text-blue-600"
+                      />
+                      <span className="text-sm text-gray-700">{option.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* BMI Slider */}
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    BMI (Body Mass Index)
+                  </label>
+                  <span className="text-sm font-semibold text-blue-600">
+                    {riskFactors.bmi || 25}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="15"
+                  max="45"
+                  step="0.5"
+                  value={riskFactors.bmi || 25}
+                  onChange={(e) => setRiskFactors({...riskFactors, bmi: parseFloat(e.target.value)})}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>Underweight (&lt;18.5)</span>
+                  <span>Normal (18.5-25)</span>
+                  <span>Overweight (25-30)</span>
+                  <span>Obese (&gt;30)</span>
+                </div>
+              </div>
+
+              {/* Alcohol Slider */}
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Alcoholic Drinks per Week
+                  </label>
+                  <span className="text-sm font-semibold text-blue-600">
+                    {riskFactors.alcohol_drinks_per_week ?? 0} drinks
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="30"
+                  step="1"
+                  value={riskFactors.alcohol_drinks_per_week ?? 0}
+                  onChange={(e) => {
+                    const drinks = parseInt(e.target.value);
+                    let pattern: 'none' | 'moderate' | 'heavy' = 'none';
+                    if (drinks === 0) pattern = 'none';
+                    else if (drinks <= 14) pattern = 'moderate';
+                    else pattern = 'heavy';
+                    setRiskFactors({
+                      ...riskFactors, 
+                      alcohol_drinks_per_week: drinks,
+                      alcohol_pattern: pattern
+                    });
+                  }}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>None</span>
+                  <span>Moderate (1-14/week)</span>
+                  <span>Heavy (15+/week)</span>
+                </div>
+              </div>
+
+              {/* Exercise Slider */}
+              <div className="mb-2">
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Exercise (hours per week)
+                  </label>
+                  <span className="text-sm font-semibold text-blue-600">
+                    {riskFactors.exercise_hours_per_week ?? 2.5} hours
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="20"
+                  step="0.5"
+                  value={riskFactors.exercise_hours_per_week ?? 2.5}
+                  onChange={(e) => {
+                    const hours = parseFloat(e.target.value);
+                    let fitness: 'sedentary' | 'moderate' | 'high' = 'moderate';
+                    if (hours < 1) fitness = 'sedentary';
+                    else if (hours < 5) fitness = 'moderate';
+                    else fitness = 'high';
+                    setRiskFactors({
+                      ...riskFactors,
+                      exercise_hours_per_week: hours,
+                      fitness_level: fitness
+                    });
+                  }}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>Sedentary</span>
+                  <span>Moderate (2.5+ hrs)</span>
+                  <span>Active (5+ hrs)</span>
+                </div>
+              </div>
+            </div>
+
             {/* Calculate Button - Primary Action */}
             <button
               type="submit"
@@ -300,52 +430,17 @@ function HomeContent() {
                   className="text-blue-600 hover:text-blue-800 text-sm text-center"
                 >
                   <span className="font-medium">{showDetailedForm ? '− Hide Health Details' : '+ Add Health Details'}</span>
-                  <span className="block text-xs text-gray-500">(optional)</span>
+                  <span className="block text-xs text-gray-500">(optional - blood pressure, cholesterol, etc.)</span>
                 </button>
               </div>
               
               {showDetailedForm && (
                 <div className="space-y-4 mt-3">
-                  {/* Lifestyle Factors */}
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-700 mb-3 flex items-center">
-                      <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
-                      Other Lifestyle Factors
-                    </h4>
-                    <p className="text-xs text-gray-500 mb-3">These affect overall mortality risk but are not used in the PREVENT cardiovascular calculator</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Physical Activity Level
-                        </label>
-                        <select 
-                          value={riskFactors.fitness_level || 'moderate'}
-                          onChange={(e) => setRiskFactors({...riskFactors, fitness_level: e.target.value as any})}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                        >
-                          <option value="sedentary">Sedentary (little to no exercise)</option>
-                          <option value="moderate">Moderate (some regular exercise)</option>
-                          <option value="high">High (regular intense exercise)</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Alcohol Consumption
-                        </label>
-                        <select 
-                          value={riskFactors.alcohol_pattern || 'none'}
-                          onChange={(e) => setRiskFactors({...riskFactors, alcohol_pattern: e.target.value as any})}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                        >
-                          <option value="none">No alcohol</option>
-                          <option value="moderate">Moderate (1-2 drinks/day)</option>
-                          <option value="heavy">Heavy (3+ drinks/day)</option>
-                          <option value="binge">Binge drinking pattern</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
+                  {/* Additional health details can go here */}
+                  <p className="text-sm text-gray-500 text-center">
+                    Additional health metrics like blood pressure, cholesterol, and eGFR can be added here 
+                    for more detailed cardiovascular risk assessment using the AHA PREVENT calculator.
+                  </p>
                 </div>
               )}
             </div>
