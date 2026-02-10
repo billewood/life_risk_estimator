@@ -2,9 +2,10 @@
 
 ## Current Production Setup
 
-**Frontend**: Vercel (billewood.com)  
-**Backend**: Render (life-risk-estimator.onrender.com)  
-**Domain**: Porkbun (billewood.com)
+**Landing Page**: Vercel (billewood.com) - separate repo: `billewood-landing`  
+**Life Risk Estimator Frontend**: Vercel (liferisk.billewood.com) - this repo  
+**Backend API**: Render (life-risk-estimator.onrender.com)  
+**Domain Registrar**: Porkbun (billewood.com)
 
 ---
 
@@ -14,19 +15,28 @@
 ┌─────────────────────────────────────────────────────────────┐
 │                         User                                 │
 │                          │                                   │
-│                          ▼                                   │
-│              billewood.com (Vercel)                          │
-│                    Next.js Frontend                          │
-│                          │                                   │
-│                          ▼                                   │
-│              /api/calculate (Next.js API Route)              │
-│                          │                                   │
-│                          ▼                                   │
-│     life-risk-estimator.onrender.com (Render)               │
-│                 Python Flask Backend                         │
-│              /api/calculate-risk endpoint                    │
+│            ┌─────────────┴─────────────┐                    │
+│            ▼                           ▼                    │
+│   billewood.com              liferisk.billewood.com         │
+│   (Landing Page)             (Life Risk Estimator)          │
+│   billewood-landing repo     life_risk_estimator repo       │
+│                                        │                    │
+│                                        ▼                    │
+│                          /api/calculate (Next.js Route)     │
+│                                        │                    │
+│                                        ▼                    │
+│                    life-risk-estimator.onrender.com         │
+│                          Python Flask Backend               │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+## DNS Records (Porkbun)
+
+| Type | Host | Answer |
+|------|------|--------|
+| A | @ | 216.198.79.1 |
+| CNAME | www | cname.vercel-dns.com |
+| CNAME | liferisk | 90eaf7c790f07b94.vercel-dns-017.com |
 
 ---
 
