@@ -50,7 +50,7 @@ export default function OtherRisksPage() {
         {/* Back Button */}
         <button
           onClick={() => {
-            window.location.href = '/?view=results'
+            window.location.href = '/life-risk-estimator?view=results'
           }}
           className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
         >
