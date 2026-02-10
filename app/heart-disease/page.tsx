@@ -85,7 +85,7 @@ export default function HeartDiseasePage() {
         {/* Back Button */}
         <button
           onClick={() => {
-            window.location.href = '/life-risk-estimator?view=results'
+            window.location.href = '/?view=results'
           }}
           className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
         >
